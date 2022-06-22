@@ -3,9 +3,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 # #1.데이터
-x = np.array([1,2,3,4,5,6,7,8,9,10])
-y = np.array([1,2,3,4,5,6,7,8,9,10])
-
+x = np.array([1,2,3,4,5,6,7,8,9,10])         
+y = np.array([1,2,3,4,5,6,7,8,9,10])   
+     
 x_train = x[:7]
 x_test = x[7:]
 y_train = y[:7]
@@ -26,6 +26,11 @@ print(y_test)
 #2.모델구성
 model = Sequential()
 model.add(Dense(10, input_dim=1))
+model.add(Dense(20))
+model.add(Dense(30))
+model.add(Dense(40))
+model.add(Dense(10))
+model.add(Dense(50))
 model.add(Dense(1))
 
 #3.컴파일,훈련
