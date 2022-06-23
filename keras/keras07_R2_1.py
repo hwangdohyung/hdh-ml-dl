@@ -35,7 +35,7 @@ print('loss : ', loss)
 
 y_predict = model.predict(x)
 
-#R2결정계수 
+#R2결정계수 (평가지표)
 from sklearn.metrics import r2_score
 r2 = r2_score(y, y_predict)
 print('r2스코어 : ' , r2)
