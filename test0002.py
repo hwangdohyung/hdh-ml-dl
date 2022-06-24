@@ -7,3 +7,4 @@ kingkeras@naver.com
 
 #과제
 
+함수에 대해서 공부하기!

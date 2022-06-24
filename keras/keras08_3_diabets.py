@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_diabetes
+from sklearn.datasets import load_diabetes 
 
 #1.데이터
 datasets = load_diabetes()
@@ -12,8 +12,8 @@ y = datasets.target
 # print(x)
 # print(y)
 # print(x.shape, y.shape) #(442, 10) (442,)
-# print(datasets.feature_names)
-# print(datasets.DESCR)
+# print(datasets.feature_names) 열 특징의 이름 
+# print(datasets.DESCR) 특징 설명 
 
 #[실습]
 #R2 0.62 이상
@@ -48,3 +48,4 @@ print('r2스코어 : ' , r2)
 
 #loss :  2267.363037109375
 # r2스코어 :  0.6215301607936815
+
