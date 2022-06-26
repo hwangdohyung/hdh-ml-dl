@@ -48,22 +48,22 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 model = Sequential()
 model.add(Dense(6, input_dim=9))
 model.add(Dense(5))
-model.add(Dense(4))
 model.add(Dense(7))
+model.add(Dense(4))
+model.add(Dense(8))
+model.add(Dense(3))
+model.add(Dense(4))
+model.add(Dense(3))
+model.add(Dense(2))
 model.add(Dense(5))
-model.add(Dense(4))
 model.add(Dense(6))
-model.add(Dense(4))
+model.add(Dense(3))
 model.add(Dense(7))
-model.add(Dense(5))
-model.add(Dense(4))
-model.add(Dense(6))
-model.add(Dense(5))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
 model.compile(loss= 'mse', optimizer ='adam')
-model.fit(x_train, y_train, epochs=4000, batch_size=150,verbose=2)
+model.fit(x_train, y_train, epochs=2000, batch_size=100,verbose=2)
 
 
 #4.평가,예측
