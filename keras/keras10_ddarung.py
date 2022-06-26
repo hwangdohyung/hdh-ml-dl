@@ -24,7 +24,7 @@ print(train_set.describe())
 
 #####결측치 처리 1. 제거 ######
 print(train_set.isnull().sum()) 
-train_set= train_set.dropna()
+train_set= train_set.fillna(train_set.mean())
 print(train_set.isnull().sum()) 
 print(train_set.shape)
 ##############################
@@ -43,21 +43,23 @@ y = train_set['count']
 x_train, x_test, y_train, y_test = train_test_split(x, y, 
                                                     train_size=0.7,
                                                     shuffle=True,
-                                                    random_state=66)
+                                                    random_state=71)
 #2.모델구성
 model = Sequential()
 model.add(Dense(6, input_dim=9))
-model.add(Dense(3))
-model.add(Dense(5))
+model.add(Dense(10))
+model.add(Dense(2))
 model.add(Dense(7))
-model.add(Dense(3))
+model.add(Dense(4))
 model.add(Dense(8))
+model.add(Dense(3))
+model.add(Dense(3))
 model.add(Dense(3))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
 model.compile(loss= 'mse', optimizer ='adam')
-model.fit(x_train, y_train, epochs=200, batch_size=5)
+model.fit(x_train, y_train, epochs=1000, batch_size=25,verbose=2)
 
 
 #4.평가,예측
