@@ -25,8 +25,6 @@ print(train_set.info()) #non-null count : 결측치
 print(train_set.describe()) 
 
 #####이상치 처리##############
-
-
 def dr_outlier(train_set):
     quartile_1 = train_set.quantile(0.25)
     quartile_3 = train_set.quantile(0.75)
@@ -38,12 +36,11 @@ def dr_outlier(train_set):
     return search_train_set, train_set.drop(search_df.index, axis=0)
 
 
-###############################
 #####결측치 처리 1. 제거 ######
-print(train_set.isnull().sum()) 
-train_set= train_set.dropna()
-print(train_set.isnull().sum()) 
-print(train_set.shape)
+# print(train_set.isnull().sum()) 
+train_set = train_set.dropna()
+# print(train_set.isnull().sum()) 
+# print(train_set.shape)
 test_set= test_set.fillna(test_set.mean())
 ##############################
 
@@ -74,7 +71,9 @@ model.add(Dense(100, input_dim=9))
 model.add(Dense(100,activation ='selu'))
 model.add(Dense(100,activation ='selu'))
 model.add(Dense(100,activation ='selu'))
-model.add(Dense(100,activation ='selu'))
+model.add(Dense(20,activation ='selu'))
+model.add(Dense(20,activation ='selu'))
+model.add(Dense(20,activation ='selu'))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
@@ -102,6 +101,9 @@ submission = pd.read_csv(path + 'submission.csv')
 submission['count'] = y_submmit
 
 submission.to_csv(path + 'submission.csv',index=False)
+
+rmse = RMSE(y_test, y_predict)
+print("RMSE : ", rmse)
 
 ################.to_csv() 를 사용해서 
 ### submission.csv를 완성하시오!!!
