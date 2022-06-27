@@ -27,15 +27,15 @@ print(train_set.describe())
 #####이상치 처리##############
 
 
-def dr_outlier(train_set):
-    quartile_1 = train_set.quantile(0.25)
-    quartile_3 = train_set.quantile(0.75)
-    IQR = quartile_3 - quartile_1
-    condition = (train_set < (quartile_1 - 1.5 * IQR)) | (train_set > (quartile_3 + 1.5 * IQR))
-    condition = condition.any(axis=1)
-    search_df = train_set[condition]
+# def dr_outlier(train_set):
+#     quartile_1 = train_set.quantile(0.25)
+#     quartile_3 = train_set.quantile(0.75)
+#     IQR = quartile_3 - quartile_1
+#     condition = (train_set < (quartile_1 - 1.5 * IQR)) | (train_set > (quartile_3 + 1.5 * IQR))
+#     condition = condition.any(axis=1)
+#     search_df = train_set[condition]
 
-    return search_train_set, train_set.drop(search_df.index, axis=0)
+#     return search_train_set, train_set.drop(search_df.index, axis=0)
 
 
 ###############################
@@ -44,7 +44,6 @@ print(train_set.isnull().sum())
 train_set= train_set.dropna()
 print(train_set.isnull().sum()) 
 print(train_set.shape)
-test_set= test_set.fillna(test_set.mean())
 ##############################
 
 
@@ -70,16 +69,15 @@ import matplotlib.font_manager as fm
 
 #2.모델구성
 model = Sequential()
-model.add(Dense(100, input_dim=9))
-model.add(Dense(100,activation ='selu'))
-model.add(Dense(100,activation ='selu'))
-model.add(Dense(100,activation ='selu'))
-model.add(Dense(100,activation ='selu'))
+model.add(Dense(150, input_dim=9))
+model.add(Dense(100,activation ='relu'))
+model.add(Dense(90,activation ='relu'))
+model.add(Dense(80,activation ='relu'))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
 model.compile(loss= 'mse', optimizer ='adam')
-model.fit(x_train, y_train, epochs=2000, batch_size=100,verbose=2)
+model.fit(x_train, y_train, epochs=2000, batch_size=32,verbose=2)
 
 
 #4.평가,예측
@@ -93,18 +91,6 @@ def RMSE(y_test, y_predict):
 
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
-
-y_submmit = model.predict(test_set)
-print(y_submmit)
-print(y_submmit.shape)  #(715,1)
-
-submission = pd.read_csv(path + 'submission.csv')
-submission['count'] = y_submmit
-
-submission.to_csv(path + 'submission.csv',index=False)
-
-################.to_csv() 를 사용해서 
-### submission.csv를 완성하시오!!!
 
 
 
