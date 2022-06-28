@@ -33,7 +33,7 @@ def dr_outlier(train_set):
     condition = condition.any(axis=1)
     search_df = train_set[condition]
 
-    return search_train_set, train_set.drop(search_df.index, axis=0)
+    return train_set, train_set.drop(train_set.index, axis=0)
 
 
 #####결측치 처리 1. 제거 ######
@@ -58,7 +58,7 @@ y = train_set['count']
 x_train, x_test, y_train, y_test = train_test_split(x, y, 
                                                     train_size=0.7,
                                                     shuffle=True,
-                                                    random_state=31)
+                                                    random_state=48)
 
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
@@ -71,14 +71,14 @@ model.add(Dense(100, input_dim=9))
 model.add(Dense(100,activation ='selu'))
 model.add(Dense(100,activation ='selu'))
 model.add(Dense(100,activation ='selu'))
-model.add(Dense(20,activation ='selu'))
-model.add(Dense(20,activation ='selu'))
-model.add(Dense(20,activation ='selu'))
+model.add(Dense(100,activation ='selu'))
+model.add(Dense(100,activation ='selu'))
+model.add(Dense(100,activation ='selu'))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
 model.compile(loss= 'mse', optimizer ='adam')
-model.fit(x_train, y_train, epochs=2000, batch_size=100,verbose=2)
+model.fit(x_train, y_train, epochs=3000, batch_size=150,verbose=2)
 
 
 #4.평가,예측
