@@ -53,10 +53,10 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.75,random_s
 
 #2. 모델구성
 model = Sequential()
-model.add(Dense(10, activation='swish', input_dim=12))
-model.add(Dense(10, activation='elu'))
-model.add(Dense(10, activation='swish'))
-model.add(Dense(10, activation='elu'))
+model.add(Dense(100, activation='swish', input_dim=12))
+model.add(Dense(100, activation='elu'))
+model.add(Dense(100, activation='swish'))
+model.add(Dense(100, activation='elu'))
 model.add(Dense(1))
 
 #3. 컴파일, 훈련
@@ -80,11 +80,12 @@ submission_set = pd.read_csv(path + 'sampleSubmission.csv',index_col=0)
 print(submission_set)
 
 y_summit = submission_set['count'] 
-print(submission_set)
+
 abs(submission_set)
+print(submission_set)
 
 
-submission_set.to_csv(path + 'submission.csv', index = True)
+submission_set.to_csv(path + 'samplesubmission.csv', index = True)
 
 def RMSE(a, b): 
     return np.sqrt(mean_squared_error(a, b))

@@ -20,7 +20,7 @@ test_set = pd.read_csv(path + 'test.csv', index_col=0)  #예측에서 쓴다!
 print(test_set)
 print(test_set.shape) # (715, 9)
 
-print(train_set.columns)
+print(train_set.columns)    
 print(train_set.info()) #non-null count : 결측치 
 print(train_set.describe()) 
 
@@ -60,9 +60,9 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                     shuffle=True,
                                                     random_state=48)
 
-import matplotlib as mpl 
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
+# import matplotlib as mpl 
+# import matplotlib.pyplot as plt
+# import matplotlib.font_manager as fm
 
 
 #2.모델구성
@@ -97,10 +97,10 @@ y_submmit = model.predict(test_set)
 print(y_submmit)
 print(y_submmit.shape)  #(715,1)
 
-submission = pd.read_csv(path + 'submission.csv')
+submission = pd.read_csv(path + 'samplesubmission.csv')
 submission['count'] = y_submmit
 
-submission.to_csv(path + 'submission.csv',index=False)
+submission.to_csv(path + 'samplesubmission.csv',index=False)
 
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
