@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,mean_squared_error 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
-import seaborn as sn
+import seaborn as sns
 from scipy import stats
 from scipy.stats import norm, skew
 from sklearn.impute import SimpleImputer
@@ -29,6 +29,8 @@ alldata_index = alldata.index
 ################## NA 값 20프로 이상은 drop! ##########
 NA_Ratio = 0.8 * len(alldata)
 alldata.dropna(axis=1, thresh=NA_Ratio, inplace=True)
+
+
 ################### 수치형,카테고리형 분리,범위 설정 #############
 alldata_obj = alldata.select_dtypes(include='object') 
 alldata_num = alldata.select_dtypes(exclude='object')
@@ -57,7 +59,7 @@ print(test_set)
 ###############################################################
 x_train, x_test, y_train, y_test = train_test_split(train_set, trainLabel, train_size=0.8, 
                                             
-                                                random_state=77)
+                                                random_state=58)
 
 
 #2.모델구성
@@ -66,11 +68,12 @@ model.add(Dense(100, input_dim=74))
 model.add(Dense(100,activation ='relu'))
 model.add(Dense(100,activation ='relu'))
 model.add(Dense(100,activation ='relu'))
+model.add(Dense(100,activation ='relu'))
 model.add(Dense(1,activation ='relu'))
 
 #3. 컴파일, 훈련
 model.compile(loss= 'mae', optimizer ='adam')
-model.fit(x_train, y_train, epochs=3000, batch_size=150,verbose=2)
+model.fit(x_train, y_train, epochs=2000, batch_size=50,verbose=2)
 
 
 

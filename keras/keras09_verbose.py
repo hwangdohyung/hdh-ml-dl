@@ -29,7 +29,8 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 model.compile(loss='mse', optimizer='adam')
 start_time = time.time() #현재 시간을 알려준다.
 print(start_time)            #1656032968.308002
-model.fit(x_train, y_train, epochs=50, batch_size=1, verbose=0) #verbose:(장황한) 0으로 하면 훈련과정을 보여주지 않는다. 성능의 차이는x , 속도차이o 
+model.fit(x_train, y_train, epochs=50, batch_size=1, verbose=1) #verbose:(장황한) 0으로 하면 훈련과정을 보여주지 않는다. 성능의 차이는x , 속도차이o 
+
 
 end_time = time.time() - start_time
 
