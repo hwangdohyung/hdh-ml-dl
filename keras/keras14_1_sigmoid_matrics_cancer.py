@@ -4,7 +4,7 @@ from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, accuracy_score
 
 #1.데이터
 datasets = load_breast_cancer()
@@ -19,8 +19,8 @@ print(x.shape, y.shape)
 #2.모델구성
 model = Sequential()
 model.add(Dense(10,activation='linear', input_dim = 30)) #linear: 디폴트값, 선형회귀 
-model.add(Dense(10,activation='linear'))
-model.add(Dense(10,activation='linear'))
+model.add(Dense(10,activation='sigmoid'))
+model.add(Dense(10,activation='relu')) # 성능이 좋은 relu 히든에서만 쓸수 있다.
 model.add(Dense(10,activation='linear'))
 model.add(Dense(10,activation='linear'))
 model.add(Dense(1,activation='sigmoid'))# 회귀모델은 ouuput에 linear,2진분류는 무조건 마지막 output에 activation은 sigmoid(0과1사이의 값으로나온다. 사이값은 반올림하면 된다.)
@@ -37,10 +37,14 @@ hist=model.fit(x_train,y_train,epochs=1000, batch_size=32,verbose=1,validation_s
 #4.평가,예측
 loss = model.evaluate(x_test,y_test)
 print('loss: ', loss)
-# y_predict=model.predict(x_test)
 
-# r2 = r2_score(y_test, y_predict)
-# print('r2스코어: ', r2)
+y_predict = model.predict(x_test) # 반올림을 해줘야 acc가 나온다 
+y_predict = y_predict.round()
+acc = accuracy_score(y_test, y_predict)
+print('acc스코어: ', acc)
+print(y_predict)
 
 ################ 분류모델에서는 r2 말고 acc쓴다. ###################
+
+
 
