@@ -24,7 +24,7 @@ trainLabel = train_set['SalePrice']
 train_set.drop(['SalePrice'], axis=1, inplace=True)
 ############################################
 ################### 트레인,테스트 합치기 ##################
-all_data = pd.concat((train_set, test_set), axis=0)
+all_data = pd.concat((train_set, test_set), axis=0) 
 all_data_index = all_data.index
 
 all_data_na = (all_data.isnull().sum() / len(all_data)) * 100
