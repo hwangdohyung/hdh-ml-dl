@@ -39,7 +39,7 @@ hist = model.fit(x_train, y_train, epochs=2000, batch_size=50,
 loss = model.evaluate(x_test, y_test)
 print('loss : ', loss)
 y_predict = model.predict(x_test)
-y_predict = y_predict.round()
+
 from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict) 
 print('r2스코어 : ' , r2) 
