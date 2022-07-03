@@ -94,3 +94,5 @@ def RMSE(a, b):
 
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
+# loss :  2744.703125
+# RMSE :  64.7638105407249
