@@ -3,6 +3,9 @@
 # metrics 추가
 # earlyStopping 넣구 성능비교
 # 느낀줄 2줄이상!!
+
+#activation(활성화 함수): 모든레이어에 강림하신다. 한정시키는 역할 
+#계단함수(0.1만 있는것)>>> 시그모이드함수(0과1사이의 실수를 한정하여 출력하는 것,음수는 0으로 취급)>>>
 import numpy as np 
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense

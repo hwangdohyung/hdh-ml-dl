@@ -19,7 +19,7 @@ print(x.shape, y.shape)
 #2.모델구성
 model = Sequential()
 model.add(Dense(10,activation='linear', input_dim = 30)) #linear: 디폴트값, 선형회귀 
-model.add(Dense(10,activation='sigmoid'))
+model.add(Dense(10,activation='relu'))
 model.add(Dense(10,activation='relu')) # 성능이 좋은 relu 히든에서만 쓸수 있다.
 model.add(Dense(10,activation='linear'))
 model.add(Dense(10,activation='linear'))
@@ -40,10 +40,8 @@ print('loss: ', loss)
 
 y_predict = model.predict(x_test) # 반올림을 해줘야 acc가 나온다 
 y_predict = y_predict.round()
-acc = accuracy_score(y_test, y_predict)
+acc = accuracy_score(y_test, y_predict) 
 print('acc스코어: ', acc)
 print(y_predict)
 
 ################ 분류모델에서는 r2 말고 acc쓴다. ###################
-
-

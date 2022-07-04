@@ -8,6 +8,9 @@ from sklearn.datasets import load_diabetes
 datasets = load_diabetes()
 x = datasets.data 
 y = datasets.target 
+print(datasets)
+print(datasets.feature_names)
+print(datasets.DESCR)
 
 #2.모델구성
 model = Sequential()
@@ -43,5 +46,5 @@ print('r2스코어 : ' , r2)
 
 
 
-# loss :  2085.260498046875
-# r2스코어 :  0.6519268315921122
+# # loss :  2085.260498046875
+# # r2스코어 :  0.6519268315921122
