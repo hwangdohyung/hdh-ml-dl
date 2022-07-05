@@ -2,8 +2,8 @@
 import numpy as np 
 import pandas as pd
 from sklearn import metrics
-from tensorflow.python.keras.models import Sequential 
-from tensorflow.python.keras.layers import Dense,Dropout
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense,Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,accuracy_score
 from tensorflow.python.keras.callbacks import EarlyStopping
@@ -21,21 +21,15 @@ import tensorflow as tf
 path = './_data/kaggle_titanic/'
 train_set = pd.read_csv(path + 'train.csv',index_col =0)
 test_set = pd.read_csv(path + 'test.csv', index_col=0)
-
 ##########전처리############
-
-from sklearn.preprocessing import LabelEncoder
-
-train_set = pd.get_dummies(train_set, columns= ['Sex'],drop_first=True)
-test_set= pd.get_dummies(test_set, columns= ['Sex'],drop_first=True)
-
-###### 매핑 ##### 순서형 범주형 데이터에 적합 컬럼별로 따로 지정 가능
-# sex_mapping = {"male":0, "female":1}
-# for dataset in train_test_data:
-#     dataset['Sex'] = dataset['Sex'].map(sex_mapping)
-
-
 train_test_data = [train_set, test_set]
+sex_mapping = {"male":0, "female":1}
+for dataset in train_test_data:
+    dataset['Sex'] = dataset['Sex'].map(sex_mapping)
+
+print(dataset)
+
+
 for dataset in train_test_data:
     # 가족수 = 형제자매 + 부모님 + 자녀 + 본인
     dataset['FamilySize'] = dataset['SibSp'] + dataset['Parch'] + 1
@@ -75,46 +69,15 @@ print(train_set.head())
 x = train_set.drop(['Survived'], axis=1,)
 y = train_set['Survived']
 
-print(x.shape,y.shape)
+
+from sklearn.tree import DecisionTreeClassifier
+
+clf = DecisionTreeClassifier()
+clf.fit(x, y)
+y_submmit = clf.predict(test_set)
 
 
-#2.모델
-model = Sequential()
-model.add(Dense(100, input_dim=8))
-model.add(Dense(30,activation ='relu'))
-model.add(Dense(30,activation ='relu'))
-model.add(Dense(30,activation ='relu'))
-model.add(Dense(30,activation ='relu'))
-model.add(Dense(1,activation = 'sigmoid'))
-
-#.컴파일,훈련
-model.compile(loss= 'binary_crossentropy',optimizer='adam')
-earlyStopping= EarlyStopping(monitor= 'val_loss',patience=50,mode='min',restore_best_weights=True,verbose=1)
-x_train,x_test,y_train,y_test=train_test_split(x,y,test_size= 0.3,random_state=61)
-model.fit(x_train, y_train, epochs=1000, batch_size=32,validation_split=0.2,callbacks=earlyStopping, verbose=1)
-
-#4.평가,예측
-loss = model.evaluate(x_test,y_test)
-print('loss : ', loss)
-
-y_predict = model.predict(x_test)
-y_predict = y_predict.argmax(axis=1) 
-
-
-acc = accuracy_score(y_test,y_predict)
-print('acc : ',acc)
-
-#제출
-y_submmit = model.predict(test_set)
-y_submmit = y_submmit.round(0)
-
- 
-
-submission = pd.read_csv(path + 'gender_submission.csv')
-submission['Survived'] = y_submmit.astype('int32')
+submission = pd.read_csv(path + "gender_submission.csv")
+submission['Survived'] = y_submmit
 
 submission.to_csv(path + 'submission.csv',index=False)
-
-
-# loss :  0.474556565284729
-# acc :  0.6231343283582089
