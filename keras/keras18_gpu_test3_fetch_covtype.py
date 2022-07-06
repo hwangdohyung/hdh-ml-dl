@@ -53,7 +53,7 @@ x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3,shuffle=T
 
 earlyStopping= EarlyStopping(monitor='val_loss',patience=200,mode='min',restore_best_weights=True,verbose=1)
 start_time =time.time()
-model.fit(x_train, y_train, epochs=500, batch_size=100,validation_split=0.2,callbacks=earlyStopping, verbose=1) #batch default :32
+model.fit(x_train, y_train, epochs=20, batch_size=200,validation_split=0.2,callbacks=earlyStopping, verbose=1) #batch default :32
 
 
 #4.평가,예측
