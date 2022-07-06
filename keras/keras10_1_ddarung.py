@@ -1,8 +1,8 @@
 # 데이콘 따릉이 문제풀이 
 import numpy as np 
 import pandas as pd # csv 파일 당겨올 때 사용
-from tensorflow.keras.models import Sequential 
-from tensorflow.keras.layers import Dense,Dropout
+from tensorflow.python.keras.models import Sequential 
+from tensorflow.python.keras.layers import Dense,Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error 
 from collections import Counter

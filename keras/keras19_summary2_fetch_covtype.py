@@ -1,3 +1,4 @@
+# keras18_gpu_test3파일의 서머리를 확인해보시오.
 
 import numpy as np 
 from sklearn.datasets import fetch_covtype
@@ -44,10 +45,6 @@ model.add(Dense(200,activation ='relu'))
 model.add(Dense(200,activation ='relu'))
 model.add(Dense(200,activation ='relu'))
 model.add(Dense(200,activation ='relu'))
-model.add(Dense(200,activation ='relu'))
-model.add(Dense(200,activation ='relu'))
-model.add(Dense(200,activation ='relu'))
-model.add(Dense(200,activation ='relu'))
 model.add(Dense(100,activation ='relu'))
 model.add(Dense(7,activation ='softmax')) #소프트맥스는 모든 연산값의 합이 1.0,그중 가장 큰값(퍼센트)을 선택,so 마지막 노드3개* y의 라벨의 갯수
 #softmax는 아웃풋만 가능 히든에서 x
@@ -59,7 +56,7 @@ x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3,shuffle=T
 
 earlyStopping= EarlyStopping(monitor='val_loss',patience=200,mode='min',restore_best_weights=True,verbose=1)
 start_time =time.time()
-model.fit(x_train, y_train, epochs=2, batch_size=100,validation_split=0.2,callbacks=earlyStopping, verbose=1) #batch default :32
+model.fit(x_train, y_train, epochs=10, batch_size=200,validation_split=0.2,callbacks=earlyStopping, verbose=1) #batch default :32
 
 
 #4.평가,예측
@@ -79,3 +76,5 @@ print('time: ', end_time)
 # gpu와 cpu
 #cpu 걸린시간:18.41567063331604
 #gpu 걸린시간:76.92454600334167
+
+model.summary()

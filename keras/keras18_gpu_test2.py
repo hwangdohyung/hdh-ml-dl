@@ -39,7 +39,7 @@ model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy','m
 x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.7,random_state=31)
 hist=model.fit(x_train,y_train,epochs=100, batch_size=1,verbose=1,validation_split=0.2, callbacks= [earlyStopping])#callback 리스트형태 더 호출할수있다.
 
-end_time = time.time()
+end_time = time.time() - start_time
 #4.평가,예측
 loss = model.evaluate(x_test,y_test)
 print('loss: ', loss)
