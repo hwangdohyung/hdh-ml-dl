@@ -6,7 +6,7 @@ from keras.layers.recurrent import LSTM, SimpleRNN
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 import datetime as dt
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 
 #1. 데이터
 path = './_data/kaggle_bike/'
@@ -50,7 +50,10 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.75,random_s
       
 # minmax , standard
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
@@ -109,6 +112,14 @@ print("RMSE : ", rmse)
 # standard
 # loss :  1223.87255859375
 # RMSE :  46.34005317572847
+
+# Maxabs
+# loss :  1683.7886962890625
+# RMSE :  50.37578050278697
+
+# Robust
+# loss :  1826.589599609375
+# RMSE :  51.49942724885991
 
 # none
 # loss :  2744.703125

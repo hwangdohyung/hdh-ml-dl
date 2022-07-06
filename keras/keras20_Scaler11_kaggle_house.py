@@ -6,7 +6,7 @@ from tensorflow.python.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,mean_squared_error 
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder,MinMaxScaler,StandardScaler
+from sklearn.preprocessing import LabelEncoder,MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import seaborn as sns
 from scipy import stats
 from scipy.stats import norm, skew
@@ -62,7 +62,10 @@ x_train, x_test, y_train, y_test = train_test_split(train_set, trainLabel, train
 
 # minmax , standard 트레인테스트를 나눈뒤 해야한다. 과적합 방지와 같은 이치 
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
@@ -118,6 +121,14 @@ print("RMSE : ", rmse)
 # standard
 # loss:  121686440.0
 # RMSE :  27313.55662626531
+
+# Maxabs
+# loss:  886582976.0
+# RMSE :  25305.44596542389
+
+# Robust
+# loss:  166989904.0
+# RMSE :  43023.35094320131
 
 # none
 # loss:  17040.515625

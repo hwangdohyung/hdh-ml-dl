@@ -3,7 +3,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_diabetes 
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 
 #1.데이터
 datasets = load_diabetes()
@@ -21,10 +21,12 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 # # minmax , standard
 # scaler = MinMaxScaler()
-# # scaler = StandardScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
-# x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
+#  scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
+x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
 
 
 #2.모델구성
@@ -63,9 +65,18 @@ print('r2스코어 : ' , r2)
 # loss :  2171.984375
 # r2스코어 :  0.637450858618813
 
+#maxabs
+# loss :  2192.7685546875
+# r2스코어 :  0.633981534987031
+
+#robust
+# loss :  2152.371826171875
+# r2스코어 :  0.6407245875539607
+
 #none
 # loss :  2238.430419921875
 # r2스코어 :  0.626359603138329
+
 
 
 

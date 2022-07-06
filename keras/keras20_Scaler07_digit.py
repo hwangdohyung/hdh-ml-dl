@@ -5,7 +5,7 @@ from tensorflow.python.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,accuracy_score
 from tensorflow.python.keras.callbacks import EarlyStopping
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 
 #1.데이터 
 datasets = load_digits()
@@ -23,7 +23,9 @@ x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3,shuffle=T
 
 # minmax , standard
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
@@ -80,6 +82,14 @@ print(y_test)
 #standard
 # loss :  0.18987935781478882
 # acc :  0.9518518518518518
+
+#maxabs
+# loss :  0.15934054553508759
+# acc :  0.9444444444444444
+
+#robust
+# loss :  0.21949733793735504
+# acc :  0.9425925925925925
 
 #none
 # loss :  0.28474682569503784

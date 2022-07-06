@@ -6,7 +6,7 @@ from tensorflow.python.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,accuracy_score
 from tensorflow.python.keras.callbacks import EarlyStopping
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import tensorflow as tf
 tf.random.set_seed(66) # tensorflow의 y=wx weight 랜덤난수 고정하는것 장단점이 있다.
 
@@ -42,8 +42,10 @@ x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3,shuffle=T
                                                      random_state=58)
 
 # minmax , standard
-scaler = MinMaxScaler()
+# scaler = MinMaxScaler()
 # scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
@@ -98,6 +100,14 @@ print(y_test)
 #standard
 # loss :  0.0757056400179863
 # acc :  0.9555555555555556
+
+#maxabs
+# loss :  0.035067684948444366
+# acc :  0.9777777777777777
+
+#robust
+# loss :  0.24942819774150848
+# acc :  0.9333333333333333
 
 #none
 # loss :  0.018528694286942482

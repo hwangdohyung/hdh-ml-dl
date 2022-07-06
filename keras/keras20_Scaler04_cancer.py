@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.metrics import r2_score, accuracy_score
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 
 #1.데이터
 datasets = load_breast_cancer()
@@ -22,10 +22,14 @@ x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.7,random_state=
 # # minmax , standard
 # # scaler = MinMaxScaler()
 # scaler = StandardScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
-# x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
+x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
 
+print(x_train)
+print(x_test)
 
 #2.모델구성
 model = Sequential()
@@ -53,7 +57,7 @@ y_predict = model.predict(x_test) # 반올림을 해줘야 acc가 나온다
 y_predict = y_predict.round()
 acc = accuracy_score(y_test, y_predict) 
 print('acc스코어: ', acc)
-print(y_predict)
+
 
 ################ 분류모델에서는 r2 말고 acc쓴다. ###################
 
@@ -64,6 +68,14 @@ print(y_predict)
 #standard
 
 # loss:  [0.08542139083147049, 0.9824561476707458, 0.01600143127143383]
+# acc스코어:  0.9824561403508771
+
+#maxabs
+# loss:  [0.17983931303024292, 0.9590643048286438, 0.02932935208082199]
+# acc스코어:  0.9590643274853801
+
+#robust
+# loss:  [0.06259587407112122, 0.9824561476707458, 0.01670248433947563]
 # acc스코어:  0.9824561403508771
 
 #none

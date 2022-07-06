@@ -1,6 +1,6 @@
 from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import numpy as np 
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
@@ -28,12 +28,14 @@ x_train,x_test, y_train,y_test = train_test_split(x,y, test_size=0.3, random_sta
 # 트레인테스트 split (범위 문제*피처스케일링) 트레인데이터 따로 스케일링해서 훈련시킨후 범위 밖의 테스트데이터에 대입해서 예측한다.val도 마찬가지 
 # train set fit 하고 나머지데이터는 후에 transform
 
-# minmax , standard
+# minmax , standard ,maxabs , robust
 # # scaler = MinMaxScaler()
 # scaler = StandardScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
-# x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
+x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
 
 # print(np.min(x_train)) #0.0
 # print(np.max(x_train)) #1.0
@@ -71,6 +73,14 @@ print('r2스코어 : ' , r2)
 # standard
 # loss: 11.65905475616455
 # r2스코어 : 0.8588784475617859
+
+# maxabs
+# loss:  11.972809791564941
+# r2스코어 :  0.8550807368815204
+
+#robust
+# loss:  11.370014190673828
+# r2스코어 :  0.862376994029175
 
 # none
 # loss: 14.690462112426758

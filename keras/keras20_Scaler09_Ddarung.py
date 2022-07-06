@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error 
 from collections import Counter
 from tensorflow.python.keras.callbacks import EarlyStopping
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
  
 #1.데이터 
 path = './_data/ddarung/'
@@ -67,7 +67,10 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 # minmax , standard
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
+scaler = MaxAbsScaler()
+# scaler = RobustScaler()
+
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
@@ -120,6 +123,14 @@ print("RMSE : ", rmse)
 # standard
 # loss:  4524114432.0
 # RMSE :  44.68051079811457
+
+# maxabs
+# loss:  1958864.0
+# RMSE :  41.22613327004314
+
+# robust
+# loss:  18557429760.0
+# RMSE :  45.05083185306908
 
 # none
 # loss:  508.2084045410156

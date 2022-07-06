@@ -3,7 +3,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import fetch_california_housing
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 
 #1.데이터
 datasets = fetch_california_housing()
@@ -18,9 +18,11 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 # minmax , standard
 # scaler = MinMaxScaler()
 # scaler = StandardScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
-# x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
+scaler = MaxAbsScaler()
+# scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
+x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
 
 #2.모델구성
 model = Sequential()
@@ -60,6 +62,14 @@ print('r2스코어 : ' , r2)
 #standard
 # loss :  0.25456172227859497
 # r2스코어 :  0.807888387977042
+
+#Maxabs
+# loss :  0.33512821793556213
+# r2스코어 :  0.7470867911156376
+
+#robust
+# loss :  0.2823280990123749
+# r2스코어 :  0.7869337806171974
 
 #none
 # loss :  0.4566934108734131

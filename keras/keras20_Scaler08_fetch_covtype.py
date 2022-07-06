@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,accuracy_score
 from tensorflow.python.keras.callbacks import EarlyStopping
 import tensorflow as tf
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 
 import pandas as pd
 
@@ -40,7 +40,9 @@ x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3,shuffle=T
 
 # minmax , standard
 # scaler = MinMaxScaler()
-scaler = StandardScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
@@ -100,6 +102,16 @@ print(y_test)
 # loss :  0.32615140080451965
 # acc :  0.8657976868000734
 
-#standard
+#standard # 표준편차를 이용하여 표준정규분포로 바꾼다.
 # loss :  0.3016088306903839
 # acc :  0.8784479988984762
+
+#maxabs
+# loss :  0.35131189227104187
+# acc :  0.8558380760051404
+
+
+#robust
+# loss :  0.292805939912796
+# acc :  0.8815230861024417
+
