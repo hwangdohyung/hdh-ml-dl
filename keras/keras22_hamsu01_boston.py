@@ -2,8 +2,8 @@ from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import numpy as np 
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.models import Sequential,Model
+from tensorflow.python.keras.layers import Dense,Input
 from sklearn.metrics import r2_score,accuracy_score
 # predict 파일도 스케일링 하는거 주의! test파일 따로 있을때!
 # 학습 데이터에 fit 한 설정을 그대로 test set에도 적용하는 것이다.
@@ -29,16 +29,13 @@ x_train,x_test, y_train,y_test = train_test_split(x,y, test_size=0.3, random_sta
 # train set fit 하고 나머지데이터는 후에 transform
 
 # minmax , standard ,maxabs , robust
-# # scaler = MinMaxScaler()
+scaler = MinMaxScaler()
 # scaler = StandardScaler()
 # scaler = MaxAbsScaler()
-scaler = RobustScaler()
-# scaler.fit(x_train)
-# x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
-# x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
-
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
+# scaler = RobustScaler()
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
+x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
 
 # print(np.min(x_train)) #0.0
 # print(np.max(x_train)) #1.0
@@ -46,13 +43,22 @@ x_test = scaler.transform(x_test)
 # print(np.max(x_test)) #1.1478180091225068
 
 #2.모델구성
-model = Sequential()
-model.add(Dense(40,input_dim=13))
-model.add(Dense(20,activation='relu'))
-model.add(Dense(20,activation='relu'))
-model.add(Dense(20,activation='relu'))
-model.add(Dense(20,activation='relu'))
-model.add(Dense(1,))
+# model = Sequential()
+# model.add(Dense(40,input_dim=13))
+# model.add(Dense(20,activation='relu'))
+# model.add(Dense(20,activation='relu'))
+# model.add(Dense(20,activation='relu'))
+# model.add(Dense(20,activation='relu'))
+# model.add(Dense(1,))
+
+input1 = Input(shape = (13,))
+dense1 = Dense(40,activation= 'relu')(input1)
+dense2 = Dense(20,activation= 'relu')(dense1)
+dense3 = Dense(20,activation= 'relu')(dense2)
+dense4 = Dense(20,activation= 'relu')(dense3)
+dense5 = Dense(20,activation= 'relu')(dense4)
+output1 = Dense(1)(dense5)
+model = Model(inputs= input1, outputs=output1)      
 
 #3.컴파일,훈련
 
@@ -69,27 +75,5 @@ y_predict = model.predict(x_test)
 r2 = r2_score(y_test, y_predict) 
 print('r2스코어 : ' , r2) 
 
-# minmax
-# loss: 9.25155353546142
-# r2스코어 : 0.8880189163195478
-
-# standard
-# loss: 11.65905475616455
-# r2스코어 : 0.8588784475617859
-
-# maxabs
-# loss:  11.972809791564941
-# r2스코어 :  0.8550807368815204
-
-#robust
-# loss:  11.370014190673828
-# r2스코어 :  0.862376994029175
-
-# none
-# loss: 14.690462112426758
-# r2스코어 : 0.8221861795427536
-
-
-
-
-
+# loss:  11.584153175354004
+# r2스코어 :  0.8597850426571492
