@@ -72,9 +72,11 @@ test_set = scaler.transform(test_set)
 #2.모델구성
 input1=Input(shape=(8,))
 dense1=Dense(100,activation='relu')(input1)
-dense2=Dense(30,activation='relu')(dense1)
+drop1 = Dropout(0.2)(dense1)
+dense2=Dense(30,activation='relu')(drop1)
 dense3=Dense(30,activation='relu')(dense2)
-dense4=Dense(30,activation='relu')(dense3)
+drop2 = Dropout(0.3)(dense3)
+dense4=Dense(30,activation='relu')(drop2)
 dense5=Dense(30,activation='relu')(dense4)
 output1=Dense(1,activation='sigmoid')(dense5)
 model=Model(inputs=input1,outputs=output1)
@@ -86,13 +88,13 @@ date=date.strftime('%m%d_%H%M')
 model.compile(loss= 'binary_crossentropy',optimizer='adam')
 earlyStopping= EarlyStopping(monitor= 'val_loss',patience=50,mode='min',restore_best_weights=True,verbose=1)
 
-filepath='./_ModelCheckpoint/k24/'
-filename='{epoch:04d}-{val_loss:.4f}.hdf5'
+# filepath='./_ModelCheckpoint/k24/'
+# filename='{epoch:04d}-{val_loss:.4f}.hdf5'
 
-mcp = ModelCheckpoint(monitor = 'val_loss',mode = 'auto', save_best_only=True, verbose=1,
-                      filepath="".join([filepath,'titanic',date,'_',filename]))
+# mcp = ModelCheckpoint(monitor = 'val_loss',mode = 'auto', save_best_only=True, verbose=1,
+#                       filepath="".join([filepath,'titanic',date,'_',filename]))
 
-model.fit(x_train, y_train, epochs=1000, batch_size=32,validation_split=0.2,callbacks=[earlyStopping,mcp], verbose=1)
+model.fit(x_train, y_train, epochs=1000, batch_size=32,validation_split=0.2,callbacks=[earlyStopping], verbose=1)
 
 #4.평가,예측
 loss = model.evaluate(x_test,y_test)
@@ -104,4 +106,7 @@ y_predict = y_predict.round()
 
 acc = accuracy_score(y_test,y_predict)
 print('acc : ',acc)
+
+# loss :  0.4440535306930542
+# acc :  0.8097014925373134
 

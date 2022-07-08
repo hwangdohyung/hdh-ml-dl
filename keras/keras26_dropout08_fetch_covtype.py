@@ -1,7 +1,7 @@
 import numpy as np 
 from sklearn.datasets import fetch_covtype
 from tensorflow.python.keras.models import Sequential,Model,load_model
-from tensorflow.python.keras.layers import Dense,Input
+from tensorflow.python.keras.layers import Dense,Input,Dropout
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score,accuracy_score
 from tensorflow.python.keras.callbacks import EarlyStopping,ModelCheckpoint
@@ -40,7 +40,9 @@ x_test = scaler.transform(x_test)#test는 transfrom만 해야됨
 model = Sequential()
 model.add(Dense(40, input_dim=54))
 model.add(Dense(30,activation ='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(30,activation ='relu'))
+model.add(Dropout(0.2))
 model.add(Dense(30,activation ='relu'))
 model.add(Dense(30,activation ='relu'))
 model.add(Dense(7,activation ='softmax')) #소프트맥스는 모든 연산값의 합이 1.0,그중 가장 큰값(퍼센트)을 선택,so 마지막 노드3개* y의 라벨의 갯수
@@ -54,13 +56,13 @@ model.compile(loss= 'categorical_crossentropy', optimizer ='adam', metrics='accu
 
 earlyStopping= EarlyStopping(monitor='val_loss',patience=10,mode='min',restore_best_weights=True,verbose=1)
 
-filepath = './_ModelCheckpoint/k24/'
-filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
+# filepath = './_ModelCheckpoint/k24/'
+# filename = '{epoch:04d}-{val_loss:.4f}.hdf5'
 
-mcp = ModelCheckpoint(monitor='val_loss',mode='auto',save_best_only=True,verbose=1,
-                      filepath="".join([filepath,'fetch_covtype',date,'_',filename]))
+# mcp = ModelCheckpoint(monitor='val_loss',mode='auto',save_best_only=True,verbose=1,
+#                       filepath="".join([filepath,'fetch_covtype',date,'_',filename]))
 
-model.fit(x_train, y_train, epochs=100, batch_size=100,validation_split=0.2,callbacks=[earlyStopping,mcp],verbose=1) #batch default :32
+model.fit(x_train, y_train, epochs=100, batch_size=100,validation_split=0.2,callbacks=[earlyStopping,],verbose=1) #batch default :32
 
 
 #4.평가,예측
@@ -74,3 +76,6 @@ y_predict = tf.argmax(y_predict,axis=1)
 y_test = tf.argmax(y_test,axis=1) 
 acc = accuracy_score(y_test,y_predict)
 print('acc : ',acc)
+
+# loss :  0.4642634391784668
+# acc :  0.8038541857903433

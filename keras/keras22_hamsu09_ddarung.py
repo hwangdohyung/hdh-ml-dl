@@ -96,8 +96,6 @@ model=Model(inputs=input1,outputs=output1)
 
 
 
-
-
 #3. 컴파일, 훈련
 model.compile(loss= 'mse', optimizer ='adam')
 
@@ -129,5 +127,5 @@ print("RMSE : ", rmse)
 ### submission.csv를 완성하시오!!!
 #loss nan이 뜨는 이유 : 데이터에 nan값이 있기때문에 --해결법 기초 nan값을 지워준다.(결측치 처리)
 
-# loss :  0.26711177825927734
-# acc :  0.8928079676886359
+# loss:  8039884800.0
+# RMSE :  45.06450731329933
