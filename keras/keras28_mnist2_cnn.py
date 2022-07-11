@@ -3,6 +3,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense, Conv2D, Flatten, MaxPooling2D
 from tensorflow.keras.datasets import mnist
 from sklearn.preprocessing import MinMaxScaler, MaxAbsScaler, StandardScaler, RobustScaler
+
 #1.데이터
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -50,7 +51,7 @@ y_test = np.argmax(y_test, axis= 1)
 
 from sklearn.metrics import accuracy_score
 acc = accuracy_score(y_test, y_predict)
-print(acc)
+print('acc스코어: ', acc)
 
 # 0.9809
 #
