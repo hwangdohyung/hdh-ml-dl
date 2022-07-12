@@ -25,8 +25,8 @@ model.add(Dense(10,activation='linear'))
 model.add(Dense(10,activation='linear'))
 model.add(Dense(1,activation='sigmoid'))# 회귀모델은 ouuput에 linear,2진분류는 무조건 마지막 output에 activation은 sigmoid(0과1사이의 값으로나온다. 사이값은 반올림하면 된다.)
 
-    from tensorflow.python.keras.callbacks import EarlyStopping
-    earlyStopping= EarlyStopping(monitor= 'val_loss',patience=80,mode='min',restore_best_weights=True,verbose=1) 
+from tensorflow.python.keras.callbacks import EarlyStopping
+earlyStopping= EarlyStopping(monitor= 'val_loss',patience=80,mode='min',restore_best_weights=True,verbose=1) 
 
 #3.컴파일,훈련
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy','mse'],) #모델과 예측값을 비교하는곳 2진분류는 무조건 binary쓴다. 다중분류는 softmax 

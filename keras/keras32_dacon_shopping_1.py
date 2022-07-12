@@ -1,4 +1,4 @@
-# 데이콘 따릉이 문제풀이 
+
 import numpy as np 
 import pandas as pd # csv 파일 당겨올 때 사용
 from tensorflow.python.keras.models import Sequential,Model,load_model
@@ -9,6 +9,8 @@ from collections import Counter
 from tensorflow.python.keras.callbacks import EarlyStopping,ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import datetime
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 #1.데이터 
 path = './_data/shopping/'
@@ -50,7 +52,6 @@ x_train = train_set.drop(columns=['Weekly_Sales'])
 y_train = train_set[['Weekly_Sales']]
 
 
-
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, 
                                                     train_size=0.7,
                                                     shuffle=True,
@@ -59,8 +60,6 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train,
 scaler = MinMaxScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
-
-
 
 
 
@@ -73,7 +72,6 @@ model.add(Dense(50, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(50, activation='relu'))
 model.add(Dense(1))
-
 
 #3. 컴파일, 훈련
 model.compile(loss= 'mse', optimizer ='adam')

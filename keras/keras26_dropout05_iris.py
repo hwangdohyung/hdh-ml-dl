@@ -33,6 +33,8 @@ print(y.shape)
 x_train, x_test, y_train, y_test = train_test_split(x,y, test_size=0.3,shuffle=True,
                                                      random_state=58)
 
+
+
 # minmax , standard
 scaler = MaxAbsScaler()
 x_train = scaler.fit_transform(x_train)#스케일링한것을 보여준다.
@@ -82,6 +84,10 @@ y_predict = y_predict.argmax(axis=1) # 최대값의 위치 구해줌. argmin은 
 y_test = y_test.argmax(axis=1) # y_test 값도 최대값 추출해줘야함 (n, 3) 에서 (n, 1)로 변경 
 acc = accuracy_score(y_test,y_predict)# acc 정수값을 원한다. 
 print('acc : ',acc)
-
+# DNN
 # loss :  0.06750369817018509
 # acc :  0.9777777777777777
+
+#CNN
+#loss:  [0.07540352642536163, 0.9707602262496948, 0.9084029793739319]
+# acc스코어:  0.30409356725146197
