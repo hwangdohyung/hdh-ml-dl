@@ -38,10 +38,7 @@ test_set['IsHoliday'] = test_set['IsHoliday'].astype(int)
 
 print(train_set.info())
 
-
-
-
-train_set = train_set.dropna()
+train_set = train_set.fillna(0)
 test_set = test_set.fillna(0)
 
 # 전처리 하기 전 칼럼들을 제거합니다.
