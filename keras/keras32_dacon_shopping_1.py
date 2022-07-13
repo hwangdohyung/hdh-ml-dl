@@ -61,8 +61,6 @@ scaler = MinMaxScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
-
-
 #2.모델구성
 model = Sequential()
 model.add(Dense(50, activation='relu', input_dim=13))
