@@ -43,7 +43,7 @@ model.summary()
 # Trainable params: 181
 # Non-trainable params: 0
 
-# 1.( unit 개수 * unit 개수 ) + ( input_dim(feature) 수 + unit 개수 ) + ( 1 * unit 개수)
+# 1.( unit 개수 * unit 개수 ) + ( input_dim(feature) 수 * unit 개수 ) + ( 1 * unit 개수)
 #       10 * 10                          10*1                              1*10         = 120
  
 # == 2.파라미터 아웃값 * (파라미터 아웃값 + 디멘션 값 + 1(바이어스) 

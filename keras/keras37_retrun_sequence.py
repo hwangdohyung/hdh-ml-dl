@@ -22,7 +22,6 @@ print(x.shape,y.shape)
 model = Sequential()
 model.add(LSTM(100,activation='relu', return_sequences=True, input_shape = (3,1))) # return_sequences True= 한차원 늘려서 던져준다. #(n,3,1) -> (n,3,10)
 print(x.shape)
-
 model.add(LSTM(100, input_shape=(3,100)))
 model.add(Dense(100, activation='relu')) 
 model.add(Dense(100, activation='relu')) 

@@ -67,8 +67,7 @@ date=date.strftime('%m%d_%H%M')
 
 #3. 컴파일, 훈련
 model.compile(loss='mse', optimizer='adam')
-x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.7,random_state=31)      
-                               
+
 earlyStopping =EarlyStopping(monitor = 'val_loss',patience=30,mode='min',restore_best_weights=True,verbose=1)
 
 filepath='./_ModelCheckpoint/k24/'

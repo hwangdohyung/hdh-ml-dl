@@ -41,7 +41,7 @@ result = model.predict(y_pred)  #모델은 3차원을 원한다.
 print('loss : ', loss)
 print('result : ', result)
 
-############# rnn 데이터 자르는 함수 ##############
+############# rnn 데이터 자르는 함수  1 #########################
 # data = ([1,2,3,4,5,6,7,8,9,10,11,12,13,20,30,40,50,60,70])
 
 #1. 데이터
@@ -61,3 +61,26 @@ print('result : ', result)
 
 # x, y = split_xy1(data, 3)     #### 여기서 3부분에 컬럼 수 넣는다.
 
+################################ 2 #################################
+# import numpy as np 
+
+# a = np.array(range(1,11))
+# size = 5
+
+# def split_x(dataset, size):
+#     aaa= [ ]
+#     for i in range(len(dataset) - size +1): 
+#         subset = dataset[i : (i + size)] 
+#         aaa.append(subset)   
+#     return np.array(aaa)
+
+# bbb = split_x(a, size)
+# print(bbb)
+# print(bbb.shape) #(6,5)
+
+# x = bbb[:, :-1]
+# y = bbb[:, -1]
+# print(x,y)
+# print(x.shape, y.shape) #(6,4) (6,)
+
+# # 과제 분석 
