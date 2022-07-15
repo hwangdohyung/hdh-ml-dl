@@ -47,11 +47,11 @@ model.summary()
 #3.컴파일 훈련
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 from tensorflow.python.keras.callbacks import EarlyStopping,ModelCheckpoint
-ES = EarlyStopping(monitor='val_loss', patience=20, mode='min')
-MCP = ModelCheckpoint(monitor='val_loss', save_best_only=True, mode='auto',
-                      filepath='./_ModelCheckPoint/k29/cifar100.hdf5')
+ES = EarlyStopping(monitor='val_loss', patience=10, mode='min')
+# MCP = ModelCheckpoint(monitor='val_loss', save_best_only=True, mode='auto',
+                    #   filepath='./_ModelCheckPoint/k29/cifar100.hdf5')
 
-model.fit(x_train, y_train, epochs=10, batch_size=600, callbacks=[ES,MCP], validation_split=0.05)
+model.fit(x_train, y_train, epochs=100, batch_size=600, callbacks=[ES], validation_split=0.05)
 
 print(y_test)
 
@@ -68,3 +68,4 @@ from sklearn.metrics import accuracy_score
 acc = accuracy_score(y_test, y_predict)
 print('acc스코어: ', acc)
 
+#acc스코어:  0.3079

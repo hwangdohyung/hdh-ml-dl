@@ -21,8 +21,8 @@ print(x.shape,y.shape)
 
 #2.모델구성
 model = Sequential()
-# model.add(Bidirectional(LSTM(200,return_sequences=True),input_shape=(3,1))) 
-model.add(Bidirectional(LSTM(200),input_shape=(3,1))) 
+# model.add(Bidirectional(LSTM(200,return_sequences=True),input_shape=(3,1))) # return은 bidir에서 제공하지 않는다. rnn에서 제공하는것이므로 괄호 조심!
+model.add(Bidirectional(LSTM(200),input_shape=(3,1))) #래핑하는것 감싸서 양방향으로 연산하게끔 한다.
 # model.add(LSTM(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))

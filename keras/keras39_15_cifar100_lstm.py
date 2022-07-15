@@ -62,4 +62,7 @@ from sklearn.metrics import accuracy_score
 acc = accuracy_score(y_test, y_predict)
 print('acc스코어: ', acc)
 
+#CNN
+# acc스코어:  0.3079
 #LSTM
+
