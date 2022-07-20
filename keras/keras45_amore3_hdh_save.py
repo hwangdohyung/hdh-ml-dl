@@ -37,7 +37,6 @@ data4 = data1.drop(['종가'],axis=1)
 jong = data1['종가']
 
 
-
 scaler = MinMaxScaler()
 # # scaler = StandardScaler()
 # # scaler = MaxAbsScaler()
@@ -49,13 +48,9 @@ scaler = MinMaxScaler()
 data4 = scaler.fit_transform(data4)
 data2 = scaler.fit_transform(data2)
 
-
-
-
 print(data1,data1.shape)
 
 #데이터 자르기
-
 
 def split_3(dataset,time_steps,y_column):
     xs=list()
