@@ -17,7 +17,6 @@ train_datagen = ImageDataGenerator(
     fill_mode='nearest'
 )
 
-
 # 1. ImageDataGenerator를 정의
 # 2. 파일에서 가져오려면 -> flow_from_directory() // x,y가 튜플 형태로 뭉쳐있다.
 # 3. 데이터에서 가져오려면 -> flow() // x,y가 나눠져있다.

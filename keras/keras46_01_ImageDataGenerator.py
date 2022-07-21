@@ -1,7 +1,6 @@
 import numpy as np 
 from keras.preprocessing.image import ImageDataGenerator
 
-
 train_datagen = ImageDataGenerator(
     rescale=1./255,  #스케일링 자체 minmax제공
     horizontal_flip=True,#수평

@@ -14,12 +14,12 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense,Conv2D,Flatten
 
 model = Sequential()
-model.add(Conv2D(64, (2,2), input_shape = (150,150,3),activation='relu'))
+model.add(Conv2D(32, (2,2), input_shape = (150,150,3),activation='relu'))
 model.add(Conv2D(32, (3,3), activation='relu'))
 model.add(Flatten())
-model.add(Dense(50, activation='relu'))
-model.add(Dense(50, activation='relu'))
-model.add(Dense(50, activation='relu'))
+model.add(Dense(30, activation='relu'))
+model.add(Dense(30, activation='relu'))
+model.add(Dense(30, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
 
@@ -55,5 +55,6 @@ acc = accuracy_score(y_test,y_predict)
 print('loss : ', loss)
 print('acc : ', acc)
 
-# loss :  0.6642055511474609
-# acc :  0.5936727632229363
+# loss :  0.6241764426231384
+# acc :  0.6510133465150766
+
