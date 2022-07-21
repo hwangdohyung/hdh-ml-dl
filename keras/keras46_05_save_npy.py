@@ -50,7 +50,6 @@ np.save('d:/study_data/_save/_npy/keras46_5_test_x.npy', arr=xy_test[0][0])
 np.save('d:/study_data/_save/_npy/keras46_5_test_y.npy', arr=xy_test[0][1])
 
 
-'''
 #2.모델
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense,Conv2D,Flatten
@@ -85,19 +84,19 @@ print('val_loss : ', val_loss[-1])
 print('accuracy : ', accuracy[-1])
 print('val_accuracy : ', val_accuracy[-1])
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-plt.figure(figsize=(9,6)) #그래프 표 사이즈
-plt.plot(hist.history['loss'], marker = '.' ,c = 'red', label = 'loss') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
-plt.plot(hist.history['val_loss'], marker = '.' ,c = 'orange', label = 'val_loss') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
-plt.plot(hist.history['accuracy'], marker = '.' ,c = 'black', label = 'accuracy') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
-plt.plot(hist.history['val_accuracy'], marker = '.' ,c = 'blue', label = 'val_accuracy')
-plt.grid() # 모눈종이에 하겠다
-plt.title('gen')#제목
-plt.ylabel('loss')#y축 이름
-plt.xlabel('epochs')#x축 이름
-plt.legend(loc='upper right') # upper right: 위쪽 상단에 표시하겠다.(라벨 이름들)
-plt.show()# 보여줘
+# plt.figure(figsize=(9,6)) #그래프 표 사이즈
+# plt.plot(hist.history['loss'], marker = '.' ,c = 'red', label = 'loss') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
+# plt.plot(hist.history['val_loss'], marker = '.' ,c = 'orange', label = 'val_loss') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
+# plt.plot(hist.history['accuracy'], marker = '.' ,c = 'black', label = 'accuracy') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
+# plt.plot(hist.history['val_accuracy'], marker = '.' ,c = 'blue', label = 'val_accuracy')
+# plt.grid() # 모눈종이에 하겠다
+# plt.title('gen')#제목
+# plt.ylabel('loss')#y축 이름
+# plt.xlabel('epochs')#x축 이름
+# plt.legend(loc='upper right') # upper right: 위쪽 상단에 표시하겠다.(라벨 이름들)
+# plt.show()# 보여줘
 
-'''
+
 

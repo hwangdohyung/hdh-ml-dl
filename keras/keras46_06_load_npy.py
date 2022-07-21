@@ -19,7 +19,7 @@ print(x_test.shape)           #(120, 150, 150, 1)
 print(y_test.shape)           #(120)
 
 
-'''
+
 #2.모델
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense,Conv2D,Flatten
@@ -68,4 +68,4 @@ plt.xlabel('epochs')#x축 이름
 plt.legend(loc='upper right') # upper right: 위쪽 상단에 표시하겠다.(라벨 이름들)
 plt.show()# 보여줘
 
-'''
+
