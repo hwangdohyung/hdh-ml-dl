@@ -1,3 +1,4 @@
+from matplotlib.pyplot import hist2d
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -29,13 +30,13 @@ model.add(Dense(1, activation='sigmoid'))
 # 3. 컴파일, 훈련
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']) 
 
-log = model.fit(x_train, y_train, epochs=10, batch_size=10, validation_split=0.2) 
+hist = model.fit(x_train, y_train, epochs=10, batch_size=10, validation_split=0.2) 
 
 # 그래프
-loss = log.history['loss']
-accuracy = log.history['accuracy']
-val_loss = log.history['val_loss']
-val_accuracy = log.history['val_accuracy']
+loss = hist.history['loss']
+accuracy = hist.history['accuracy']
+val_loss = hist.history['val_loss']
+val_accuracy = hist.history['val_accuracy']
 
 
 print('loss: ', loss[-1])
@@ -43,4 +44,5 @@ print('accuracy: ', accuracy[-1])
 print('val_loss: ', val_loss[-1])
 print('val_accuracy: ', val_accuracy[-1])
 
-
+# loss:  0.005300433840602636
+# accuracy:  0.9992054104804993
