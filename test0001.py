@@ -1,64 +1,53 @@
-from tensorflow.keras.preprocessing.text import Tokenizer
 import numpy as np
+from tensorflow.keras.datasets import cifar10
+from tensorflow.python.keras.models import Sequential, Model
+from tensorflow.python.keras.layers import Dense, Conv2D, Dropout,LSTM,Input,LeakyReLU,Reshape,Conv2DTranspose,Flatten
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score,accuracy_score
+from tensorflow.python.keras.callbacks import EarlyStopping
 
-#1. 데이터
-docs = ['너무 재밋어요', '참 최고예요', '참 잘 만든 영화에요', '추천하고 싶은 영화입니다.', 
-        '한 번 더 보고 싶네요', '글쎄요', '별로에요', '생각보다 지루해요', '연기가 어색해요', 
-        '재미없어요', '너무 재미없다', '참 재밋네요', '예람이가 잘 생기긴 했어요'
-]
+latent_dim = 32 
+height = 32 
+width = 32 
+channels = 3
 
-# 긍정 1, 부정 0
-labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1])
+generator_input = Input(shape =latent_dim, )
+x = Dense(128 *16* 16)(generator_input)
+x = LeakyReLU()(x)
+x = Reshape((16,16,128))(x)
 
-token = Tokenizer()
-token.fit_on_texts(docs)
-print(token.word_index)  
+x = Conv2D(256, 5, padding = 'same')(x)
+x = LeakyReLU()(x)
 
-x = token.texts_to_sequences(docs)
-# print(x)
+x = Conv2DTranspose(256, 4, strides= 2, padding = 'same')(x)
+x = LeakyReLU()(x)
 
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-pad_x = pad_sequences(x, maxlen=5)
+x = Conv2D(256, 5, padding = 'same')(x)
+x = LeakyReLU()(x)
+x = Conv2D(256, 5, padding = 'same')(x)
+x = LeakyReLU()(x)
 
+x = Conv2D(channels, 7, activation= 'tanh', padding = 'same')(x)
 
-word_size = len(token.word_index)
+generator  = Model(generator_input, x)
+generator.summary()
 
+discriminator_input = Input(shape=(height,width,channels))
+x1 = Conv2D(128,3)(discriminator_input)
+x1 = LeakyReLU()(x1)
+x1 = Conv2D(128,4,strides=2)(x1)
+x1 = LeakyReLU()(x1)
+x1 = Conv2D(128,4,strides=2)(x1)
+x1 = LeakyReLU()(x1)
+x1 = Conv2D(128,4,strides=2)(x1)
+x1 = LeakyReLU()(x1)
+x1 = Flatten()(x1)
+x1 = Dropout(0.4)(x1)
+x1 = Dense(1, activation='sigmoid')(x1)
 
-#2. 모델
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Embedding, Conv1D, Flatten     # Embedding 은 데이터를 좌표계로 바꿔준다.
+discriminator = Model(discriminator_input, x1)
+discriminator.summary()
 
-model = Sequential()
-model.add(Embedding(input_dim=28, output_dim=10, input_length=5))  
-model.add(Conv1D(32, 2))
-model.add(Flatten())
-model.add(Dense(64, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
-
-model.summary()   # output x input_dim = first parameter 
-
-
-#3. 컴파일, 훈련
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
-model.fit(pad_x, labels, epochs=100, batch_size=1)
-
-#4. 결과
-acc = model.evaluate(pad_x, labels)[1]
-print("acc : ", acc)
-
-
-########################### 실습 ##########################
-
-
-
-x_predict = ['나는 반장이 정말 재미없다 정말']
-token.fit_on_texts(x_predict)
-x_predict = token.texts_to_sequences(x_predict)
-
-result = model.predict(x_predict)
-print(result)
-
-'''
-acc :  1.0
-[[0.97650856]]
-'''
+from tensorflow.python.keras.optimizers import rmsprop_v2
+discriminator_optimizer = rmsprop_v2(lr= 0.0008, clipvalue = 1.0, decay =1e-8)
+discriminator.compile(optimizer= discriminator_optimizer, loss= 'binary_crossentropy')
