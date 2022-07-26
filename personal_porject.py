@@ -349,9 +349,12 @@ def fit (EPOCHS = 200) :
                 print('#',end='')
             train_on_batch(b_w_image, tar_image)
         
-        if epoch%3  == 0 :
+        if epoch%20  == 0 :
             global_gen_image = gen0(global_b_w_image,training = True)
             fig(global_b_w_image, global_gen_image, global_tar_image)
 
 fit(EPOCHS = 100)
+
+
+
 

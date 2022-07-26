@@ -13,6 +13,7 @@ def sorted_alphanumeric(data):
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)',key)]
     return sorted(data,key = alphanum_key)
+
 # defining the size of the image
 SIZE = 256
 color_img = []
@@ -20,7 +21,7 @@ path = 'D:\study_data\_data\image\gan\color/'
 files = os.listdir(path)
 files = sorted_alphanumeric(files)
 for i in tqdm(files):    
-        if i == '2200.jpg':
+        if i == 'image4999.jpg':
             break
         else:    
             img = cv2.imread(path + '/'+i,1)
@@ -37,7 +38,7 @@ path = 'D:\study_data\_data\image\gan\gray/'
 files = os.listdir(path)
 files = sorted_alphanumeric(files)
 for i in tqdm(files):
-         if i == '2200.jpg':
+         if i == 'image4999.jpg':
             break
          else: 
             img = cv2.imread(path + '/'+i,1)
@@ -47,12 +48,11 @@ for i in tqdm(files):
             img = img.astype('float32') / 255.0
             gray_img.append(img_to_array(img))
             
-            
 color_dataset=tf.data.Dataset.from_tensor_slices(np.array(color_img[:2000])).batch(64)
 gray_dataset=tf.data.Dataset.from_tensor_slices(np.array(gray_img[:2000])).batch(64)
 
-# color_dataset_t=tf.data.Dataset.from_tensor_slices(np.array(color_img[2000:])).batch(8)
-# gray_dataset_t=tf.data.Dataset.from_tensor_slices(np.array(gray_img[2000:])).batch(8)
+color_dataset_t=tf.data.Dataset.from_tensor_slices(np.array(color_img[2000:5001])).batch(8)
+gray_dataset_t=tf.data.Dataset.from_tensor_slices(np.array(gray_img[2000:5001])).batch(8)        
 
 example_color = next(iter(color_dataset))
 example_gray = next(iter(gray_dataset))
@@ -63,12 +63,13 @@ def plot_images(a = 4):
         plt.figure(figsize = (10,10))
         plt.subplot(121)
         plt.title('color')
-        plt.imshow(example_color[i] )
+        plt.imshow(example_color[i])
 
         plt.subplot(122)
         plt.title('gray')
         plt.imshow(example_gray[i])
         plt.show()
+        
 plot_images(3)
 
 def downsample(filters, size, apply_batchnorm=True):
@@ -154,6 +155,7 @@ def Generator():
 
   return tf.keras.Model(inputs=inputs, outputs=x)
 
+
 def Discriminator():
   initializer = tf.random_normal_initializer(0., 0.02)
 
@@ -211,6 +213,24 @@ def discriminator_loss(disc_real_output, disc_generated_output):
 
   return total_disc_loss
 
+def generate_images(model, test_input, tar):
+  prediction = model(test_input, training=True)
+  plt.figure(figsize=(15,15))
+
+  display_list = [test_input[0], tar[0], prediction[0]]
+  title = ['Input Image', 'Ground Truth', 'Predicted Image']
+
+  for i in range(3):
+    plt.subplot(1, 3, i+1)
+    plt.title(title[i])
+    # getting the pixel values between [0, 1] to plot it.
+    plt.imshow(display_list[i])
+    plt.axis('off')
+  plt.show()
+
+for example_input, example_target in tf.data.Dataset.zip((gray_dataset,color_dataset)).take(2):
+  generate_images(generator, example_input, example_target)
+  
 def train_step(input_image, target, epoch):
   with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
     gen_output = generator(input_image, training=True)
@@ -242,48 +262,37 @@ def fit(train_ds, epochs,):
     for n, (input_image, target) in train_ds.enumerate():
       
       train_step(input_image, target, epoch)
+        
     print()
-
-  
-
+    
+    weight_path = "./weight"
+    if not os.path.exists(weight_path):
+        os.mkdir(weight_path)
+    generator.save(f"./weight/gen_epoch_{epoch+1}.h5")    
+    
     print ('Time taken for epoch {} is {} sec\n'.format(epoch + 1,
                                                         time.time()-start))
 
+fit(tf.data.Dataset.zip((gray_dataset, color_dataset)),epochs = 100)
+
+from keras.models import load_model
 def generate_images(model, test_input, tar):
-  prediction = model(test_input, training=True)
-  plt.figure(figsize=(15,15))
+    model = load_model("./gen.h5")
+    prediction = model(test_input, training=True)
+    plt.figure(figsize=(15,15))
 
-  display_list = [test_input[0], tar[0], prediction[0]]
-  title = ['Input Image', 'Ground Truth', 'Predicted Image']
+    display_list = [test_input[0], tar[0], prediction[0]]
+    title = ['Input Image', 'Ground Truth', 'Predicted Image']
 
-  for i in range(3):
-    plt.subplot(1, 3, i+1)
-    plt.title(title[i])
-    # getting the pixel values between [0, 1] to plot it.
-    plt.imshow(display_list[i])
-    plt.axis('off')
-  plt.show()
+    for i in range(3):
+        plt.subplot(1, 3, i+1)
+        plt.title(title[i])
+        # getting the pixel values between [0, 1] to plot it.
+        plt.imshow(display_list[i])
+        plt.axis('off')
+    plt.show()
 
-for example_input, example_target in tf.data.Dataset.zip((gray_dataset,color_dataset)).take(2):
-  generate_images(generator, example_input, example_target)
-  
-
-
-fit(tf.data.Dataset.zip((gray_dataset, color_dataset)),
-    epochs = 10)
-
-def generate_images(model, test_input, tar):
-  prediction = model(test_input, training=True)
-  plt.figure(figsize=(15,15))
-
-  display_list = [test_input[0], tar[0], prediction[0]]
-  title = ['Input Image', 'Ground Truth', 'Predicted Image']
-
-  for i in range(3):
-    plt.subplot(1, 3, i+1)
-    plt.title(title[i])
-    # getting the pixel values between [0, 1] to plot it.
-    plt.imshow(display_list[i])
-    plt.axis('off')
-  plt.show()
-
+# print(gray_dataset_t)
+for example_input, example_target in tf.data.Dataset.zip((gray_dataset_t,color_dataset_t)).take(10):
+    generate_images(generator, example_input, example_target)
+    
