@@ -1,13 +1,11 @@
-from cv2 import IMREAD_COLOR
-import tensorflow as tf
-import os
-import time
-from matplotlib import pyplot as plt
-from IPython import display
 import cv2
 import numpy as np
-clr_path = "D:\study_data\_data\image\gan\color/color/"
-gry_path = "D:\study_data\_data\image\gan\gray/gray/"
+import matplotlib.pyplot as plt
+from tensorflow import keras
+import tensorflow as tf
+
+clr_path = "D:\study_data\_data\image\gan\color"
+gry_path = "D:\study_data\_data\image\gan\gray"
 
 import os
 
@@ -19,10 +17,9 @@ for img_path in os.listdir(clr_path) :
     
 for img_path in os.listdir(gry_path) :
     gry_img_path.append(os.path.join(gry_path, img_path))
-    
+
 clr_img_path.sort()
 gry_img_path.sort()
-
 
 from PIL import Image
 from keras.preprocessing.image import img_to_array
@@ -37,7 +34,7 @@ for i in range(5000) :
     
     y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))
     X.append(img_to_array(Image.fromarray(cv2.resize(img2,(128,128)))))
-    
+
 X = np.array(X)
 y = np.array(y)
 
@@ -67,6 +64,7 @@ y = (y/127.5) - 1
 
 from sklearn.model_selection import train_test_split
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.15, shuffle = False)
+
 
 from tensorflow_addons.layers import SpectralNormalization
 from keras.layers import BatchNormalization
@@ -203,7 +201,7 @@ dis0 = PatchGAN((128,128,3,)) # (W//1) x (H//1)
 dis1 = PatchGAN((64, 64, 3,)) # (W//2) x (H//2)
 dis2 = PatchGAN((32, 32, 3,)) # (W//4) x (H//4)
 
-bin_entropy = tf.keras.losses.BinaryCrossentropy(from_logits = True)
+bin_entropy = keras.losses.BinaryCrossentropy(from_logits = True)
 
 def gen_loss (dis_gen_output, target_image, gen_output) :
     
@@ -225,7 +223,7 @@ def dis_loss (dis_gen_output, dis_tar_output) :
     total_dis_loss = gen_loss + tar_loss
     return total_dis_loss
 
-img  = cv2.imread('D:\study_data\_data\image\gan\color\color/image0000.jpg')
+img  = cv2.imread('D:\study_data\_data\image\gan\color/image0000.jpg')
 img  = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), (128,128))
 a128 = img_to_array(Image.fromarray(img))
 
@@ -300,22 +298,22 @@ def train_on_batch (b_w_image, tar_image) :
         d_total_loss = d_loss_128 + d_loss_064 + d_loss_032
     
     # compute gradients
-g_gradients = g.gradient(g_total_loss, gen0.trainable_variables) # generatorLoss
+    g_gradients = g.gradient(g_total_loss, gen0.trainable_variables) # generatorLoss
     
-d0gradients = g.gradient(d_loss_128, dis0.trainable_variables)   # dis loss 128
-d1gradients = g.gradient(d_loss_064, dis1.trainable_variables)   # dis loss 064
-d2gradients = g.gradient(d_loss_032, dis2.trainable_variables)   # dis loss 032
+    d0gradients = g.gradient(d_loss_128, dis0.trainable_variables)   # dis loss 128
+    d1gradients = g.gradient(d_loss_064, dis1.trainable_variables)   # dis loss 064
+    d2gradients = g.gradient(d_loss_032, dis2.trainable_variables)   # dis loss 032
     
     
     # apply gradient descent
-g_optimizer.apply_gradients(zip(g_gradients, gen0.trainable_variables))
+    g_optimizer.apply_gradients(zip(g_gradients, gen0.trainable_variables))
     
-d0optimizer.apply_gradients(zip(d0gradients, dis0.trainable_variables))
-d1optimizer.apply_gradients(zip(d1gradients, dis1.trainable_variables))
-d2optimizer.apply_gradients(zip(d2gradients, dis2.trainable_variables))
+    d0optimizer.apply_gradients(zip(d0gradients, dis0.trainable_variables))
+    d1optimizer.apply_gradients(zip(d1gradients, dis1.trainable_variables))
+    d2optimizer.apply_gradients(zip(d2gradients, dis2.trainable_variables))
     
 for global_b_w_image, global_tar_image in train_dataset.take(1) :
-      pass
+    pass
 
 def fig (b_w_image, gen_image, tar_image) :
     
@@ -354,5 +352,6 @@ def fit (EPOCHS = 200) :
         if epoch%3  == 0 :
             global_gen_image = gen0(global_b_w_image,training = True)
             fig(global_b_w_image, global_gen_image, global_tar_image)
-        
+
 fit(EPOCHS = 100)
+

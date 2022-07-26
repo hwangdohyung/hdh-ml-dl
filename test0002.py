@@ -1,228 +1,289 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# File: Image2Image.py
-# Author: Yuxin Wu
-
-import argparse
-import functools
-import glob
-import numpy as np
-import os
-import cv2
 import tensorflow as tf
+import keras 
+from keras import layers
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+import os
+from tqdm import tqdm
+import re
+from keras.preprocessing.image import img_to_array
 
-from tensorpack import *
-from tensorpack.tfutils.scope_utils import auto_reuse_variable_scope
-from tensorpack.tfutils.summary import add_moving_summary
-from tensorpack.utils.gpu import get_num_gpu
-from tensorpack.utils.viz import stack_patches
+def sorted_alphanumeric(data):  
+    convert = lambda text: int(text) if text.isdigit() else text.lower()
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)',key)]
+    return sorted(data,key = alphanum_key)
+# defining the size of the image
+SIZE = 256
+color_img = []
+path = 'D:\study_data\_data\image\gan\color/'
+files = os.listdir(path)
+files = sorted_alphanumeric(files)
+for i in tqdm(files):    
+        if i == '2200.jpg':
+            break
+        else:    
+            img = cv2.imread(path + '/'+i,1)
+            # open cv reads images in BGR format so we have to convert it to RGB
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            #resizing image
+            img = cv2.resize(img, (SIZE, SIZE))
+            img = img.astype('float32') / 255.0
+            color_img.append(img_to_array(img))
 
-from GAN import GANModelDesc, GANTrainer
 
-"""
-To train Image-to-Image translation model with image pairs:
-    ./Image2Image.py --data /path/to/datadir --mode {AtoB,BtoA}
-    # datadir should contain jpg images of shpae 2s x s, formed by A and B
-    # you can download some data from the original authors:
-    # https://people.eecs.berkeley.edu/~tinghuiz/projects/pix2pix/datasets/
-Training visualization will appear be in tensorboard.
-To visualize on test set:
-    ./Image2Image.py --sample --data /path/to/test/datadir --mode {AtoB,BtoA} --load model
-"""
+gray_img = []
+path = 'D:\study_data\_data\image\gan\gray/'
+files = os.listdir(path)
+files = sorted_alphanumeric(files)
+for i in tqdm(files):
+         if i == '2200.jpg':
+            break
+         else: 
+            img = cv2.imread(path + '/'+i,1)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            #resizing image
+            img = cv2.resize(img, (SIZE, SIZE))
+            img = img.astype('float32') / 255.0
+            gray_img.append(img_to_array(img))
+            
+            
+color_dataset=tf.data.Dataset.from_tensor_slices(np.array(color_img[:2000])).batch(64)
+gray_dataset=tf.data.Dataset.from_tensor_slices(np.array(gray_img[:2000])).batch(64)
 
-BATCH = 1
-IN_CH = 3
-OUT_CH = 3
+# color_dataset_t=tf.data.Dataset.from_tensor_slices(np.array(color_img[2000:])).batch(8)
+# gray_dataset_t=tf.data.Dataset.from_tensor_slices(np.array(gray_img[2000:])).batch(8)
+
+example_color = next(iter(color_dataset))
+example_gray = next(iter(gray_dataset))
+
+def plot_images(a = 4):
+    
+    for i in range(a):
+        plt.figure(figsize = (10,10))
+        plt.subplot(121)
+        plt.title('color')
+        plt.imshow(example_color[i] )
+
+        plt.subplot(122)
+        plt.title('gray')
+        plt.imshow(example_gray[i])
+        plt.show()
+plot_images(3)
+
+def downsample(filters, size, apply_batchnorm=True):
+  
+  result = tf.keras.Sequential()
+  result.add(
+      tf.keras.layers.Conv2D(filters, size, strides=2, padding='same',
+                             kernel_initializer='he_normal', use_bias=False))
+
+  if apply_batchnorm:
+    result.add(tf.keras.layers.BatchNormalization())
+
+  result.add(tf.keras.layers.LeakyReLU())
+
+  return result
+
+def upsample(filters, size, apply_dropout=False):
+  
+
+  result = tf.keras.Sequential()
+  result.add(
+    tf.keras.layers.Conv2DTranspose(filters, size, strides=2,
+                                    padding='same',
+                                    kernel_initializer='he_normal',
+                                    use_bias=False))
+
+  result.add(tf.keras.layers.BatchNormalization())
+
+  if apply_dropout:
+      result.add(tf.keras.layers.Dropout(0.5))
+
+  result.add(tf.keras.layers.ReLU())
+
+  return result  
+
+def Generator():
+  inputs = tf.keras.layers.Input(shape=[256,256,3])
+
+  down_stack = [
+    downsample(64, 4, apply_batchnorm=False), # (bs, 128, 128, 64)
+    downsample(128, 4), # (bs, 64, 64, 128)
+    downsample(256, 4), # (bs, 32, 32, 256)
+    downsample(512, 4), # (bs, 16, 16, 512)
+    downsample(512, 4), # (bs, 8, 8, 512)
+    downsample(512, 4), # (bs, 4, 4, 512)
+    downsample(512, 4), # (bs, 2, 2, 512)
+    downsample(512, 4), # (bs, 1, 1, 512)
+  ]
+
+  up_stack = [
+    upsample(512, 4, apply_dropout=True), # (bs, 2, 2, 1024)
+    upsample(512, 4, apply_dropout=True), # (bs, 4, 4, 1024)
+    upsample(512, 4, apply_dropout=True), # (bs, 8, 8, 1024)
+    upsample(512, 4), # (bs, 16, 16, 1024)
+    upsample(256, 4), # (bs, 32, 32, 512)
+    upsample(128, 4), # (bs, 64, 64, 256)
+    upsample(64, 4), # (bs, 128, 128, 128)
+  ]
+
+  initializer = tf.random_normal_initializer(0., 0.02)
+  last = tf.keras.layers.Conv2DTranspose(3, 4,
+                                         strides=2,
+                                         padding='same',
+                                         kernel_initializer=initializer,
+                                         activation='tanh') # (bs, 256, 256, 3)
+
+  x = inputs
+
+  # Downsampling through the model
+  skips = []
+  for down in down_stack:
+    x = down(x)
+    skips.append(x)
+
+  skips = reversed(skips[:-1])
+
+  # Upsampling and establishing the skip connections
+  for up, skip in zip(up_stack, skips):
+    x = up(x)
+    x = tf.keras.layers.Concatenate()([x, skip])
+
+  x = last(x)
+
+  return tf.keras.Model(inputs=inputs, outputs=x)
+
+def Discriminator():
+  initializer = tf.random_normal_initializer(0., 0.02)
+
+  inp = tf.keras.layers.Input(shape=[256, 256, 3], name='input_image')
+  tar = tf.keras.layers.Input(shape=[256, 256, 3], name='target_image')
+
+  x = tf.keras.layers.concatenate([inp, tar]) # (bs, 256, 256, channels*2)
+
+  down1 = downsample(64, 4, False)(x) # (bs, 128, 128, 64)
+  down2 = downsample(128, 4)(down1) # (bs, 64, 64, 128)
+  down3 = downsample(256, 4)(down2) # (bs, 32, 32, 256)
+
+  zero_pad1 = tf.keras.layers.ZeroPadding2D()(down3) # (bs, 34, 34, 256)
+  conv = tf.keras.layers.Conv2D(512, 4, strides=1,
+                                kernel_initializer=initializer,
+                                use_bias=False)(zero_pad1) # (bs, 31, 31, 512)
+
+  batchnorm1 = tf.keras.layers.BatchNormalization()(conv)
+
+  leaky_relu = tf.keras.layers.LeakyReLU()(batchnorm1)
+
+  zero_pad2 = tf.keras.layers.ZeroPadding2D()(leaky_relu) # (bs, 33, 33, 512)
+
+  last = tf.keras.layers.Conv2D(1, 4, strides=1,
+                                kernel_initializer=initializer)(zero_pad2) # (bs, 30, 30, 1)
+
+  return tf.keras.Model(inputs=[inp, tar], outputs=last)
+
+generator = Generator()
+
+discriminator = Discriminator()
+
+loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+
 LAMBDA = 100
-NF = 64  # number of filter
+
+def generator_loss(disc_generated_output, gen_output, target):
+  gan_loss = loss_object(tf.ones_like(disc_generated_output), disc_generated_output)
+
+  # mean absolute error
+  l1_loss = tf.reduce_mean(tf.abs(target - gen_output))
+
+  total_gen_loss = gan_loss + (LAMBDA * l1_loss)
+
+  return total_gen_loss, gan_loss, l1_loss
+
+def discriminator_loss(disc_real_output, disc_generated_output):
+  real_loss = loss_object(tf.ones_like(disc_real_output), disc_real_output)
+
+  generated_loss = loss_object(tf.zeros_like(disc_generated_output), disc_generated_output)
+
+  total_disc_loss = real_loss + generated_loss
+
+  return total_disc_loss
+
+def train_step(input_image, target, epoch):
+  with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+    gen_output = generator(input_image, training=True)
+
+    disc_real_output = discriminator([input_image, target], training=True)
+    disc_generated_output = discriminator([input_image, gen_output], training=True)
+
+    gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, target)
+    disc_loss = discriminator_loss(disc_real_output, disc_generated_output)
+
+  generator_gradients = gen_tape.gradient(gen_total_loss,
+                                          generator.trainable_variables)
+  discriminator_gradients = disc_tape.gradient(disc_loss,
+                                               discriminator.trainable_variables)
+
+  generator_optimizer.apply_gradients(zip(generator_gradients,
+                                          generator.trainable_variables))
+  discriminator_optimizer.apply_gradients(zip(discriminator_gradients,
+                                              discriminator.trainable_variables))
+  
+import time
+def fit(train_ds, epochs,):
+  for epoch in range(epochs):
+    start = time.time()
+
+    print("Epoch: ", epoch+1)
+
+    # Train
+    for n, (input_image, target) in train_ds.enumerate():
+      
+      train_step(input_image, target, epoch)
+    print()
+
+  
+
+    print ('Time taken for epoch {} is {} sec\n'.format(epoch + 1,
+                                                        time.time()-start))
+
+def generate_images(model, test_input, tar):
+  prediction = model(test_input, training=True)
+  plt.figure(figsize=(15,15))
+
+  display_list = [test_input[0], tar[0], prediction[0]]
+  title = ['Input Image', 'Ground Truth', 'Predicted Image']
+
+  for i in range(3):
+    plt.subplot(1, 3, i+1)
+    plt.title(title[i])
+    # getting the pixel values between [0, 1] to plot it.
+    plt.imshow(display_list[i])
+    plt.axis('off')
+  plt.show()
+
+for example_input, example_target in tf.data.Dataset.zip((gray_dataset,color_dataset)).take(2):
+  generate_images(generator, example_input, example_target)
+  
 
 
-def BNLReLU(x, name=None):
-    x = BatchNorm('bn', x)
-    return tf.nn.leaky_relu(x, alpha=0.2, name=name)
+fit(tf.data.Dataset.zip((gray_dataset, color_dataset)),
+    epochs = 10)
 
+def generate_images(model, test_input, tar):
+  prediction = model(test_input, training=True)
+  plt.figure(figsize=(15,15))
 
-def visualize_tensors(name, imgs, scale_func=lambda x: (x + 1.) * 128., max_outputs=1):
-    """Generate tensor for TensorBoard (casting, clipping)
-    Args:
-        name: name for visualization operation
-        *imgs: multiple tensors as list
-        scale_func: scale input tensors to fit range [0, 255]
-    Example:
-        visualize_tensors('viz1', [img1])
-        visualize_tensors('viz2', [img1, img2, img3], max_outputs=max(30, BATCH))
-    """
-    xy = scale_func(tf.concat(imgs, axis=2))
-    xy = tf.cast(tf.clip_by_value(xy, 0, 255), tf.uint8, name='viz')
-    tf.summary.image(name, xy, max_outputs=30)
+  display_list = [test_input[0], tar[0], prediction[0]]
+  title = ['Input Image', 'Ground Truth', 'Predicted Image']
 
+  for i in range(3):
+    plt.subplot(1, 3, i+1)
+    plt.title(title[i])
+    # getting the pixel values between [0, 1] to plot it.
+    plt.imshow(display_list[i])
+    plt.axis('off')
+  plt.show()
 
-class Model(GANModelDesc):
-    def inputs(self):
-        SHAPE = 256
-        return [tf.TensorSpec((None, SHAPE, SHAPE, IN_CH), tf.float32, 'input'),
-                tf.TensorSpec((None, SHAPE, SHAPE, OUT_CH), tf.float32, 'output')]
-
-    def generator(self, imgs):
-        # imgs: input: 256x256xch
-        # U-Net structure, it's slightly different from the original on the location of relu/lrelu
-        with argscope(BatchNorm, training=True), \
-                argscope(Dropout, is_training=True):
-            # always use local stat for BN, and apply dropout even in testing
-            with argscope(Conv2D, kernel_size=4, strides=2, activation=BNLReLU):
-                e1 = Conv2D('conv1', imgs, NF, activation=tf.nn.leaky_relu)
-                e2 = Conv2D('conv2', e1, NF * 2)
-                e3 = Conv2D('conv3', e2, NF * 4)
-                e4 = Conv2D('conv4', e3, NF * 8)
-                e5 = Conv2D('conv5', e4, NF * 8)
-                e6 = Conv2D('conv6', e5, NF * 8)
-                e7 = Conv2D('conv7', e6, NF * 8)
-                e8 = Conv2D('conv8', e7, NF * 8, activation=BNReLU)  # 1x1
-            with argscope(Conv2DTranspose, activation=BNReLU, kernel_size=4, strides=2):
-                return (LinearWrap(e8)
-                        .Conv2DTranspose('deconv1', NF * 8)
-                        .Dropout()
-                        .ConcatWith(e7, 3)
-                        .Conv2DTranspose('deconv2', NF * 8)
-                        .Dropout()
-                        .ConcatWith(e6, 3)
-                        .Conv2DTranspose('deconv3', NF * 8)
-                        .Dropout()
-                        .ConcatWith(e5, 3)
-                        .Conv2DTranspose('deconv4', NF * 8)
-                        .ConcatWith(e4, 3)
-                        .Conv2DTranspose('deconv5', NF * 4)
-                        .ConcatWith(e3, 3)
-                        .Conv2DTranspose('deconv6', NF * 2)
-                        .ConcatWith(e2, 3)
-                        .Conv2DTranspose('deconv7', NF * 1)
-                        .ConcatWith(e1, 3)
-                        .Conv2DTranspose('deconv8', OUT_CH, activation=tf.tanh)())
-
-    @auto_reuse_variable_scope
-    def discriminator(self, inputs, outputs):
-        """ return a (b, 1) logits"""
-        l = tf.concat([inputs, outputs], 3)
-        with argscope(Conv2D, kernel_size=4, strides=2, activation=BNLReLU):
-            l = (LinearWrap(l)
-                 .Conv2D('conv0', NF, activation=tf.nn.leaky_relu)
-                 .Conv2D('conv1', NF * 2)
-                 .Conv2D('conv2', NF * 4)
-                 .Conv2D('conv3', NF * 8, strides=1, padding='VALID')
-                 .Conv2D('convlast', 1, strides=1, padding='VALID', activation=tf.identity)())
-        return l
-
-    def build_graph(self, input, output):
-        input, output = input / 128.0 - 1, output / 128.0 - 1
-
-        with argscope([Conv2D, Conv2DTranspose], kernel_initializer=tf.truncated_normal_initializer(stddev=0.02)):
-            with tf.variable_scope('gen'):
-                fake_output = self.generator(input)
-            with tf.variable_scope('discrim'):
-                real_pred = self.discriminator(input, output)
-                fake_pred = self.discriminator(input, fake_output)
-
-        self.build_losses(real_pred, fake_pred)
-        errL1 = tf.reduce_mean(tf.abs(fake_output - output), name='L1_loss')
-        self.g_loss = tf.add(self.g_loss, LAMBDA * errL1, name='total_g_loss')
-        add_moving_summary(errL1, self.g_loss)
-
-        # tensorboard visualization
-        if IN_CH == 1:
-            input = tf.image.grayscale_to_rgb(input)
-        if OUT_CH == 1:
-            output = tf.image.grayscale_to_rgb(output)
-            fake_output = tf.image.grayscale_to_rgb(fake_output)
-
-        visualize_tensors('input,output,fake', [input, output, fake_output], max_outputs=max(30, BATCH))
-
-        self.collect_variables()
-
-    def optimizer(self):
-        lr = tf.get_variable('learning_rate', initializer=2e-4, trainable=False)
-        return tf.train.AdamOptimizer(lr, beta1=0.5, epsilon=1e-3)
-
-
-def split_input(mode, dp):
-    """
-    dp: the datapoint. first component is an RGB image of shape (s, 2s, 3).
-    :return: [input, output]
-    """
-    img = dp[0]
-    # split the image into left + right pairs
-    s = img.shape[0]
-    assert img.shape[1] == 2 * s
-    input, output = img[:, :s, :], img[:, s:, :]
-    if mode == 'BtoA':
-        input, output = output, input
-    if IN_CH == 1:
-        input = cv2.cvtColor(input, cv2.COLOR_RGB2GRAY)[:, :, np.newaxis]
-    if OUT_CH == 1:
-        output = cv2.cvtColor(output, cv2.COLOR_RGB2GRAY)[:, :, np.newaxis]
-    return [input, output]
-
-
-def get_data(args):
-    datadir = args.data
-    imgs = glob.glob(os.path.join(datadir, '*.jpg'))
-    ds = ImageFromFile(imgs, channel=3, shuffle=True)
-
-    ds = MapData(ds, functools.partial(split_input, args.mode))
-    augs = [imgaug.Resize(286), imgaug.RandomCrop(256)]
-    ds = AugmentImageComponents(ds, augs, (0, 1))
-    ds = BatchData(ds, BATCH)
-    ds = MultiProcessRunner(ds, 100, 1)
-    return ds
-
-
-def sample(datadir, model_path):
-    pred = PredictConfig(
-        session_init=SmartInit(model_path),
-        model=Model(),
-        input_names=['input', 'output'],
-        output_names=['viz'])
-
-    imgs = glob.glob(os.path.join(datadir, '*.jpg'))
-    ds = ImageFromFile(imgs, channel=3, shuffle=True)
-    ds = MapData(ds, split_input)
-    ds = AugmentImageComponents(ds, [imgaug.Resize(256)], (0, 1))
-    ds = BatchData(ds, 6)
-
-    pred = SimpleDatasetPredictor(pred, ds)
-    for o in pred.get_result():
-        o = o[0][:, :, :, ::-1]
-        stack_patches(o, nr_row=3, nr_col=2, viz=True)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.')
-    parser.add_argument('--load', help='load model')
-    parser.add_argument('--sample', action='store_true', help='run sampling')
-    parser.add_argument('--data', help='Image directory', required=True)
-    parser.add_argument('--mode', choices=['AtoB', 'BtoA'], default='AtoB')
-    parser.add_argument('-b', '--batch', type=int, default=1)
-    args = parser.parse_args()
-    if args.gpu:
-        os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-
-    BATCH = args.batch
-
-    if args.sample:
-        assert args.load
-        sample(args.data, args.load)
-    else:
-        logger.auto_set_dir()
-
-        data = QueueInput(get_data(args))
-        trainer = GANTrainer(data, Model(), get_num_gpu())
-
-        trainer.train_with_defaults(
-            callbacks=[
-                PeriodicTrigger(ModelSaver(), every_k_epochs=3),
-                ScheduledHyperParamSetter('learning_rate', [(200, 1e-4)])
-            ],
-            steps_per_epoch=data.size(),
-            max_epoch=300,
-            session_init=SmartInit(args.load)
-        )
