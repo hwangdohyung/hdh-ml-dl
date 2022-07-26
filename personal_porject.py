@@ -37,7 +37,7 @@ for i in range(5000) :
 
 X = np.array(X)
 y = np.array(y)
-
+    
 # plt.figure(figsize = (10,50))
 
 # i = 0
@@ -355,6 +355,7 @@ def fit (EPOCHS = 200) :
 
 fit(EPOCHS = 100)
 
+# https://developers.arcgis.com/python/guide/how-pix2pix-works/
 
 
 
