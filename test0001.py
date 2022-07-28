@@ -1,33 +1,48 @@
-import tensorflow as tf 
-import os 
-import time 
-from matplotlib import pyplot as plt 
-from IPython import display
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow import keras
+import tensorflow as tf
 
-PATH = 'D:\study_data\_data\image\gan/'
+pre_path = "D:\study_data\_data\image\pix2pix"
 
 
-BUFFER_SIZE = 400
-BATCH_SIZE = 1
-IMG_WIDTH = 256
-IMG_HEIGHT = 256
+import os
 
-def load(image_file):
-  image = tf.io.read_file(image_file)
+clr_img_path = []
 
-  w = tf.shape(image)[1]
 
-  w = w // 2
-  color_image = image[:, :w, :]
-  gray_image = image[:, w:, :]
 
-  color_image = tf.cast(gray_image, tf.float32)
-  gray_image = tf.cast(color_image, tf.float32)
+for img_path in os.listdir(pre_path) :
+    clr_img_path.append(os.path.join(pre_path, img_path))
+    
 
-  return gray_image, color_image
+clr_img_path.sort()
 
-gray, color = load(PATH +'image0001.jpg')
-plt.figure()
-plt.imshow(gray/255.0)
-plt.figure()
-plt.imshow(color/255.0)
+
+
+from PIL import Image
+from keras.preprocessing.image import img_to_array
+
+X = []
+y = []
+
+for i in range(4) :
+    
+    img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)
+     
+    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))
+
+y = np.array(y)
+
+y = (y/127.5) - 1
+
+LAMBDA = 100
+BATCH_SIZE = 16
+BUFFER_SIZE  = 400
+
+train_dataset = tf.data.Dataset.from_tensor_slices((X))
+valid_dataset = tf.data.Dataset.from_tensor_slices((y))
+train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
+valid_dataset = valid_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
+

@@ -355,5 +355,4 @@ def fit (EPOCHS = 200) :
 
 fit(EPOCHS = 100)
 
-# https://developers.arcgis.com/python/guide/how-pix2pix-works/
 
