@@ -58,6 +58,10 @@ y = np.array(y)
 #     i += 2
     
 # plt.show()
+print(y.shape)
+
+
+exit()
 
 X = (X/127.5) - 1
 y = (y/127.5) - 1
@@ -354,5 +358,4 @@ def fit (EPOCHS = 200) :
             fig(global_b_w_image, global_gen_image, global_tar_image)
 
 fit(EPOCHS = 100)
-
 
