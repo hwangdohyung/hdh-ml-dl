@@ -226,7 +226,6 @@ def dis_loss (dis_gen_output, dis_tar_output) :
 img  = cv2.imread('D:\study_data\_data\image\gan\color/image0000.jpg')
 img  = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), (128,128))
 a128 = img_to_array(Image.fromarray(img))
-
 a128/= 255.0
 
 a064 = cv2.resize(a128, (64,64))

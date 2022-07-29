@@ -58,6 +58,14 @@ x = (x/127.5) - 1
 y = (y/127.5) - 1
 
 x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.15, shuffle = False)
+######################### 1장################################
+img  = cv2.imread('D:\study_data\_data\image\gan\color/image0000.jpg')
+img  = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), (256,256))
+a128 = img_to_array(Image.fromarray(img))
+a128 = np.array(a128)
+a128 = (a128/127.5) - 1
+# a128 = a128.reshape(1,128,128,3)
+##############################################################
 
 LAMBDA = 100
 BATCH_SIZE = 16
@@ -89,7 +97,8 @@ def downsample(filters, size, apply_batchnorm=True):
     return result 
 
 down_model = downsample(3,4)
-
+down_result = down_model(tf.expand_dims(a128, 0))
+print (down_result.shape)
 
 ###### 업샘플 정의 #####
 def upsample(filters, size, apply_dropout=False):
@@ -109,6 +118,9 @@ def upsample(filters, size, apply_dropout=False):
     result.add(tf.keras.layers.ReLU())
     
     return result
+
+up_model = upsample(3,4)
+up_result = up_model(down_result)
 
 ###################### 제너레이터(업샘플+다운샘플)u_net ####################
 def Generator():
@@ -159,17 +171,13 @@ def Generator():
     return tf.keras.Model(inputs=inputs, outputs=x)
 
 ############# 이미지 1장 빼놓은거 ##########
-img  = cv2.imread('D:\study_data\_data\image\gan\color/image0000.jpg')
-img  = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), (128,128))
-a128 = img_to_array(Image.fromarray(img))
-
-a128 = (a128/127.5) - 1
 
 generator = Generator()
 
-gen_output = generator(a128[tf.newaxis,...],trainig=False)
+gen_output = generator(a128[tf.newaxis,...],training=False)
+
 plt.imshow(gen_output[0,...])
-    
+plt.show()   
     
     
     
