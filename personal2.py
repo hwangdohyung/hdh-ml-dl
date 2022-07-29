@@ -9,20 +9,19 @@ gry_path = "D:\study_data\_data\image\gan\gray"
 
 import os
 
-clr_img_path = []
+clr_img_path = [] # array 를 담겠다.
 gry_img_path = []
 
 
-for img_path in os.listdir(clr_path) :
-    clr_img_path.append(os.path.join(clr_path, img_path))
+for img_path in os.listdir(clr_path) :  # listdir :경로의 파일들을 불러오겠다.
+    clr_img_path.append(os.path.join(clr_path, img_path))  #img_path 붙이는 이유
     
 for img_path in os.listdir(gry_path) :
     gry_img_path.append(os.path.join(gry_path, img_path))
 
 
-clr_img_path.sort()
+clr_img_path.sort()# 오름차순 정렬
 gry_img_path.sort()
-
 
 from PIL import Image
 from keras.preprocessing.image import img_to_array
@@ -32,11 +31,11 @@ y = []
 
 for i in range(5000) :
     
-    img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)
-    img2 = cv2.cvtColor(cv2.imread(gry_img_path[i]), cv2.COLOR_BGR2RGB)
+    img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)    #matplotlib에서 bgr로 읽기때문 바꿔준다. 
+    img2 = cv2.cvtColor(cv2.imread(gry_img_path[i]), cv2.COLOR_BGR2RGB)    
      
-    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))
-    X.append(img_to_array(Image.fromarray(cv2.resize(img2,(128,128)))))
+    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))    #formarray: 넘파이 배열을 pil 이미지로 변환 
+    X.append(img_to_array(Image.fromarray(cv2.resize(img2,(128,128)))))    #image_to_array: 이미지를 넘파이 배열로 변환
 
 X = np.array(X)
 y = np.array(y)
@@ -64,6 +63,8 @@ y = np.array(y)
 
 X = (X/127.5) - 1
 y = (y/127.5) - 1
+
+print(X.shape,y.shape)
 
 
 from sklearn.model_selection import train_test_split
@@ -189,7 +190,6 @@ valid_dataset = valid_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=
 
 gen0 = mod_Unet()
 
-
 dis0 = PatchGAN((128,128,3,)) # (W//1) x (H//1)
 dis1 = PatchGAN((64, 64, 3,)) # (W//2) x (H//2)
 dis2 = PatchGAN((32, 32, 3,)) # (W//4) x (H//4)
@@ -197,7 +197,7 @@ dis2 = PatchGAN((32, 32, 3,)) # (W//4) x (H//4)
 bin_entropy = keras.losses.BinaryCrossentropy(from_logits = True)
 
 def gen_loss (dis_gen_output, target_image, gen_output) :
-    
+
     ad_loss = bin_entropy(tf.ones_like (dis_gen_output) ,  dis_gen_output)
     l1_loss = tf.reduce_mean(tf.abs(tf.subtract(target_image,gen_output)))
     
@@ -344,3 +344,7 @@ fit(EPOCHS = 300)
 for b_w_image,tar_image in valid_dataset.take(20) :
     gen_image = gen0(b_w_image , training = True)
     fig(b_w_image, gen_image, tar_image)
+
+
+# https://stackoverflow.com/questions/59858294/save-and-load-gan-model-for-continued-training-using-keras # 
+# save,load

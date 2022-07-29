@@ -58,10 +58,6 @@ y = np.array(y)
 #     i += 2
     
 # plt.show()
-print(y.shape)
-
-
-exit()
 
 X = (X/127.5) - 1
 y = (y/127.5) - 1
