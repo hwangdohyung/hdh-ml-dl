@@ -48,8 +48,8 @@ for i in range(5000) :
     img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)
     img2 = cv2.cvtColor(cv2.imread(gry_img_path[i]), cv2.COLOR_BGR2RGB)
     
-    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))
-    x.append(img_to_array(Image.fromarray(cv2.resize(img2,(128,128)))))
+    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(256,256)))))
+    x.append(img_to_array(Image.fromarray(cv2.resize(img2,(256,256)))))
 
 x = np.array(x)
 y = np.array(y)
@@ -75,6 +75,9 @@ train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 test_dataset = tf.data.Dataset.from_tensor_slices((x_valid, y_valid))
 train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
 test_dataset = test_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
+
+
+
 
 ########################## 모델 #######################
 
@@ -182,7 +185,7 @@ plt.imshow(gen_output[0,...])
 ############################### DISCRIMINATOR ##################################
  
 def Discriminator():
-    initializer = tf.random_initializer(0.,0.02)
+    initializer = tf.random_normal_initializer(0.,0.02)
     
     inp = tf.keras.layers.Input(shape =[256,256,3], name = 'input_image')
     tar = tf.keras.layers.Input(shape =[256,256,3], name = 'target_image')
@@ -203,14 +206,14 @@ def Discriminator():
     
     zero_pad2 = tf.keras.layers.ZeroPadding2D()(leaky_relu)
     
-    last = tf.keras.layser.Conv2D(1, 4, strides=1, 
+    last = tf.keras.layers.Conv2D(1, 4, strides=1, 
                                   kernel_initializer=initializer)(zero_pad2)    
     
     return tf.keras.Model(inputs=[inp, tar], outputs=last)
 
 discriminator = Discriminator()
 
-
+################################# loss ###################################
 LAMBDA =100
 
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
@@ -236,7 +239,16 @@ def generator_loss(disc_generated_output,gen_output,target):
 generator_optimizer = tf.keras.optimizers.Adam(2e-4,beta_1=-0.5)
 discriminator_optimizer = tf.keras.optimizers.Adam(2e-4,beta_1=-0.5)
 
+############################## checkpoint ################################
 
+checkpoint_dir = 'D:\study_data\_temp'
+checkpoint_prefix = os.path.join(checkpoint_dir, 'ckpt')
+checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                 discriminator_optimizer=discriminator_optimizer,
+                                 generator=generator,
+                                 discriminator=discriminator)
+
+############################### train #####################################
 EPOCHS = 150 
 
 def generate_images(model, test_input, tar): 
@@ -261,3 +273,39 @@ def train_step(input_image, target):
         gen_output = generator(input_image, training=True)
         
         disc_real_output = discriminator([input_image])
+        disc_generated_output = discriminator([input_image, gen_output], training = True)
+        
+        gen_loss = generator_loss(disc_generated_output, gen_output, target)
+        disc_loss = discriminator_loss(disc_real_output, disc_generated_output)
+    
+    generator_gradients = gen_tape.gradient(gen_loss,
+                                            generator.trainable_variables)
+    discriminator_gradients = disc_tape.gradient(disc_loss,
+                                                 discriminator.trainable_variables)
+    
+    generator_optimizer.apply_gradients(zip(generator_gradients,
+                                            generator.trainable_variables))
+    
+    discriminator_optimizer.apply_gradients(zip(discriminator_gradients,
+                                                discriminator.trainable_variables))
+    
+import time
+def fit(train_ds, epochs, test_ds):
+    for epoch in range(epochs):
+        start = time.time() 
+        
+        for input_image,target in train_ds:
+            train_step(input_image, target)
+        
+        for example_input, example_target in test_ds.take(1):
+            generate_images(generator, example_input, example_target)       
+        
+        if (epoch + 1) % 20 == 0:
+            checkpoint.save(file_prefix = checkpoint_prefix)
+            
+        
+        print('Time taken for epoch {} is {} sec/n'.format(epoch + 1,
+                                                           time.time()-start))
+        
+        
+fit(train_dataset, EPOCHS, test_dataset)    
