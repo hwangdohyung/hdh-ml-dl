@@ -1,48 +1,34 @@
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-from tensorflow import keras
-import tensorflow as tf
-
-pre_path = "D:\study_data\_data\image\pix2pix"
-
-
-import os
-
-clr_img_path = []
+import tensorflow as tf 
+import numpy as np 
+import pandas as pd
+from tensorflow.python.keras.layers import Dense,Flatten,Conv2D,Dropout,Conv2DTranspose,Input
+from tensorflow.python.keras.models import Model,Sequential
+from sklearn.model_selection import train_test_split 
+from tensorflow.python.keras.callbacks import EarlyStopping,ModelCheckpoint
 
 
+#1.data 
+x = [1,2,3,4,5,6,7,]
+y = [10,20,30,40,50,60,70]
 
-for img_path in os.listdir(pre_path) :
-    clr_img_path.append(os.path.join(pre_path, img_path))
-    
+#2.model
+model = Sequential()
+model.add(Dense(30,input_dim=1))
+model.add(Dense(30,activation='relu'))
+model.add(Dense(30,activation='relu'))
+model.add(Dense(100,activation='relu'))
+model.add(Dense(30,activation='relu'))
+model.add(Dense(1,activation='linear'))
 
-clr_img_path.sort()
+#3.compile,fit
+model.compile(loss='mse',optimizer='adam') 
+model.fit(x,y,epochs=500,verbose=1)
+
+#4.evaluate,predict
+loss = model.evaluate(x,y)
+result = model.predict([8])
+print('loss: ' ,loss)
+print('result: ' , result)
 
 
-
-from PIL import Image
-from keras.preprocessing.image import img_to_array
-
-X = []
-y = []
-
-for i in range(4) :
-    
-    img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)
-     
-    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))
-
-y = np.array(y)
-
-y = (y/127.5) - 1
-
-LAMBDA = 100
-BATCH_SIZE = 16
-BUFFER_SIZE  = 400
-
-train_dataset = tf.data.Dataset.from_tensor_slices((X))
-valid_dataset = tf.data.Dataset.from_tensor_slices((y))
-train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
-valid_dataset = valid_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
 

@@ -177,12 +177,87 @@ generator = Generator()
 gen_output = generator(a128[tf.newaxis,...],training=False)
 
 plt.imshow(gen_output[0,...])
-plt.show()   
+ 
+
+############################### DISCRIMINATOR ##################################
+ 
+def Discriminator():
+    initializer = tf.random_initializer(0.,0.02)
+    
+    inp = tf.keras.layers.Input(shape =[256,256,3], name = 'input_image')
+    tar = tf.keras.layers.Input(shape =[256,256,3], name = 'target_image')
+    
+    x = tf.keras.layers.concatenate([inp,tar]) 
+    
+    down1 = downsample(64, 4, False)(x) 
+    down2 = downsample(128, 4)(down1)
+    down3 = downsample(256, 4)(down2)
+    
+    zero_pad1 = tf.keras.layers.ZeroPadding2D()(down3)
+    conv = tf.keras.layers.Conv2D(512, 4, strides=1,
+                                  kernel_initializer =initializer,
+                                  use_bias=False)(zero_pad1)
+    batchnorm1 = tf.keras.layers.BatchNormalization()(conv)
+    
+    leaky_relu = tf.keras.layers.LeakyReLU()(batchnorm1)
+    
+    zero_pad2 = tf.keras.layers.ZeroPadding2D()(leaky_relu)
+    
+    last = tf.keras.layser.Conv2D(1, 4, strides=1, 
+                                  kernel_initializer=initializer)(zero_pad2)    
+    
+    return tf.keras.Model(inputs=[inp, tar], outputs=last)
+
+discriminator = Discriminator()
+
+
+LAMBDA =100
+
+loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+def discriminator_loss(disc_real_output,disc_generated_output):
+    real_loss = loss_object(tf.ones_like(disc_real_output), disc_real_output)
+    
+    generated_loss = loss_object(tf.zeros_like(disc_generated_output), disc_generated_output)
+    
+    total_disc_loss = real_loss + generated_loss
+    
+    return total_disc_loss
+
+def generator_loss(disc_generated_output,gen_output,target):
+    gan_loss = loss_object(tf.ones_like(disc_generated_output),disc_generated_output)
+    
+    l1_loss = tf.reduce_mean(tf.abs(target - gen_output))
+    
+    total_gen_loss = gan_loss + (LAMBDA*l1_loss)
+    
+    return total_gen_loss
+
+generator_optimizer = tf.keras.optimizers.Adam(2e-4,beta_1=-0.5)
+discriminator_optimizer = tf.keras.optimizers.Adam(2e-4,beta_1=-0.5)
+
+
+EPOCHS = 150 
+
+def generate_images(model, test_input, tar): 
+    prediction = model(test_input, training =True)
+    plt.figure(figsize=(15,15))
+    
+    display_list = [test_input[0], tar[0], prediction[0]]
+    title = ['Input Image', 'Ground Truth', 'Predicted Image']
+    
+    for i in range(3):
+        plt.subplot(1, 3, 1+i)
+        plt.title(title[i])
+        plt.imshow(display_list[i] * 0.5 +0.5)
+        plt.axis('off')
+    plt.show()
     
     
     
-    
-    
-    
-    
-    
+@tf.function
+def train_step(input_image, target):
+    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+        gen_output = generator(input_image, training=True)
+        
+        disc_real_output = discriminator([input_image])
