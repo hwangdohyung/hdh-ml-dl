@@ -48,8 +48,8 @@ for i in range(5000) :
     img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)
     img2 = cv2.cvtColor(cv2.imread(gry_img_path[i]), cv2.COLOR_BGR2RGB)
     
-    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(256,256)))))
-    x.append(img_to_array(Image.fromarray(cv2.resize(img2,(256,256)))))
+    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))
+    x.append(img_to_array(Image.fromarray(cv2.resize(img2,(128,128)))))
 
 x = np.array(x)
 y = np.array(y)
@@ -187,8 +187,8 @@ plt.imshow(gen_output[0,...])
 def Discriminator():
     initializer = tf.random_normal_initializer(0.,0.02)
     
-    inp = tf.keras.layers.Input(shape =[256,256,3], name = 'input_image')
-    tar = tf.keras.layers.Input(shape =[256,256,3], name = 'target_image')
+    inp = tf.keras.layers.Input(shape =[128,128,3], name = 'input_image')
+    tar = tf.keras.layers.Input(shape =[128,128,3], name = 'target_image')
     
     x = tf.keras.layers.concatenate([inp,tar]) 
     
@@ -204,7 +204,7 @@ def Discriminator():
     
     leaky_relu = tf.keras.layers.LeakyReLU()(batchnorm1)
     
-    zero_pad2 = tf.keras.layers.ZeroPadding2D()(leaky_relu)
+    zero_pad2 = tf.keras.layers.ZeroPadding2D(2)(leaky_relu)
     
     last = tf.keras.layers.Conv2D(1, 4, strides=1, 
                                   kernel_initializer=initializer)(zero_pad2)    
