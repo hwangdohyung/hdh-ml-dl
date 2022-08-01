@@ -352,5 +352,9 @@ def fit (EPOCHS = 200) :
             global_gen_image = gen0(global_b_w_image,training = True)
             fig(global_b_w_image, global_gen_image, global_tar_image)
 
-fit(EPOCHS = 100)
+fit(EPOCHS = 3)
 
+for b_w_image,tar_image in valid_dataset.take(20) :
+    gen_image = gen0(b_w_image , training = True)
+    fig(b_w_image, gen_image, tar_image)
+    

@@ -204,7 +204,7 @@ def Discriminator():
     
     leaky_relu = tf.keras.layers.LeakyReLU()(batchnorm1)
     
-    zero_pad2 = tf.keras.layers.ZeroPadding2D(2)(leaky_relu)
+    zero_pad2 = tf.keras.layers.ZeroPadding2D()(leaky_relu)
     
     last = tf.keras.layers.Conv2D(1, 4, strides=1, 
                                   kernel_initializer=initializer)(zero_pad2)    

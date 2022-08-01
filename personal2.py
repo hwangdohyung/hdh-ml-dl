@@ -3,15 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow import keras
 import tensorflow as tf
+import os
 
 clr_path = "D:\study_data\_data\image\gan\color"
 gry_path = "D:\study_data\_data\image\gan\gray"
-
-import os
+last_path = "D:\study_data\_data\image\pix2pix"
 
 clr_img_path = [] # array 를 담겠다.
 gry_img_path = []
-
+last_img_path = []
 
 for img_path in os.listdir(clr_path) :  # listdir :경로의 파일들을 불러오겠다.
     clr_img_path.append(os.path.join(clr_path, img_path))  #img_path 붙이는 이유
@@ -19,15 +19,19 @@ for img_path in os.listdir(clr_path) :  # listdir :경로의 파일들을 불러
 for img_path in os.listdir(gry_path) :
     gry_img_path.append(os.path.join(gry_path, img_path))
 
+for img_path in os.listdir(last_path) :
+    last_img_path.append(os.path.join(last_path, img_path))
 
 clr_img_path.sort()# 오름차순 정렬
 gry_img_path.sort()
+last_img_path.sort()
 
 from PIL import Image
 from keras.preprocessing.image import img_to_array
 
 X = []
 y = []
+z = []
 
 for i in range(5000) :
     
@@ -40,35 +44,27 @@ for i in range(5000) :
 X = np.array(X)
 y = np.array(y)
 
-# plt.figure(figsize = (10,50))
+for i in range(5) :
 
-# i = 0
+    img3 = cv2.cvtColor(cv2.imread(last_img_path[i]), cv2.COLOR_BGR2RGB)   
+    z.append(img_to_array(Image.fromarray(cv2.resize(img3,(128,128)))))  
+     
+z = np.array(z)
 
-# while i < 20:
-    
-#     x = np.random.randint(0,3000)
-    
-#     plt.subplot(10, 2, i+1)
-#     plt.imshow(X[x]/255.0,'gray')
-#     plt.axis('off')
-#     plt.title('Gray Image')
-    
-#     plt.subplot(10, 2, i+2)
-#     plt.imshow(y[x]/ 255.0)
-#     plt.axis('off')
-#     plt.title('ColorImage')
-#     i += 2
-    
-# plt.show()
 
 X = (X/127.5) - 1
 y = (y/127.5) - 1
+z = (z/127.5) - 1
 
-print(X.shape,y.shape)
+LAMBDA = 100
+BATCH_SIZE = 64
+BUFFER_SIZE  = 5000
+TEST_BATCH = 1
 
-
-from sklearn.model_selection import train_test_split
-X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.15, shuffle = False)
+train_dataset = tf.data.Dataset.from_tensor_slices((X, y)) # numpy array를 dataset으로 변환
+train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
+test_dataset = tf.data.Dataset.from_tensor_slices((z))
+test_dataset = test_dataset.batch(batch_size=TEST_BATCH)
 
 
 from tensorflow_addons.layers import SpectralNormalization
@@ -170,29 +166,19 @@ def mod_Unet () :
     u512 = u_block(u512, c512, 2**9, 2, 'same', True, False)# __________.  .  .  .
     u256 = u_block(u512, c256, 2**8, 2, 'same', True, False)# _____________.  .  .
     u128 = u_block(u256, c128, 2**7, 2, 'same', True, False)# ________________.  .
-    u064 = u_block(u128, c064, 2**6, 2, 'same', False, True)# ___________________.m,
+    u064 = u_block(u128, c064, 2**6, 2, 'same', False, True)# ___________________.
+    
     
     genI = Conv2DTranspose(3, (4,4), strides = 2, padding = 'same', activation = 'tanh', kernel_initializer = init)(u064)
     
     model = Model(inputs = srcI, outputs = genI)
     return model
 
-g_model = mod_Unet()
-
-LAMBDA = 100
-BATCH_SIZE = 16
-BUFFER_SIZE  = 400
-
-train_dataset = tf.data.Dataset.from_tensor_slices((X_train, y_train))
-valid_dataset = tf.data.Dataset.from_tensor_slices((X_valid, y_valid))
-train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
-valid_dataset = valid_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
 
 gen0 = mod_Unet()
 
 dis0 = PatchGAN((128,128,3,)) # (W//1) x (H//1)
-dis1 = PatchGAN((64, 64, 3,)) # (W//2) x (H//2)
-dis2 = PatchGAN((32, 32, 3,)) # (W//4) x (H//4)
+
 
 bin_entropy = keras.losses.BinaryCrossentropy(from_logits = True)
 
@@ -214,19 +200,10 @@ def dis_loss (dis_gen_output, dis_tar_output) :
     total_dis_loss = gen_loss + tar_loss
     return total_dis_loss
 
-img  = cv2.imread('D:\study_data\_data\image\gan\color/image0000.jpg')
-img  = cv2.resize(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), (128,128))
-a128 = img_to_array(Image.fromarray(img))
 
-a128/= 255.0
+g_optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002)
+d0optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002)
 
-a064 = cv2.resize(a128, (64,64))
-a032 = cv2.resize(a064, (32,32))
-
-g_optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002, beta_1=0.5, beta_2=0.999)
-d0optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002, beta_1=0.5, beta_2=0.999)
-d1optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002, beta_1=0.5, beta_2=0.999)
-d2optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002, beta_1=0.5, beta_2=0.999)
 
 @tf.function
 def train_on_batch (b_w_image, tar_image) :
@@ -236,7 +213,7 @@ def train_on_batch (b_w_image, tar_image) :
       
         gen_image = gen0(b_w_image, training=True)
         
-        # 128x128
+        
         dis_tar_output_128 = dis0([b_w_image, tar_image], training = True)
         dis_gen_output_128 = dis0([b_w_image, gen_image], training = True)
         
@@ -244,63 +221,24 @@ def train_on_batch (b_w_image, tar_image) :
         tar_image_128 = tar_image
         gen_image_128 = gen_image
         
-        tar_image = tf.image.resize(tar_image, [64,64])
-        b_w_image = tf.image.resize(b_w_image, [64,64])
-        gen_image = tf.image.resize(gen_image, [64,64])
         
-        # 064x064
-        dis_tar_output_064 = dis1([b_w_image, tar_image], training = True)
-        dis_gen_output_064 = dis1([b_w_image, gen_image], training = True)
-        
-        tar_image_064 = tar_image
-        gen_image_064 = gen_image
-        
-        tar_image = tf.image.resize(tar_image, [32,32])
-        b_w_image = tf.image.resize(b_w_image, [32,32])
-        gen_image = tf.image.resize(gen_image, [32,32])
-        
-        # 032x032
-        dis_tar_output_032 = dis2([b_w_image, tar_image], training = True)
-        dis_gen_output_032 = dis2([b_w_image, gen_image], training = True)
-        
-        tar_image_032 = tar_image
-        gen_image_032 = gen_image
-        
-     
-        # 128x128
         g_loss_128, _, _ = gen_loss(dis_gen_output_128, tar_image_128, gen_image_128)
         d_loss_128 = dis_loss(dis_gen_output_128, dis_tar_output_128)
         
-        # 064x064
-        g_loss_064, _, _ = gen_loss(dis_gen_output_064, tar_image_064, gen_image_064)
-        d_loss_064 = dis_loss(dis_gen_output_064, dis_tar_output_064)
-        
-        # 032x032
-        g_loss_032, _, _ = gen_loss(dis_gen_output_032, tar_image_032, gen_image_032)
-        d_loss_032 = dis_loss(dis_gen_output_032, dis_tar_output_032)
-        
-        
-        g_total_loss = g_loss_128 + g_loss_064 + g_loss_032
-        d_total_loss = d_loss_128 + d_loss_064 + d_loss_032
+
+        g_total_loss = g_loss_128 
+        d_total_loss = d_loss_128 
     
     # compute gradients
     g_gradients = g.gradient(g_total_loss, gen0.trainable_variables) # generatorLoss
-    
-    d0gradients = g.gradient(d_loss_128, dis0.trainable_variables)   # dis loss 128
-    d1gradients = g.gradient(d_loss_064, dis1.trainable_variables)   # dis loss 064
-    d2gradients = g.gradient(d_loss_032, dis2.trainable_variables)   # dis loss 032
-    
+    d0gradients = g.gradient(d_loss_128, dis0.trainable_variables)   # dis loss
+
     
     # apply gradient descent
     g_optimizer.apply_gradients(zip(g_gradients, gen0.trainable_variables))
-    
     d0optimizer.apply_gradients(zip(d0gradients, dis0.trainable_variables))
-    d1optimizer.apply_gradients(zip(d1gradients, dis1.trainable_variables))
-    d2optimizer.apply_gradients(zip(d2gradients, dis2.trainable_variables))
-    
-for global_b_w_image, global_tar_image in train_dataset.take(1) :
-    pass
-
+ 
+ 
 def fig (b_w_image, gen_image, tar_image) :
     
     plt.figure(figsize = (20, 20))
@@ -335,16 +273,35 @@ def fit (EPOCHS = 200) :
                 print('#',end='')
             train_on_batch(b_w_image, tar_image)
         
-        if epoch%100  == 0 :
-            global_gen_image = gen0(global_b_w_image,training = True)
-            fig(global_b_w_image, global_gen_image, global_tar_image)
+        if epoch%500  == 0 :
+            global_gen_image = gen0(b_w_image,training = True)
+            fig(b_w_image, global_gen_image, tar_image)
 
-fit(EPOCHS = 300)
+fit(EPOCHS = 2)
 
-for b_w_image,tar_image in valid_dataset.take(20) :
+# for b_w_image,tar_image in train_dataset.take(20) :
+#     gen_image = gen0(b_w_image , training = True)
+#     fig(b_w_image, gen_image, tar_image)
+
+def fig1 (b_w_image, gen_image) :
+    
+    plt.figure(figsize = (20, 20))
+    
+    plt.subplot(1,2,1)
+    plt.imshow((b_w_image[0] + 1.0) / 2.0)
+    plt.title('BandW Image',fontsize = 20)
+    plt.axis('off')
+    
+    plt.subplot(1,2,2)
+    plt.imshow((gen_image[0] + 1.0) / 2.0)
+    plt.title('GenerateImg',fontsize = 20)
+    plt.axis('off')
+    
+    plt.show()
+
+for b_w_image in test_dataset.take(5) :
     gen_image = gen0(b_w_image , training = True)
-    fig(b_w_image, gen_image, tar_image)
+    fig1(b_w_image, gen_image)
 
 
-# https://stackoverflow.com/questions/59858294/save-and-load-gan-model-for-continued-training-using-keras # 
-# save,load
+
