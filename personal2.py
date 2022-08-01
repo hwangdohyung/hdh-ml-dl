@@ -9,12 +9,12 @@ clr_path = "D:\study_data\_data\image\gan\color"
 gry_path = "D:\study_data\_data\image\gan\gray"
 last_path = "D:\study_data\_data\image\pix2pix"
 
-clr_img_path = [] # array 를 담겠다.
+clr_img_path = [] 
 gry_img_path = []
 last_img_path = []
 
-for img_path in os.listdir(clr_path) :  # listdir :경로의 파일들을 불러오겠다.
-    clr_img_path.append(os.path.join(clr_path, img_path))  #img_path 붙이는 이유
+for img_path in os.listdir(clr_path) :  
+    clr_img_path.append(os.path.join(clr_path, img_path))  
     
 for img_path in os.listdir(gry_path) :
     gry_img_path.append(os.path.join(gry_path, img_path))
@@ -35,22 +35,20 @@ z = []
 
 for i in range(5000) :
     
-    img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)    #matplotlib에서 bgr로 읽기때문 바꿔준다. 
+    img1 = cv2.cvtColor(cv2.imread(clr_img_path[i]), cv2.COLOR_BGR2RGB)    
     img2 = cv2.cvtColor(cv2.imread(gry_img_path[i]), cv2.COLOR_BGR2RGB)    
      
-    y.append(img_to_array(Image.fromarray(cv2.resize(img1,(128,128)))))    #formarray: 넘파이 배열을 pil 이미지로 변환 
-    X.append(img_to_array(Image.fromarray(cv2.resize(img2,(128,128)))))    #image_to_array: 이미지를 넘파이 배열로 변환
+    y.append(img_to_array(cv2.resize(img1,(128,128))))   
+    X.append(img_to_array(cv2.resize(img2,(128,128))))   
 
 X = np.array(X)
 y = np.array(y)
 
 for i in range(5) :
-
     img3 = cv2.cvtColor(cv2.imread(last_img_path[i]), cv2.COLOR_BGR2RGB)   
-    z.append(img_to_array(Image.fromarray(cv2.resize(img3,(128,128)))))  
+    z.append(img_to_array(cv2.resize(img3,(128,128))))  
      
 z = np.array(z)
-
 
 X = (X/127.5) - 1
 y = (y/127.5) - 1
@@ -59,7 +57,7 @@ z = (z/127.5) - 1
 LAMBDA = 100
 BATCH_SIZE = 64
 BUFFER_SIZE  = 5000
-TEST_BATCH = 1
+TEST_BATCH = 6
 
 train_dataset = tf.data.Dataset.from_tensor_slices((X, y)) # numpy array를 dataset으로 변환
 train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
@@ -225,12 +223,9 @@ def train_on_batch (b_w_image, tar_image) :
         g_loss_128, _, _ = gen_loss(dis_gen_output_128, tar_image_128, gen_image_128)
         d_loss_128 = dis_loss(dis_gen_output_128, dis_tar_output_128)
         
-
-        g_total_loss = g_loss_128 
-        d_total_loss = d_loss_128 
     
     # compute gradients
-    g_gradients = g.gradient(g_total_loss, gen0.trainable_variables) # generatorLoss
+    g_gradients = g.gradient(g_loss_128, gen0.trainable_variables) # generatorLoss
     d0gradients = g.gradient(d_loss_128, dis0.trainable_variables)   # dis loss
 
     
@@ -277,7 +272,7 @@ def fit (EPOCHS = 200) :
             global_gen_image = gen0(b_w_image,training = True)
             fig(b_w_image, global_gen_image, tar_image)
 
-fit(EPOCHS = 2)
+fit(EPOCHS = 1000)
 
 # for b_w_image,tar_image in train_dataset.take(20) :
 #     gen_image = gen0(b_w_image , training = True)
@@ -285,7 +280,7 @@ fit(EPOCHS = 2)
 
 def fig1 (b_w_image, gen_image) :
     
-    plt.figure(figsize = (20, 20))
+    plt.figure(figsize = (10, 10))
     
     plt.subplot(1,2,1)
     plt.imshow((b_w_image[0] + 1.0) / 2.0)
