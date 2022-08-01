@@ -22,10 +22,6 @@ for img_path in os.listdir(gry_path) :
 for img_path in os.listdir(last_path) :
     last_img_path.append(os.path.join(last_path, img_path))
 
-clr_img_path.sort()# 오름차순 정렬
-gry_img_path.sort()
-last_img_path.sort()
-
 from PIL import Image
 from keras.preprocessing.image import img_to_array
 
@@ -59,11 +55,10 @@ BATCH_SIZE = 64
 BUFFER_SIZE  = 5000
 TEST_BATCH = 6
 
-train_dataset = tf.data.Dataset.from_tensor_slices((X, y)) # numpy array를 dataset으로 변환
+train_dataset = tf.data.Dataset.from_tensor_slices((X, y)) 
 train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
 test_dataset = tf.data.Dataset.from_tensor_slices((z))
 test_dataset = test_dataset.batch(batch_size=TEST_BATCH)
-
 
 from tensorflow_addons.layers import SpectralNormalization
 from keras.layers import BatchNormalization
@@ -90,7 +85,6 @@ def d_block (x_input, filters, strides, padding, batch_norm, inst_norm) :
                use_bias= False,
                kernel_initializer = init)(x_input)
     
-
     if batch_norm == True :
         x = BatchNormalization   ()(x)
     if inst_norm  == True :
@@ -107,7 +101,6 @@ def u_block (x, skip, filters, strides, padding, batch_norm, inst_norm) :
                         use_bias= False,
                         kernel_initializer = init)(x)
     
-
     if batch_norm == True :
         x = BatchNormalization   ()(x)
     if inst_norm  == True :
@@ -198,48 +191,38 @@ def dis_loss (dis_gen_output, dis_tar_output) :
     total_dis_loss = gen_loss + tar_loss
     return total_dis_loss
 
-
 g_optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002)
-d0optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002)
+d_optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0002)
 
 
 @tf.function
-def train_on_batch (b_w_image, tar_image) :
+def train_on_batch (input_image, tar_image) :
     
     with tf.GradientTape(persistent = True) as  g :
         
-      
-        gen_image = gen0(b_w_image, training=True)
+        gen_image = gen0(input_image, training=True)
         
+        dis_tar_output = dis0([input_image, tar_image], training = True)
+        dis_gen_output = dis0([input_image, gen_image], training = True)
         
-        dis_tar_output_128 = dis0([b_w_image, tar_image], training = True)
-        dis_gen_output_128 = dis0([b_w_image, gen_image], training = True)
+        g_loss, _, _ = gen_loss(dis_gen_output, tar_image, gen_image)
+        d_loss = dis_loss(dis_gen_output, dis_tar_output)
         
-        
-        tar_image_128 = tar_image
-        gen_image_128 = gen_image
-        
-        
-        g_loss_128, _, _ = gen_loss(dis_gen_output_128, tar_image_128, gen_image_128)
-        d_loss_128 = dis_loss(dis_gen_output_128, dis_tar_output_128)
-        
-    
     # compute gradients
-    g_gradients = g.gradient(g_loss_128, gen0.trainable_variables) # generatorLoss
-    d0gradients = g.gradient(d_loss_128, dis0.trainable_variables)   # dis loss
+    g_gradients = g.gradient(g_loss, gen0.trainable_variables) # generatorLoss
+    d_gradients = g.gradient(d_loss, dis0.trainable_variables)   # dis loss
 
-    
     # apply gradient descent
     g_optimizer.apply_gradients(zip(g_gradients, gen0.trainable_variables))
-    d0optimizer.apply_gradients(zip(d0gradients, dis0.trainable_variables))
+    d_optimizer.apply_gradients(zip(d_gradients, dis0.trainable_variables))
  
  
-def fig (b_w_image, gen_image, tar_image) :
+def fig (input_image, gen_image, tar_image) :
     
     plt.figure(figsize = (20, 20))
     
     plt.subplot(1,3,1)
-    plt.imshow((b_w_image[0] + 1.0) / 2.0)
+    plt.imshow((input_image[0] + 1.0) / 2.0)
     plt.title('BandW Image',fontsize = 20)
     plt.axis('off')
     
@@ -261,16 +244,16 @@ def fit (EPOCHS = 200) :
         
         print(f'Epoch {epoch} out of {EPOCHS}')
         
-        for n, (b_w_image, tar_image) in train_dataset.enumerate() :
+        for n, (input_image, tar_image) in train_dataset.enumerate() :
             if n ==  265 :
                 print('#....End')
             if n%20 == 0 :
                 print('#',end='')
-            train_on_batch(b_w_image, tar_image)
+            train_on_batch(input_image, tar_image)
         
         if epoch%500  == 0 :
-            global_gen_image = gen0(b_w_image,training = True)
-            fig(b_w_image, global_gen_image, tar_image)
+            global_gen_image = gen0(input_image,training = True)
+            fig(input_image, global_gen_image, tar_image)
 
 fit(EPOCHS = 1000)
 
@@ -278,13 +261,13 @@ fit(EPOCHS = 1000)
 #     gen_image = gen0(b_w_image , training = True)
 #     fig(b_w_image, gen_image, tar_image)
 
-def fig1 (b_w_image, gen_image) :
+def fig1 (input_image, gen_image) :
     
     plt.figure(figsize = (10, 10))
     
     plt.subplot(1,2,1)
-    plt.imshow((b_w_image[0] + 1.0) / 2.0)
-    plt.title('BandW Image',fontsize = 20)
+    plt.imshow((input_image[0] + 1.0) / 2.0)
+    plt.title('Input Image',fontsize = 20)
     plt.axis('off')
     
     plt.subplot(1,2,2)
@@ -294,9 +277,9 @@ def fig1 (b_w_image, gen_image) :
     
     plt.show()
 
-for b_w_image in test_dataset.take(5) :
-    gen_image = gen0(b_w_image , training = True)
-    fig1(b_w_image, gen_image)
+for input_image in test_dataset.take(5) :
+    gen_image = gen0(input_image , training = True)
+    fig1(input_image, gen_image)
 
 
 
