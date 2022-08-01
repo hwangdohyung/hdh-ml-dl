@@ -75,8 +75,9 @@ from keras.layers import Conv2DTranspose
 from keras.initializers import RandomNormal
 from tensorflow_addons.layers import InstanceNormalization
 
-init = RandomNormal(mean = 0.0, stddev = 0.02)
+############################### 인코더 #################################
 
+init = RandomNormal(mean = 0.0, stddev = 0.02)
 def d_block (x_input, filters, strides, padding, batch_norm, inst_norm) :
     
     x = Conv2D(filters, (4, 4),
@@ -92,6 +93,7 @@ def d_block (x_input, filters, strides, padding, batch_norm, inst_norm) :
     x = LeakyReLU(0.2)(x)
     return x
 
+############################## 디코더 ##################################
 
 def u_block (x, skip, filters, strides, padding, batch_norm, inst_norm) :
     
@@ -113,8 +115,8 @@ def u_block (x, skip, filters, strides, padding, batch_norm, inst_norm) :
 def PatchGAN (image_shape) :
     
     genI = Input(shape =  image_shape)
-    tarI = Input(shape =  image_shape)
-    conc = Concatenate()([genI, tarI])
+    inpI = Input(shape =  image_shape)
+    conc = Concatenate()([genI, inpI])
     
     c064 = d_block(conc, 2**6, 2, 'same', False, False)
     c128 = d_block(c064, 2**7, 2, 'same', False, True )
@@ -128,10 +130,12 @@ def PatchGAN (image_shape) :
     
     c001 = Conv2D(2**0, (4,4), strides=1, padding = 'valid', activation = 'sigmoid', kernel_initializer=init)(temp)
     
-    model = Model(inputs = [genI, tarI], outputs = c001)
+    model = Model(inputs = [genI, inpI], outputs = c001)
     return model
 
-d_model = PatchGAN((128,128,3,))
+dis0 = PatchGAN((128,128,3,))
+
+
 
 def mod_Unet () :
     
@@ -168,7 +172,7 @@ def mod_Unet () :
 
 gen0 = mod_Unet()
 
-dis0 = PatchGAN((128,128,3,)) # (W//1) x (H//1)
+ # (W//1) x (H//1)
 
 
 bin_entropy = keras.losses.BinaryCrossentropy(from_logits = True)
@@ -205,7 +209,7 @@ def train_on_batch (input_image, tar_image) :
         dis_tar_output = dis0([input_image, tar_image], training = True)
         dis_gen_output = dis0([input_image, gen_image], training = True)
         
-        g_loss, _, _ = gen_loss(dis_gen_output, tar_image, gen_image)
+        g_loss = gen_loss(dis_gen_output, tar_image, gen_image)
         d_loss = dis_loss(dis_gen_output, dis_tar_output)
         
     # compute gradients
@@ -245,17 +249,14 @@ def fit (EPOCHS = 200) :
         print(f'Epoch {epoch} out of {EPOCHS}')
         
         for n, (input_image, tar_image) in train_dataset.enumerate() :
-            if n ==  265 :
-                print('#....End')
-            if n%20 == 0 :
-                print('#',end='')
+         
             train_on_batch(input_image, tar_image)
         
-        if epoch%500  == 0 :
+        if epoch  :
             global_gen_image = gen0(input_image,training = True)
             fig(input_image, global_gen_image, tar_image)
 
-fit(EPOCHS = 1000)
+fit(EPOCHS = 2)
 
 # for b_w_image,tar_image in train_dataset.take(20) :
 #     gen_image = gen0(b_w_image , training = True)
