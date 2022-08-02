@@ -136,7 +136,6 @@ def PatchGAN (image_shape) :
 dis0 = PatchGAN((128,128,3,))
 
 
-
 def mod_Unet () :
     
     srcI = Input(shape = (128,128,3,))
@@ -172,7 +171,7 @@ def mod_Unet () :
 
 gen0 = mod_Unet()
 
- # (W//1) x (H//1)
+ # (W//1) x (H//1)]
 
 
 bin_entropy = keras.losses.BinaryCrossentropy(from_logits = True)
@@ -182,7 +181,7 @@ def gen_loss (dis_gen_output, target_image, gen_output) :
     ad_loss = bin_entropy(tf.ones_like (dis_gen_output) ,  dis_gen_output)
     l1_loss = tf.reduce_mean(tf.abs(tf.subtract(target_image,gen_output)))
     
-
+    
     total_loss = ad_loss + (LAMBDA*l1_loss)
     
     return total_loss, ad_loss, l1_loss
@@ -281,6 +280,4 @@ def fig1 (input_image, gen_image) :
 for input_image in test_dataset.take(5) :
     gen_image = gen0(input_image , training = True)
     fig1(input_image, gen_image)
-
-
 
