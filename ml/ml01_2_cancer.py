@@ -15,19 +15,18 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                     shuffle=True,
                                                     random_state=66)
 
-
+#2.모델구성
 model = LinearSVR()
 
+#.컴파일,훈련
 model.fit(x_train,y_train)
 
 #4.평가,예측
-# loss = model.evaluate(x_test, y_test)
-# print('loss : ', loss)
-y_predict= model.predict(x_test)
-result = model.score(x_test,y_test) #훈련시키지 않은 부분을 평가 해야 되기 때문에 x_test.
+result = model.score(x_test,y_test) 
 print('결과 : ', result)
 
 
+y_predict= model.predict(x_test)
 #R2결정계수(성능평가지표)
 from sklearn.metrics import r2_score
 r2 = r2_score(y_test, y_predict) 
