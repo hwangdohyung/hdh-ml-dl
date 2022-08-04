@@ -28,3 +28,4 @@ print("metrics.score", results[1])
 
 # acc = accuracy_score(y_data,y_predict)
 # print('accuracy_score : ' ,acc)
+

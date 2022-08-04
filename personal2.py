@@ -4,6 +4,22 @@ import matplotlib.pyplot as plt
 from tensorflow import keras
 import tensorflow as tf
 import os
+from tensorflow_addons.layers import SpectralNormalization
+from keras.layers import BatchNormalization
+from keras.layers import ZeroPadding2D
+from keras.layers import Concatenate
+from keras.layers import Activation
+from keras.models import Model
+from keras.layers import Dense
+from keras.layers import ReLU
+from keras.layers import Input
+from keras.layers import Conv2D
+from keras.layers import LeakyReLU
+from keras.layers import Conv2DTranspose
+from keras.initializers import RandomNormal
+from tensorflow_addons.layers import InstanceNormalization
+
+#1.데이터
 
 clr_path = "D:\study_data\_data\image\gan\color"
 gry_path = "D:\study_data\_data\image\gan\gray"
@@ -60,20 +76,8 @@ train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=
 test_dataset = tf.data.Dataset.from_tensor_slices((z))
 test_dataset = test_dataset.batch(batch_size=TEST_BATCH)
 
-from tensorflow_addons.layers import SpectralNormalization
-from keras.layers import BatchNormalization
-from keras.layers import ZeroPadding2D
-from keras.layers import Concatenate
-from keras.layers import Activation
-from keras.models import Model
-from keras.layers import Dense
-from keras.layers import ReLU
-from keras.layers import Input
-from keras.layers import Conv2D
-from keras.layers import LeakyReLU
-from keras.layers import Conv2DTranspose
-from keras.initializers import RandomNormal
-from tensorflow_addons.layers import InstanceNormalization
+#2.모델구성
+
 
 ############################### 인코더 #################################
 
@@ -235,7 +239,7 @@ def fig (input_image, gen_image, tar_image) :
     plt.axis('off')
     
     plt.subplot(1,3,3)
-    plt.imshow((tar_image[0] + 1.0) / 2.0)
+    plt.imshow((tar_image[0] + 1.0) / 2.0)      
     plt.title('Colored Img',fontsize = 20)
     plt.axis('off')
     
