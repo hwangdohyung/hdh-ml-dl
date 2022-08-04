@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split,KFold,cross_val_score,cross_val_predict
 from sklearn.metrics import r2_score,mean_squared_error 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder,MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
@@ -69,54 +69,23 @@ x_test = scaler.transform(x_test)#test는 transfrom만 해야됨
 test_set = scaler.transform(test_set)# **최종테스트셋이 있는경우 여기도 스케일링을 적용해야함 **               
                                                     
 
+
+n_splits = 5
+kfold = KFold(n_splits=n_splits, shuffle= True, random_state=66)  # 5개 중에 1 개를 val 로 쓰겠다. 교차검증!
+
 #2.모델구성
-from sklearn.svm import LinearSVC,SVC
-from sklearn.linear_model import Perceptron 
-from sklearn.linear_model import LogisticRegression,LinearRegression #logisticregression : regression 이 들어가지만 분류다!
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor
+model = RandomForestRegressor()
 
-# model1 = LinearSVC()
-# model2 = Perceptron()
-model3 = LinearRegression()
-model4 = KNeighborsRegressor()
-model5 = DecisionTreeRegressor()
-model6 = RandomForestRegressor()
+#3.4.컴파일,훈련,평가,예측
 
-#3.컴파일,훈련
+scores = cross_val_score(model, x_train, y_train, cv= kfold)
+print('R2 : ', scores, '\n cross_val_score : ', round(np.mean(scores), 4))
 
-# model1.fit(x_train,y_train)
-# model2.fit(x_train,y_train)
-model3.fit(x_train,y_train)
-model4.fit(x_train,y_train)
-model5.fit(x_train,y_train)
-model6.fit(x_train,y_train)
+y_predict = cross_val_predict(model, x_test, y_test, cv=kfold)
+r2 = r2_score(y_test,y_predict)
+print('cross_val_predict r2 : ', r2)
 
-#4.평가,예측
-
-# result1 = model1.score(x_test, y_test)
-# print('SCV : ', result1)
-
-
-# result2 = model2.score(x_test, y_test)
-# print('Perceptron : ', result2)
-
-result3 = model3.score(x_test, y_test)
-print('LinearRegression : ', result3)
-
-
-result4 = model4.score(x_test, y_test)
-print('KNeighborsRegressor : ', result4)
-
-
-result5 = model5.score(x_test, y_test)
-print('DecisionTreeRegressor : ', result5)
-
-result6 = model6.score(x_test, y_test)
-print('RandomForestRegressor : ', result6)
-
-# LinearRegression :  0.567708352772792
-# KNeighborsRegressor :  0.7216798128205444
-# DecisionTreeRegressor :  0.6470944792106998
-# RandomForestRegressor :  0.7730306192648703
+# R2 :  [0.89133657 0.82620744 0.84889449 0.84602873 0.86088889] 
+#  cross_val_score :  0.8547
+# cross_val_predict r2 :  0.7886763613492704

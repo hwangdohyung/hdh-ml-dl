@@ -69,54 +69,66 @@ x_test = scaler.transform(x_test)#test는 transfrom만 해야됨
 test_set = scaler.transform(test_set)# **최종테스트셋이 있는경우 여기도 스케일링을 적용해야함 **               
                                                     
 
+from sklearn.utils import all_estimators
 #2.모델구성
-from sklearn.svm import LinearSVC,SVC
-from sklearn.linear_model import Perceptron 
-from sklearn.linear_model import LogisticRegression,LinearRegression #logisticregression : regression 이 들어가지만 분류다!
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+# allAlgorithms = all_estimators(type_filter='classifier')  # 분류모델 전부를 보여준다 
+allAlgorithms = all_estimators(type_filter='regressor')
+print('allAlgorithms : ', allAlgorithms)
+print('모델의 갯수 : ', len(allAlgorithms))
+import warnings
+warnings.filterwarnings('ignore') # 출력만 안해준다
 
-# model1 = LinearSVC()
-# model2 = Perceptron()
-model3 = LinearRegression()
-model4 = KNeighborsRegressor()
-model5 = DecisionTreeRegressor()
-model6 = RandomForestRegressor()
-
-#3.컴파일,훈련
-
-# model1.fit(x_train,y_train)
-# model2.fit(x_train,y_train)
-model3.fit(x_train,y_train)
-model4.fit(x_train,y_train)
-model5.fit(x_train,y_train)
-model6.fit(x_train,y_train)
-
-#4.평가,예측
-
-# result1 = model1.score(x_test, y_test)
-# print('SCV : ', result1)
-
-
-# result2 = model2.score(x_test, y_test)
-# print('Perceptron : ', result2)
-
-result3 = model3.score(x_test, y_test)
-print('LinearRegression : ', result3)
-
-
-result4 = model4.score(x_test, y_test)
-print('KNeighborsRegressor : ', result4)
-
-
-result5 = model5.score(x_test, y_test)
-print('DecisionTreeRegressor : ', result5)
-
-result6 = model6.score(x_test, y_test)
-print('RandomForestRegressor : ', result6)
-
-# LinearRegression :  0.567708352772792
-# KNeighborsRegressor :  0.7216798128205444
-# DecisionTreeRegressor :  0.6470944792106998
-# RandomForestRegressor :  0.7730306192648703
+for (name, algorithm) in allAlgorithms:       # 리스트 안에 키밸류(알고리즘 이름과,위치)를 받아서 반복한다.
+    try:                                      # 이것을 진행해 
+        model = algorithm()
+        model.fit(x_train,y_train)
+    
+        y_predict = model.predict(x_test)
+        r2 = r2_score(y_test,y_predict)
+        print(name, '의 r2 : ', r2)              
+    except:                                   # 에러가 뜨면 계속 진행해
+        continue
+        # print(name, '안나온놈')
+        
+        
+# ARDRegression 의 r2 :  0.8210477064668218
+# AdaBoostRegressor 의 r2 :  0.806216077845067
+# BaggingRegressor 의 r2 :  0.8177297753412818
+# BayesianRidge 의 r2 :  -0.0034535069645778016
+# CCA 의 r2 :  -0.3656169274214629
+# DecisionTreeRegressor 의 r2 :  0.8100323501062745
+# DummyRegressor 의 r2 :  -0.003455010869476638
+# ElasticNet 의 r2 :  0.7961725520649962
+# ElasticNetCV 의 r2 :  0.06526063198418841
+# ExtraTreeRegressor 의 r2 :  0.7052021072514396
+# ExtraTreesRegressor 의 r2 :  0.8817550033444084
+# GammaRegressor 의 r2 :  -0.00345501086947686
+# GaussianProcessRegressor 의 r2 :  -4.392249084892602
+# GradientBoostingRegressor 의 r2 :  0.8932151404702329
+# HistGradientBoostingRegressor 의 r2 :  0.8692525441315931
+# HuberRegressor 의 r2 :  0.2656569093022262
+# KNeighborsRegressor 의 r2 :  0.4863318099651168
+# KernelRidge 의 r2 :  0.8169001171226397
+# LarsCV 의 r2 :  0.8023207211280257
+# Lasso 의 r2 :  0.8193201517611958
+# LassoCV 의 r2 :  0.8201866257473551
+# LassoLars 의 r2 :  0.819900963477243
+# LassoLarsCV 의 r2 :  0.825865657446534
+# LassoLarsIC 의 r2 :  0.8252721451158544
+# LinearRegression 의 r2 :  0.8193063662931154
+# LinearSVR 의 r2 :  -3.1908534141810527
+# MLPRegressor 의 r2 :  -3.606401376901788
+# NuSVR 의 r2 :  -0.002802369152764106
+# OrthogonalMatchingPursuit 의 r2 :  0.8321531170427163
+# OrthogonalMatchingPursuitCV 의 r2 :  0.8321531170427163
+# PLSCanonical 의 r2 :  -4.0602758000712305
+# PLSRegression 의 r2 :  0.8345101248461182
+# PassiveAggressiveRegressor 의 r2 :  0.15927040146012728
+# PoissonRegressor 의 r2 :  -0.00345501086947686
+# RANSACRegressor 의 r2 :  0.8060391881619706
+# RadiusNeighborsRegressor 의 r2 :  -1.2538463919904247e+28
+# RandomForestRegressor 의 r2 :  0.8841664908635444
+# Ridge 의 r2 :  0.819275274838131
+# RidgeCV 의 r2 :  0.8185663900013733
+# SGDRegressor 의 r2 :  -1.3500152915289162e+21
+# SVR 의 r2 :  -0.029139138199599346

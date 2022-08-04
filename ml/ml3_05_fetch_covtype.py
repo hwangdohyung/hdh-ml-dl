@@ -40,12 +40,12 @@ model6 = RandomForestClassifier()
 
 #3.컴파일,훈련
 
-model1.fit(x_train,y_train)#callback 리스트형태 더 호출할수있다.
-model2.fit(x_train,y_train)#callback 리스트형태 더 호출할수있다.
-model3.fit(x_train,y_train)#callback 리스트형태 더 호출할수있다.
-model4.fit(x_train,y_train)#callback 리스트형태 더 호출할수있다.
-model5.fit(x_train,y_train)#callback 리스트형태 더 호출할수있다.
-model6.fit(x_train,y_train)#callback 리스트형태 더 호출할수있다.
+model1.fit(x_train,y_train)
+model2.fit(x_train,y_train)
+model3.fit(x_train,y_train)
+model4.fit(x_train,y_train)
+model5.fit(x_train,y_train)
+model6.fit(x_train,y_train)
 
 #4.평가,예측
 
