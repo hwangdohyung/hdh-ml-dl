@@ -29,7 +29,7 @@ x = train_set.drop(['count'], axis=1,)
 
 y = train_set['count']
 
-x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.7,random_state=31)
+x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.9,random_state=31)
 
 n_splits = 5
 kfold = KFold(n_splits=n_splits, shuffle= True, random_state=66)

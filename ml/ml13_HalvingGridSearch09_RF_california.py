@@ -16,7 +16,7 @@ datasets = fetch_california_housing()
 x = datasets['data']
 y = datasets['target']
 
-x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.7,random_state=31)
+x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.9,random_state=31)
 
 n_splits = 5
 kfold = KFold(n_splits=n_splits, shuffle= True, random_state=66)  # 5개 중에 1 개를 val 로 쓰겠다. 교차검증!
