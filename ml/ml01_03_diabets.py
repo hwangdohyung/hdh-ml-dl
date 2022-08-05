@@ -31,4 +31,5 @@ model.fit(x_train,y_train)
 result = model.score(x_test, y_test)
 
 print('결과 r2 : ', result)
+y_predict = model.predict(x_test) 
 
