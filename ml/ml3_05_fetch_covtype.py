@@ -69,3 +69,4 @@ print('DecisionTreeClassifier : ', result5)
 
 result6 = model6.score(x_test, y_test)
 print('RandomForestClassifier : ', result6)
+

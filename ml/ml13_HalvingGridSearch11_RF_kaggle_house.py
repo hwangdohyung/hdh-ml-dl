@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
-from sklearn.model_selection import train_test_split,KFold,GridSearchCV
+from sklearn.experimental import enable_halving_search_cv # 실험적 버전 정식버전이 아니다 *
+from sklearn.model_selection import train_test_split,KFold,GridSearchCV,RandomizedSearchCV,HalvingGridSearchCV
 from sklearn.metrics import r2_score,mean_squared_error 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder,MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
@@ -74,7 +75,7 @@ parameters = [
 
 #2.모델구성
 from sklearn.ensemble import RandomForestRegressor
-model = GridSearchCV(RandomForestRegressor(),parameters, cv =kfold, verbose=1 ,
+model = RandomizedSearchCV(RandomForestRegressor(),parameters, cv =kfold, verbose=1 ,
                     refit=True, n_jobs= -1)
 
 #3.컴파일,훈련
@@ -99,10 +100,11 @@ print('최적 튠 R2 : ', r2_score(y_test, y_pred_best))
 
 print('걸린시간 : ', round(end - start, 2))
 
-# 최적의 매개변수 :  RandomForestRegressor(max_depth=12, n_jobs=4)
-# 최적의 파라미터 :  {'max_depth': 12, 'n_estimators': 100, 'n_jobs': 4}
-# best_R2_ :  0.8562158043268442
-# model.score :  0.8765700080473487
-# R2 :  0.8765700080473487
-# 최적 튠 R2 :  0.8765700080473487
-# 걸린시간 :  74.63
+
+# 최적의 매개변수 :  RandomForestRegressor(max_depth=10, n_jobs=4)
+# 최적의 파라미터 :  {'n_jobs': 4, 'n_estimators': 100, 'max_depth': 10}
+# best_R2_ :  0.8550661249753437
+# model.score :  0.876047211582806
+# R2 :  0.876047211582806
+# 최적 튠 R2 :  0.876047211582806
+# 걸린시간 :  9.1

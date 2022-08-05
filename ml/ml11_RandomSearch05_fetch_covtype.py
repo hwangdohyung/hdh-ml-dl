@@ -3,7 +3,7 @@
 from matplotlib.pyplot import hist
 import numpy as np 
 from sklearn.datasets import load_wine,fetch_covtype
-from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.model_selection import GridSearchCV, train_test_split,RandomizedSearchCV
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.metrics import r2_score, accuracy_score
@@ -30,7 +30,7 @@ parameters = [
 
 #2.모델구성
 from sklearn.ensemble import RandomForestClassifier
-model = GridSearchCV(RandomForestClassifier(),parameters, cv =kfold, verbose=1 ,
+model = RandomizedSearchCV(RandomForestClassifier(),parameters, cv =kfold, verbose=1 ,
                     refit=True, n_jobs= -1)
 
 #3.컴파일,훈련
@@ -54,3 +54,4 @@ y_pred_best = model.best_estimator_.predict(x_test)
 print('최적 튠 ACC : ', accuracy_score(y_test, y_pred_best))
 
 print('걸린시간 : ', round(end - start, 2))
+

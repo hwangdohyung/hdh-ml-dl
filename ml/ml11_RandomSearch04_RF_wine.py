@@ -2,8 +2,8 @@
 
 from matplotlib.pyplot import hist
 import numpy as np 
-from sklearn.datasets import load_wine,fetch_covtype
-from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.datasets import load_wine
+from sklearn.model_selection import GridSearchCV, train_test_split,RandomizedSearchCV
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.metrics import r2_score, accuracy_score
@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,Robus
 from sklearn.model_selection import train_test_split,KFold,cross_val_score
 
 #1.데이터
-datasets = fetch_covtype()
+datasets = load_wine()
 x = datasets['data']
 y = datasets['target']
 
@@ -30,7 +30,7 @@ parameters = [
 
 #2.모델구성
 from sklearn.ensemble import RandomForestClassifier
-model = GridSearchCV(RandomForestClassifier(),parameters, cv =kfold, verbose=1 ,
+model = RandomizedSearchCV(RandomForestClassifier(),parameters, cv =kfold, verbose=1 ,
                     refit=True, n_jobs= -1)
 
 #3.컴파일,훈련
@@ -54,3 +54,21 @@ y_pred_best = model.best_estimator_.predict(x_test)
 print('최적 튠 ACC : ', accuracy_score(y_test, y_pred_best))
 
 print('걸린시간 : ', round(end - start, 2))
+
+## grid ##
+# 최적의 매개변수 :  RandomForestClassifier(max_depth=10)
+# 최적의 파라미터 :  {'max_depth': 10, 'min_samples_split': 2, 'n_estimators': 100}
+# best_score_ :  0.984
+# model.score :  1.0
+# accuracy_score :  1.0
+# 최적 튠 ACC :  1.0
+# 걸린시간 :  13.05
+
+## random ##
+# 최적의 매개변수 :  RandomForestClassifier(max_depth=10, min_samples_leaf=10, n_estimators=200)
+# 최적의 파라미터 :  {'n_estimators': 200, 'min_samples_leaf': 10, 'max_depth': 10}
+# best_score_ :  0.976
+# model.score :  1.0
+# accuracy_score :  1.0
+# 최적 튠 ACC :  1.0
+# 걸린시간 :  2.55
