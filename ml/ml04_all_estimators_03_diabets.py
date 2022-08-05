@@ -88,3 +88,4 @@ for (name, algorithm) in allAlgorithms:       # 리스트 안에 키밸류(알�
 # TheilSenRegressor 의 r2 :  0.5607794386775835
 # TransformedTargetRegressor 의 r2 :  0.5648381389215897
 # TweedieRegressor 의 r2 :  0.42071255109755834
+
