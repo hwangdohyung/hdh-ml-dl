@@ -37,7 +37,7 @@ from sklearn.svm import LinearSVC,SVC
 model = HalvingGridSearchCV(SVC(), parameters, cv=kfold, verbose=1,
                      refit=True, n_jobs= -1)                   #n_jobs : cpu 갯수 n 쓰겟다 (-1 전체 다 쓰겟다.)        # 42 * 5 = 210번(kofld포함)
 
-    
+
 #3.컴파일,훈련
 import time 
 start = time.time()
