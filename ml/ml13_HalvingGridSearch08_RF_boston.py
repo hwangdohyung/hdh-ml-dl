@@ -8,7 +8,6 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.metrics import r2_score, accuracy_score
 from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
-
 from sklearn.model_selection import train_test_split,KFold,cross_val_score
 
 #1.데이터
