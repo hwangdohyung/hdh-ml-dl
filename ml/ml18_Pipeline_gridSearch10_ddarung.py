@@ -61,5 +61,5 @@ result = model.score(x_test, y_test)
 
 print('model.score : ', round(result,2))
 
-
+# model.score :  0.81
 
