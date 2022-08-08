@@ -77,3 +77,5 @@ model.fit(x_train, y_train) # 파이프라인에서 fit 할땐 스케일링의 t
 result = model.score(x_test, y_test)
 
 print('model.r2 : ', round(result,2))
+
+# model.r2 :  0.87
