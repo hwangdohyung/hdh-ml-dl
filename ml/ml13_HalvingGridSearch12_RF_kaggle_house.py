@@ -4,7 +4,7 @@ import pandas as pd
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
 from sklearn.experimental import enable_halving_search_cv # 실험적 버전 정식버전이 아니다 *
-from sklearn.model_selection import train_test_split,KFold,GridSearchCV,RandomizedSearchCV,HalvingGridSearchCV
+from sklearn.model_selection import train_test_split,KFold,GridSearchCV,RandomizedSearchCV,HalvingGridSearchCV,HalvingRandomSearchCV
 from sklearn.metrics import r2_score,mean_squared_error 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder,MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler

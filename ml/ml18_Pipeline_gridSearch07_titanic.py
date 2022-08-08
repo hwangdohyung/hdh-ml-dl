@@ -6,13 +6,13 @@ from sklearn import metrics
 from tensorflow.python.keras.models import Sequential,Model
 from tensorflow.python.keras.layers import Dense,Dropout,Input,Flatten,Conv2D
 from sklearn.experimental import enable_halving_search_cv # 실험적 버전 정식버전이 아니다 *
-from sklearn.model_selection import KFold, cross_val_predict, cross_val_score, train_test_split,GridSearchCV,RandomizedSearchCV,HalvingGridSearchCV,HalvingRandomSearchCV
+from sklearn.model_selection import KFold, cross_val_predict, cross_val_score, train_test_split,GridSearchCV,RandomizedSearchCV,HalvingGridSearchCV
 from sklearn.metrics import r2_score,accuracy_score
 from tensorflow.python.keras.callbacks import EarlyStopping,ModelCheckpoint
 from sklearn.preprocessing import LabelEncoder,MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import tensorflow as tf
 import datetime
-from sklearn.model_selection import cross_val_score,cross_val_predict,KFold
+from sklearn.model_selection import cross_val_score,cross_val_predict,KFold,StratifiedKFold
 
 #1.데이터
 path = './_data/kaggle_titanic/'
@@ -66,81 +66,31 @@ x = train_set.drop(['Survived'], axis=1,)
 y = train_set['Survived']
 x_train,x_test,y_train,y_test=train_test_split(x,y,test_size= 0.3,random_state=61)
 
-print(x_train.shape,x_test.shape)
-
-# minmax , standard
-scaler = MinMaxScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
-test_set = scaler.transform(test_set)        
-
 n_splits = 5
-kfold = KFold(n_splits=n_splits, shuffle= True, random_state=66)                                          
+kfold = StratifiedKFold(n_splits=n_splits, shuffle= True, random_state=66)
 
 parameters = [
-        {'n_estimators' : [100,200,300],'max_depth': [6, 8, 10, 12],'min_samples_leaf' : [3, 5, 7,10]}, # 48
-        {'n_estimators' : [100,200],'max_depth': [6, 8, 10],'min_samples_split' : [2, 3, 5, 10, 12]},   # 30
-        {'n_estimators' : [100,200],'max_depth': [6, 8, 10, 12],'n_jobs' : [-1, 2, 4]},                 # 32
-    ]                                                                                                   # 총 합 110        
+        {'RF__n_estimators' : [100,200,300],'RF__max_depth': [6, 8, 10],'RF__min_samples_leaf' : [3, 5, 7]}, # 48
+        {'RF__n_estimators' : [100,200],'RF__max_depth': [6, 8, 10],'RF__min_samples_split' : [2, 3, 5, 10]},   # 30
+        {'RF__n_estimators' : [100,200],'RF__max_depth': [6, 8, 10],'RF__n_jobs' : [-1, 2, 4]},                 # 32
+    ]                                                                                                   # 총 합 110    
+
+ 
 
 #2.모델구성
 from sklearn.ensemble import RandomForestClassifier
-model =HalvingRandomSearchCV(RandomForestClassifier(),parameters, cv =kfold, verbose=1 ,
-                    refit=True, n_jobs= -1)
+from sklearn.pipeline import make_pipeline,Pipeline
 
-#3.컴파일,훈련
-import time 
-start = time.time()
+# model = make_pipeline(MinMaxScaler(),RandomForestClassifier()) 
+pipe = Pipeline([('minmax', MinMaxScaler()),('RF', RandomForestClassifier())],verbose=1)
+
+#3.훈련     
+model = GridSearchCV(pipe,parameters,cv=5,verbose=1)
 model.fit(x_train,y_train)
-end = time.time()
 
-print("최적의 매개변수 : ", model.best_estimator_)
+#4.평가,예측
+result = model.score(x_test, y_test)
 
-print("최적의 파라미터 : ", model.best_params_)
+print('model.score : ', round(result, 2))
 
-print("best_score_ : ", model.best_score_)
-
-print('model.score : ', model.score(x_test, y_test))
-
-y_predict = model.predict(x_test)
-print('accuracy_score : ', accuracy_score(y_test, y_predict))
-
-y_pred_best = model.best_estimator_.predict(x_test)
-print('최적 튠 ACC : ', accuracy_score(y_test, y_pred_best))
-
-print('걸린시간 : ', round(end - start, 2))
-
-# n_iterations: 4
-# n_required_iterations: 5
-# n_possible_iterations: 4
-# min_resources_: 20
-# max_resources_: 623
-# aggressive_elimination: False
-# factor: 3
-# ----------
-# iter: 0
-# n_candidates: 102
-# n_resources: 20
-# Fitting 5 folds for each of 102 candidates, totalling 510 fits
-# ----------
-# iter: 1
-# n_candidates: 34
-# n_resources: 60
-# Fitting 5 folds for each of 34 candidates, totalling 170 fits
-# ----------
-# iter: 2
-# n_candidates: 12
-# n_resources: 180
-# Fitting 5 folds for each of 12 candidates, totalling 60 fits
-# ----------
-# iter: 3
-# n_candidates: 4
-# n_resources: 540
-# Fitting 5 folds for each of 4 candidates, totalling 20 fits
-# 최적의 매개변수 :  RandomForestClassifier(max_depth=6, min_samples_split=5)
-# 최적의 파라미터 :  {'max_depth': 6, 'min_samples_split': 5, 'n_estimators': 100}
-# best_score_ :  0.8289892696434752
-# model.score :  0.8171641791044776
-# accuracy_score :  0.8171641791044776
-# 최적 튠 ACC :  0.8171641791044776
-# 걸린시간 :  19.48
+# model.score :  0.81
