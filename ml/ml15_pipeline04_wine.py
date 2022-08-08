@@ -1,10 +1,9 @@
-from random import random
 import numpy as np 
-from sklearn.datasets import load_iris 
+from sklearn.datasets import load_wine
 from sklearn.preprocessing import MinMaxScaler,StandardScaler
 
 #1.데이터 
-datasets = load_iris() 
+datasets = load_wine() 
 x = datasets.data 
 y = datasets.target
 
@@ -22,18 +21,18 @@ from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.pipeline import make_pipeline
 
-model = SVC()
-model = make_pipeline(MinMaxScaler(), SVC())
+# model = SVC()
+model = make_pipeline(MinMaxScaler(), RandomForestClassifier())
 
 #3.훈련 
-model.fit(x_train, y_train)
+model.fit(x_train, y_train) # 파이프라인에서 fit 할땐 스케일링의 transform 과 fit이 돌아간다. 
 
 #4.평가, 예측 
 result = model.score(x_test, y_test)
 
 print('model.score : ', result)
 
-
+# model.score :  0.94
 
 
 
