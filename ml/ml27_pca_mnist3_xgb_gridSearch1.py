@@ -38,6 +38,10 @@ x = x.reshape(70000, 28*28)
 pca = PCA(n_components=154)  # 칼럼이 28*28개의 벡터로 압축이됨
 x = pca.fit_transform(x)
 
+x_train = x[:60000]
+x_test = x[60000:]
+
+
 # parameter
 parameter = [
     {'xg__n_estimator':[100, 200, 300], 'xg__learning_rate':[0.1, 0.3, 0.001, 0.01],
@@ -51,7 +55,7 @@ parameter = [
 
 #2. 모델 구성
 from sklearn.pipeline import Pipeline
-pipe = Pipeline([('mm', MinMaxScaler()), ('xg', XGBClassifier())])
+pipe = Pipeline([('mm', MinMaxScaler()), ('xg', XGBClassifier())],verbose=1)
 model = GridSearchCV(pipe, parameter, cv=5, verbose=1, n_jobs=1)
 
 #3. 훈련
