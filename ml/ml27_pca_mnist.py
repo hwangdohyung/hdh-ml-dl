@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from keras.datasets import mnist
 
-(x_train, y_train),(x_test, y_test) = mnist.load_data()
+(x_train, _),(x_test, _) = mnist.load_data()
 
 print(x_train.shape, x_test.shape)
 #(60000, 28, 28) (10000, 28, 28)
@@ -39,22 +39,12 @@ import matplotlib.pyplot as plt
 plt.plot(cumsum)
 plt.grid()
 plt.show()
+print('=========================')
 
-x_train = x_train.reshape(60000,784)
-
-#2.모델
-from sklearn.ensemble import RandomForestRegressor,RandomForestClassifier
-from xgboost import XGBRegressor
-
-model = RandomForestClassifier()
-
-#3.훈련 
-model.fit(x_train,y_train) #, eval_metric= 'error')
-
-#4.평가, 예측 
-results = model.score(x_test, y_test)
-print('결과 : ', results)
-
+print(np.argmax(cumsum >= 0.95)+1)  # 154, 0.95가 되는 시작부분 
+print(np.argmax(cumsum >= 0.99)+1)  # 331, 0.99가 되는 시작부분
+print(np.argmax(cumsum >= 0.999)+1)  # 486, 0.999가 되는 시작부분
+print(np.argmax(cumsum+1)+1)          # 713 , 1.0 가 되는 시작부분
 
 
 
