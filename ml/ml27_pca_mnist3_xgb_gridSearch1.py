@@ -1,11 +1,33 @@
+#n_component> 0.95 이상
+# xgboost, gridSearch 또는 RandomSearch를 쓸 것!
+
+#m27_2 결과를 뛰어넘어라!!!
+
+# parameters = [
+#     {"n_estimators":[100, 200, 300], "learning_rate":[0.1, 0.3, 0.001, 0.01],
+#      "max_depth":[4,5,6]},
+#     {"n_estimators":[90, 100, 110], "learning_rate":[0.1, 0.001, 0.01],
+#      "max_depth":[4,5,6], "colsample_bytree":[0.6, 0.9, 1]},
+#     {"n_estimators":[90, 110], "learning_rate":[0.1, 0.001, 0.5],
+#      "max_depth":[4, 5, 6], "colsample_bytree":[0.6, 0.9, 1],
+#      "colsample_bylevel":[0.6, 0.7, 0.9]}
+# ]
+# n_jobs = -1 
+#     tree_method = 'gpu_hist',
+#     predictor = 'gpu_predictor',
+#     gpu_id = 0,
+
+# 실습 시작!
+
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import MinMaxScaler
-
-
+import warnings 
+warnings.filterwarnings(action='ignore')
 import numpy as np
 from sklearn.decomposition import PCA
 from keras.datasets import mnist
+
 
 #1. 데이터 전처리
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -41,3 +63,4 @@ print('걸린 시간 : ', round(end, 2))
 
 #4. 평가, 예측
 print("score : ", model.score(x_test, y_test))
+
