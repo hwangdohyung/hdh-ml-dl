@@ -22,7 +22,6 @@ print(x.shape) # (70000, 28, 28)
 x = x.reshape(70000,784)
 print(x.shape) #(70000, 784)
 
-
 pca = PCA(n_components=784)   
 x= pca.fit_transform(x) 
 print(x.shape)            

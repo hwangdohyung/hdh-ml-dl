@@ -24,50 +24,71 @@ from sklearn.decomposition import PCA
 from keras.datasets import mnist
 from sklearn.metrics import accuracy_score
 import time
+from sklearn.model_selection import train_test_split
+from tensorflow.python.keras.layers import Dropout
+from tensorflow.python.keras.callbacks import EarlyStopping
 
 #1.데이터
 (x_train, y_train),(x_test, y_test) = mnist.load_data()
 
 print(x_train.shape, x_test.shape,y_train.shape,y_test.shape)
+
+x = np.append(x_train, x_test, axis=0)
+y = np.append(y_train, y_test, axis=0)
+
+x = x.reshape(70000,784)
+
+pca = PCA(n_components=713)   
+x= pca.fit_transform(x) 
+
+pca_EVR = pca.explained_variance_ratio_ 
+
+cumsum = np.cumsum(pca_EVR)
+
+x_train_cnn,x_test_cnn,y_train_cnn,y_test_cnn = train_test_split(x,y , train_size=0.8, random_state=123, shuffle=True)
+
+
 #(60000, 28, 28) (10000, 28, 28) (60000,) (10000,)
 
-################## CNN ####################
-x_train_cnn = x_train.reshape(60000,28,28,1)
-x_test_cnn = x_test.reshape(10000,28,28,1)
+# ################## CNN ####################
+# x_train_cnn = x_train_cnn.reshape(60000,28,28,1)
+# x_test_cnn = x_test_cnn.reshape(10000,28,28,1)
 
-from tensorflow.keras.utils import to_categorical
-y_train_cnn = to_categorical(y_train)
-y_test_cnn = to_categorical(y_test)
+# from tensorflow.keras.utils import to_categorical
+# y_train_cnn = to_categorical(y_train_cnn)
+# y_test_cnn = to_categorical(y_test_cnn)
 
-#2.모델구성
-model_cnn = Sequential()
-model_cnn.add(Conv2D(filters=64, kernel_size=(3,3), padding='valid', input_shape=(28,28,1))) 
-model_cnn.add(MaxPooling2D())
-model_cnn.add(Conv2D(7, (2,2), padding='valid', activation='relu'))
-model_cnn.add(Conv2D(7, (2,2), padding='valid', activation='relu'))
-model_cnn.add(Conv2D(7, (2,2), padding='valid', activation='relu'))
-model_cnn.add(Flatten())
-model_cnn.add(Dense(32, activation='relu'))
-model_cnn.add(Dense(32, activation='relu'))
-model_cnn.add(Dense(10, activation='softmax')) 
-model_cnn.summary()
+# #2.모델구성
+# model_cnn = Sequential()
+# model_cnn.add(Conv2D(filters=64, kernel_size=(3,3), padding='valid', input_shape=(28,28,1))) 
+# model_cnn.add(MaxPooling2D())
+# model_cnn.add(Conv2D(7, (2,2), padding='valid', activation='relu'))
+# model_cnn.add(Conv2D(7, (2,2), padding='valid', activation='relu'))
+# model_cnn.add(Conv2D(7, (2,2), padding='valid', activation='relu'))
+# model_cnn.add(Flatten())
+# model_cnn.add(Dense(32, activation='relu'))
+# model_cnn.add(Dense(32, activation='relu'))
+# model_cnn.add(Dense(10, activation='softmax')) 
+# model_cnn.summary()
 
-start_cnn = time.time()
-#3.컴파일 훈련
-model_cnn.compile(loss='categorical_crossentropy', optimizer='adam')
-model_cnn.fit(x_train_cnn, y_train_cnn, epochs=50, batch_size=20)
-end_cnn = time.time()
+# start_cnn = time.time()
+# #3.컴파일 훈련
+# model_cnn.compile(loss='categorical_crossentropy', optimizer='adam')
+# model_cnn.fit(x_train_cnn, y_train_cnn, epochs=50, batch_size=20)
+# end_cnn = time.time()
 
-############### DNN ###############
-from tensorflow.python.keras.layers import Dropout
-from tensorflow.python.keras.callbacks import EarlyStopping
-x_train_dnn = x_train.reshape(60000,784)
-x_test_dnn = x_test.reshape(10000,784)
+# ############### DNN ###############
+
+
+x_train_dnn,x_test_dnn,y_train_dnn,y_test_cnn = train_test_split(x,y , train_size=0.8, random_state=123, shuffle=True)
+print(x_train_dnn.shape,y_train_dnn.shape)
+
+
+
 
 #2. 모델구성
 model_dnn =Sequential()
-# model.add(Dense(64, input_shape = (28*28,)))
-model_dnn.add(Dense(64,activation='relu', input_shape = (784,)))   #위와 동일
+model_dnn.add(Dense(64,activation='relu', input_shape = (713,)))   #위와 동일
 model_dnn.add(Dropout(0.2))
 model_dnn.add(Dense(32,activation = 'relu'))
 model_dnn.add(Dense(32, activation='relu'))
@@ -86,40 +107,38 @@ end_dnn = time.time()
 
 
 ################## PCA ###################
-from sklearn.model_selection import train_test_split
-x = np.append(x_train, x_test, axis=0)
-y = np.append(y_train, y_test, axis=0)
+# x = np.append(x_train, x_test, axis=0)
+# y = np.append(y_train, y_test, axis=0)
 
-x = x.reshape(70000,784)
+# x = x.reshape(70000,784)
 
-pca = PCA(n_components=154)   
-x= pca.fit_transform(x) 
+# pca = PCA(n_components=713)   
+# x= pca.fit_transform(x) 
 
-pca_EVR = pca.explained_variance_ratio_ 
+# pca_EVR = pca.explained_variance_ratio_ 
 
-cumsum = np.cumsum(pca_EVR)
+# cumsum = np.cumsum(pca_EVR)
 
-x_train,x_test,y_train,y_test = train_test_split(x,y , train_size=0.8, random_state=123, shuffle=True)
+# x_train,x_test,y_train,y_test = train_test_split(x,y , train_size=0.8, random_state=123, shuffle=True)
 
-#2.모델
-from sklearn.ensemble import RandomForestRegressor 
-from xgboost import XGBRegressor
+# #2.모델
+# from sklearn.ensemble import RandomForestClassifier
 
-model = RandomForestRegressor()
+# model = RandomForestClassifier()
 
-#3.훈련 
-start_pca = time.time()
-model.fit(x_train, y_train) #, eval_metric= 'error')
-end_pca = time.time()
+# #3.훈련 
+# start_pca = time.time()
+# model.fit(x_train, y_train) #, eval_metric= 'error')
+# end_pca = time.time()
 
-###############################################################
-## pca 결과 ## 
-results = model.score(x_test, y_test)
-print('=================== pca ====================')
-print('결과 : ', results)
-print('걸린시간cnn : ', round(end_pca - start_pca, 2))
+# ###############################################################
+# ## pca 예측 ## 
+# results = model.score(x_test, y_test)
+# print('=================== pca ====================')
+# print('결과 : ', results)
+# print('걸린시간cnn : ', round(end_pca - start_pca, 2))
 
-## dnn 결과 ##
+## dnn 예측 ##
 loss_dnn = model_dnn.evaluate(x_test_dnn, y_test_cnn)
 
 y_predict_dnn = model_dnn.predict(x_test_dnn) 
@@ -131,15 +150,35 @@ print('=================== dnn ====================')
 print('acc스코어: ', acc_dnn)
 print('걸린시간dnn : ', round(end_dnn - start_dnn,2))
 
-## cnn 결과 ##
-loss_cnn = model_cnn.evaluate(x_test_cnn, y_test_cnn)
-y_predict_cnn = model_cnn.predict(x_test_cnn)
+# ## cnn 예측 ##
+# loss_cnn = model_cnn.evaluate(x_test_cnn, y_test_cnn)
+# y_predict_cnn = model_cnn.predict(x_test_cnn)
 
-y_predict_cnn = np.argmax(y_predict_cnn, axis= 1)
-y_test_cnn = np.argmax(y_test_cnn, axis= 1)
+# y_predict_cnn = np.argmax(y_predict_cnn, axis= 1)
+# y_test_cnn = np.argmax(y_test_cnn, axis= 1)
 
-from sklearn.metrics import accuracy_score
-acc_cnn = accuracy_score(y_test_cnn, y_predict_cnn)
-print('=================== cnn ====================')
-print('acc스코어: ', acc_cnn)
-print('걸린시간cnn : ', round(end_cnn - start_cnn, 2))
+# from sklearn.metrics import accuracy_score
+# acc_cnn = accuracy_score(y_test_cnn, y_predict_cnn)
+# print('=================== cnn ====================')
+# print('acc스코어: ', acc_cnn)
+# print('걸린시간cnn : ', round(end_cnn - start_cnn, 2))
+
+
+# =================== pca1.0====================
+# 결과 :  0.9051428571428571
+# 걸린시간cnn :  163.15
+# =================== pca0.999====================
+# 결과 :  0.9180714285714285
+# 걸린시간cnn :  131.92
+# =================== pca0.99 ====================
+# 결과 :  0.9387142857142857
+# 걸린시간cnn :  102.84
+# =================== pca0.95 ====================
+# 결과 :  0.9457142857142857
+# 걸린시간cnn :  66.93
+# =================== dnn ====================
+# acc스코어:  0.962
+# 걸린시간dnn :  240.66
+# =================== cnn ====================
+# acc스코어:  0.9818
+# 걸린시간cnn :  587.2
