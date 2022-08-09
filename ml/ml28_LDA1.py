@@ -34,13 +34,11 @@ x_train, x_test, y_train, y_test = train_test_split(
     x,y, train_size=0.8, random_state=123, shuffle=True, stratify=y
 )
 
-
 print(np.unique(y_train, return_counts= True))  # array([1, 2, 3, 4, 5, 6, 7]
 
 #2.모델 
 from xgboost import XGBClassifier
 model = XGBClassifier(tree_method = 'gpu_hist',predictor = 'gpu_predictor', gpu_id=0,)
-
 
 #3.훈련
 import time
