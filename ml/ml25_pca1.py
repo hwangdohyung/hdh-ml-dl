@@ -14,9 +14,9 @@ x = datasets.data
 y = datasets.target
 print(x.shape,y.shape)      #(506, 13) (506,)
 
-# pca = PCA(n_components=11)   # 컬럼 2개로 압축
+# pca = PCA(n_components=11)   # 컬럼  압축
 # x= pca.fit_transform(x) 
-# print(x.shape)              #(506, 2)
+# print(x.shape)              
 
 x_train,x_test,y_train,y_test = train_test_split(x,y , train_size=0.8, random_state=123, shuffle=True)
 
