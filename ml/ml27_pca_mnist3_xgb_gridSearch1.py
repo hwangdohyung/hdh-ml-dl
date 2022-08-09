@@ -55,7 +55,7 @@ parameter = [
 
 #2. 모델 구성
 from sklearn.pipeline import Pipeline
-pipe = Pipeline([('mm', MinMaxScaler()), ('xg', XGBClassifier())],verbose=1)
+pipe = Pipeline([('mm', MinMaxScaler()), ('xg', XGBClassifier(tree_method = 'gpu_hist', predictor = 'gpu_predictor', gpu_id = 0,))],verbose=1)
 model = GridSearchCV(pipe, parameter, cv=5, verbose=1, n_jobs=1)
 
 #3. 훈련
