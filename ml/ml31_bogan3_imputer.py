@@ -27,14 +27,16 @@ from sklearn.impute import SimpleImputer, KNNImputer, IterativeImputer # KNN: �
 # imputer = SimpleImputer(strategy='most_frequent')# 가장빈번하게 쓰는것을 채운다,동일할때는 앞에것을 씀 
 # imputer = SimpleImputer(strategy='constant')#상수를 넣는데 defalt가 0
 # imputer = SimpleImputer(strategy='constant', fill_value=777)
-# imputer = KNNImputer() # defalt는 mean 
-imputer = IterativeImputer()
+# imputer = KNNImputer() # # n_neighbors=5(디폴트 값)
+# imputer = KNNImputer(n_neighbors=3)
+# imputer를 선언할 때 n_neighbors 하이퍼파라미터를 이용해 몇 개의 이웃을 사용할 지 지정한다.
+# cf) n_neighbors=5가 디폴트 값이다.
+imputer = IterativeImputer()#각 피처에 대해 회귀 분석을 진행해서 결측값을 예측
 
 
 imputer.fit(data)
 data2 = imputer.transform(data)
 
 print(data2)
-
 
 
