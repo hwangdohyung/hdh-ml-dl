@@ -7,8 +7,9 @@ from sklearn.datasets import fetch_covtype
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder,StandardScaler
 import xgboost as xg
+
 print('xg 버전 : ', xg.__version__) # 1.6.1
 
 #1.데이터 
@@ -17,8 +18,16 @@ x = datasets.data
 y = datasets.target 
 print(x.shape)   #150,4
 
+
+
 le = LabelEncoder()
 y = le.fit_transform(y)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(x)
+x = scaler.transform(x)#스케일링한것을 보여준다.
+
 
 # pca = PCA(n_components=20)
 # x= pca.fit_transform(x) 
@@ -72,5 +81,7 @@ print('걸린시간 : ', round(end-start,2))
 # lda gpu/n_component : 2
 # 결과 :  0.9666666666666667
 # 걸린시간 :  0.47
+
+
 
 

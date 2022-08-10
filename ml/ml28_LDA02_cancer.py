@@ -20,8 +20,12 @@ print(x.shape)
 le = LabelEncoder()
 y = le.fit_transform(y)
 
-# pca = PCA(n_components=20)
-# x= pca.fit_transform(x) 
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(x)
+x = scaler.transform(x)
+
+
 print(np.unique(y,return_counts=True)) 
 
 lda = LinearDiscriminantAnalysis(n_components=1) 

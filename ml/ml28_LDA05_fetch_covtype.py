@@ -20,6 +20,10 @@ print(x.shape)
 le = LabelEncoder()
 y = le.fit_transform(y)
 
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(x)
+x = scaler.transform(x)#스케일링한것을 보여준다.
 # pca = PCA(n_components=20)
 # x= pca.fit_transform(x) 
 print(np.unique(y,return_counts=True)) 
@@ -27,6 +31,7 @@ print(np.unique(y,return_counts=True))
 lda = LinearDiscriminantAnalysis(n_components=5) 
 lda.fit(x, y)
 x = lda.transform(x)
+
 
 # pca_EVR = pca.explained_variance_ratio_ 
 # cumsum = np.cumsum(pca_EVR)

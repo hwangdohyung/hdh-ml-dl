@@ -27,6 +27,7 @@ warnings.filterwarnings(action='ignore')
 import numpy as np
 from sklearn.decomposition import PCA
 from keras.datasets import mnist
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 #1. 데이터 전처리
@@ -34,13 +35,16 @@ from keras.datasets import mnist
 
 # PCA
 x = np.append(x_train, x_test, axis=0)  # x_train, x_test를 행으로 합친다는 뜻
+y = np.append(y_train, y_test, axis=0)  # x_train, x_test를 행으로 합친다는 뜻
 x = x.reshape(70000, 28*28)
-pca = PCA(n_components=154)  # 칼럼이 28*28개의 벡터로 압축이됨
-x = pca.fit_transform(x)
+
+
+lda = LinearDiscriminantAnalysis(n_components=8) 
+lda.fit(x, y)
+x = lda.transform(x)
 
 x_train = x[:60000]
 x_test = x[60000:]
-
 
 # parameter
 parameter = [
@@ -65,4 +69,11 @@ print('걸린 시간 : ', round(end, 2))
 #4. 평가, 예측
 print("score : ", model.score(x_test, y_test))
 
+#pca
+# 걸린 시간 :  394.23
+# score :  0.9659
+
+#lda
+# 걸린 시간 :  116.68
+# score :  0.9121
 

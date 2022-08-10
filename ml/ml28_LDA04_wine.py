@@ -28,6 +28,12 @@ lda = LinearDiscriminantAnalysis(n_components=2)
 lda.fit(x, y)
 x = lda.transform(x)
 
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(x)
+x = scaler.transform(x)#스케일링한것을 보여준다.
+
 # pca_EVR = pca.explained_variance_ratio_ 
 # cumsum = np.cumsum(pca_EVR)
 # print(cumsum)
