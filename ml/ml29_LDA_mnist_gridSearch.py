@@ -48,9 +48,6 @@ parameter = [
      'xg__max_depth':[4, 5, 6]},
     {'xg__n_estimator':[90, 100, 110], 'xg__learning_rate':[0.1, 0.001, 0.01],
      'xg__max_depth':[4, 5, 6], 'xg__colsample_bytree':[0.6, 0.9, 1]},
-    {'xg__n_estimator':[90, 100], 'xg__learning_rate':[0.1, 0.001, 0.5],
-     'xg__max_depth':[4, 5, 6], 'xg__colsample_bytree':[0.6, 0.9, 1],
-     'xg__colsample_bylevel':[0.6, 0.7, 0.9]}
 ]
 
 #2. 모델 구성
