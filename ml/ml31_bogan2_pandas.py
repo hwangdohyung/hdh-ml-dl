@@ -22,7 +22,7 @@ print(data.isnull())
 print(data.isnull().sum())
 print(data.info())
 
-#1.결측치 삭제 
+#1.결측치 삭제 ㄴ
 print("===============결측치 삭제===============")
 print(data.dropna())#defalt axis=0
 print(data.dropna(axis=1))
@@ -38,4 +38,31 @@ median = data.median()
 print('중위값 : ', median)
 data3 = data.fillna(median)
 print(data3)
+
+#2-3. 특정값 - ffill, bfill
+print('==============결측치 처리 ffill, bfill==============')
+data4 = data.fillna(method='ffill')
+print(data4)
+data5 = data.fillna(method='bfill')
+print(data5)
+
+#2-4. 특정값 - 임의값으로 채우기
+print('==============결측치 - 임의값으로 채우기=============')
+data6 = data.fillna(value = 77777)
+print(data6)
+
+#################### 특정컬럼만 !!!!! #######################
+
+means = data['x1'].mean() # x1컬럼의 평균값만
+print(means)
+data['x1'] =  data['x1'].fillna(means)
+print(data)
+
+meds = data['x2'].median()
+print(meds) 
+data['x2'] =  data['x2'].fillna(meds)
+print(data)
+
+data['x4'] =  data['x4'].fillna(77777)
+print(data)
 
