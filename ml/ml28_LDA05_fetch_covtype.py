@@ -70,3 +70,4 @@ print('걸린시간 : ', round(end-start,2))
 # lda gpu/n_component : 5
 # 결과 :  0.7707460220476235
 # 걸린시간 :  3.49
+

@@ -20,7 +20,7 @@
 # 실습 시작!
 
 from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV,RandomizedSearchCV
 from sklearn.preprocessing import MinMaxScaler
 import warnings 
 warnings.filterwarnings(action='ignore')
@@ -53,7 +53,7 @@ parameter = [
 #2. 모델 구성
 from sklearn.pipeline import Pipeline
 pipe = Pipeline([('mm', MinMaxScaler()), ('xg', XGBClassifier(tree_method = 'gpu_hist', predictor = 'gpu_predictor', gpu_id = 0,))],verbose=1)
-model = GridSearchCV(pipe, parameter, cv=5, verbose=1, n_jobs=1)
+model = RandomizedSearchCV(pipe, parameter, cv=5, verbose=1, n_jobs=1)
 
 #3. 훈련
 import time
