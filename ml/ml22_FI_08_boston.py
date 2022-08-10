@@ -42,6 +42,7 @@ for model in models:
     else:
         print(str(model).strip('()'), '의 드랍후 스코어: ', score)
 
+
 # 자를 갯수:  3
 # DecisionTreeRegressor 의 스코어:         0.819132062854431
 # DecisionTreeRegressor 의 드랍후 스코어:  0.8788168011481795
@@ -51,3 +52,4 @@ for model in models:
 # GradientBoostingRegressor 의 드랍후 스코어:  0.9150789606965627
 # XGB 의 스코어:         0.9111783299858156
 # XGB 의 드랍후 스코어:  0.9045261349938265
+
