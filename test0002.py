@@ -9,8 +9,6 @@ from collections import Counter
 from tensorflow.python.keras.callbacks import EarlyStopping,ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
 import datetime
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import SimpleImputer, KNNImputer, IterativeImputer
 
 #1.데이터 
 path = './_data/ddarung/'
@@ -23,6 +21,12 @@ test_set = pd.read_csv(path + 'test.csv', index_col=0)  #예측에서 쓴다!
 
 print(train_set.isnull().sum())
 print(train_set)
+
+train_set = train_set.dropna()
+test_set= test_set.dropna()
+
+x = train_set.drop(['count'], axis=1,)
+y = train_set['count']
 
 ###########이상치 처리##############
 def dr_outlier(train_set):
@@ -37,8 +41,9 @@ def dr_outlier(train_set):
 
 dr_outlier(train_set)
 
+
 x_train, x_test, y_train, y_test = train_test_split(x, y, 
-                                                    train_size=0.8,
+                                                    train_size=0.7,
                                                     shuffle=True,
                                                     random_state=48)
 
@@ -82,7 +87,6 @@ def RMSE(y_test, y_predict):
 
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
-
 #이상치 처리 #
 # loss:  1981.86376953125
 # RMSE :  44.51813035128636

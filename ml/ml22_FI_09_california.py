@@ -51,3 +51,5 @@ for model in models:
 # GradientBoostingRegressor 의 드랍후 스코어:  0.7833602753783532
 # XGB 의 스코어:         0.8266362514646761
 # XGB 의 드랍후 스코어:  0.8307509185446069
+
+

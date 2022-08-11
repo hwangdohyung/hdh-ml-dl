@@ -58,7 +58,7 @@ y = train_set['count']
 print(y)
 print(y.shape) # (10886,)
 
-x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.75,random_state=31)   
+x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.8,random_state=123)   
       
 
 scaler = StandardScaler()
@@ -73,7 +73,7 @@ print(x_train.shape,x_test.shape)
 
 #2.모델구성
 model = Sequential()
-model.add(Dense(200,activation='relu', input_dim= 12)) 
+model.add(Dense(100,activation='relu', input_dim= 12)) 
 model.add(Dense(100,activation= 'relu'))
 model.add(Dense(100,activation= 'relu'))
 model.add(Dense(100,activation= 'relu'))
@@ -85,7 +85,7 @@ model.add(Dense(1))
 #3. 컴파일, 훈련
 model.compile(loss='mse', optimizer='adam')
     
-earlyStopping =EarlyStopping(monitor = 'val_loss',patience=10,mode='min',restore_best_weights=True,verbose=1)
+earlyStopping =EarlyStopping(monitor = 'val_loss',patience=20,mode='min',restore_best_weights=True,verbose=1)
 
 # filepath='./_ModelCheckpoint/k24/'
 # filename='{epoch:04d}-{val_loss:.4f}.hdf5'

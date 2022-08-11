@@ -23,8 +23,7 @@ def dr_outlier(train_set):
     IQR = quartile_3 - quartile_1
     condition = (train_set < (quartile_1 - 1.5 * IQR)) | (train_set > (quartile_3 + 1.5 * IQR))
     condition = condition.any(axis=1)
-    search_df = train_set[condition]
-
+    
     return train_set, train_set.drop(train_set.index, axis=0)
 
 dr_outlier(train_set)
@@ -70,7 +69,6 @@ for dataset in train_test_data:
 for dataset in train_test_data:
     dataset = dataset.drop(drop_column, axis=1, inplace=True)
 print(train_set.head())
-
 
 x = train_set.drop(['Survived'], axis=1,)
 y = train_set['Survived']
@@ -126,4 +124,5 @@ print('acc : ',acc)
 ## 이상치 처리 ##
 # loss :  0.44820234179496765
 # acc :  0.8097014925373134
+
 

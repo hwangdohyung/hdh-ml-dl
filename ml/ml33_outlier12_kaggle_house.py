@@ -22,7 +22,7 @@ test_set.set_index('Id', inplace=True)
 test_id_index = train_set.index
 trainLabel = train_set['SalePrice']
 train_set.drop(['SalePrice'], axis=1, inplace=True)
-############################################
+
 ###########이상치 처리##############
 def dr_outlier(train_set):
     quartile_1 = train_set.quantile(0.25)
@@ -30,11 +30,12 @@ def dr_outlier(train_set):
     IQR = quartile_3 - quartile_1
     condition = (train_set < (quartile_1 - 1.5 * IQR)) | (train_set > (quartile_3 + 1.5 * IQR))
     condition = condition.any(axis=1)
-    search_df = train_set[condition]
-
+    
     return train_set, train_set.drop(train_set.index, axis=0)
 
 dr_outlier(train_set)
+
+print()
 
 ################### 트레인,테스트 합치기 ##################
 alldata = pd.concat((train_set, test_set), axis=0)
@@ -128,4 +129,6 @@ print("RMSE : ", rmse)
 ### 이상치 처리 후 ###
 # loss:  155102272.0
 # RMSE :  44271.91269273772
+
+
 
