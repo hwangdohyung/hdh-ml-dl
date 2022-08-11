@@ -67,11 +67,9 @@ print(train_set)
 print(trainLabel)
 print(test_set)
 
-
 ###############################################################
 x_train, x_test, y_train, y_test = train_test_split(train_set, trainLabel, train_size=0.8, 
-                                            
-                                                random_state=58)
+                                                     random_state=58)
 
 # minmax , standard 트레인테스트를 나눈뒤 해야한다. 과적합 방지와 같은 이치 
 # scaler = MinMaxScaler()
@@ -84,7 +82,6 @@ x_train = scaler.transform(x_train)#스케일링한것을 보여준다.
 x_test = scaler.transform(x_test)#test는 transfrom만 해야됨 
 test_set = scaler.transform(test_set)# **최종테스트셋이 있는경우 여기도 스케일링을 적용해야함 **               
                                                     
-
 #2.모델구성
 model = Sequential()
 model.add(Dense(100, input_dim=74))
@@ -100,8 +97,6 @@ from tensorflow.python.keras.callbacks import EarlyStopping
 earlyStopping= EarlyStopping(monitor='val_loss',patience=30,mode='min',restore_best_weights=True,verbose=1)
 model.fit(x_train, y_train, epochs=2000, batch_size=50,validation_split=0.2,callbacks=earlyStopping, verbose=1)
 
-
-
 # #4.평가,예측
 loss = model.evaluate(train_set, trainLabel)
 print('loss: ', loss)
@@ -115,7 +110,6 @@ y_submmit = model.predict(test_set)
 # print(y_submmit)
 # print(y_submmit.shape)  
 
-
 # submission = pd.read_csv(path + 'sample_submission.csv')
 # submission['SalePrice'] = y_submmit
 
@@ -126,6 +120,7 @@ y_submmit = model.predict(test_set)
 
 rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
+
 ### 처리전 ###
 # loss:  154091168.0
 # RMSE :  48425.563583796946
