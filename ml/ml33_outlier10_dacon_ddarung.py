@@ -19,31 +19,27 @@ print(train_set.shape) # (1459, 10)
 
 test_set = pd.read_csv(path + 'test.csv', index_col=0)  #예측에서 쓴다!
 
-print(train_set.isnull().sum())
-print(train_set)
+###########이상치 처리##############
+# def dr_outlier(train_set):
+#     quartile_1 = train_set.quantile(0.25)
+#     quartile_3 = train_set.quantile(0.75)
+#     IQR = quartile_3 - quartile_1
+#     condition = (train_set < (quartile_1 - 1.5 * IQR)) | (train_set > (quartile_3 + 1.5 * IQR))
+#     condition = condition.any(axis=1)
+#     search_df = train_set[condition]
+
+#     return train_set, train_set.drop(train_set.index, axis=0)
+
+# dr_outlier(train_set)
 
 train_set = train_set.dropna()
-test_set= test_set.dropna()
+test_set= test_set.fillna(test_set.mean())
 
 x = train_set.drop(['count'], axis=1,)
 y = train_set['count']
 
-###########이상치 처리##############
-def dr_outlier(train_set):
-    quartile_1 = train_set.quantile(0.25)
-    quartile_3 = train_set.quantile(0.75)
-    IQR = quartile_3 - quartile_1
-    condition = (train_set < (quartile_1 - 1.5 * IQR)) | (train_set > (quartile_3 + 1.5 * IQR))
-    condition = condition.any(axis=1)
-    search_df = train_set[condition]
-
-    return train_set, train_set.drop(train_set.index, axis=0)
-
-dr_outlier(train_set)
-
-
 x_train, x_test, y_train, y_test = train_test_split(x, y, 
-                                                    train_size=0.8,
+                                                    train_size=0.7,
                                                     shuffle=True,
                                                     random_state=48)
 
