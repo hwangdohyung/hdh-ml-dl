@@ -16,7 +16,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline, make_pipeline 
 
 
-
 ################## 1.데이터 #######################
 path = 'D:\study_data\_data\dacon_travle/'
 train_set = pd.read_csv(path + 'train.csv', index_col=0) 
@@ -24,7 +23,6 @@ print(train_set)
 print(train_set.shape)  #(1955, 19)
 test_set = pd.read_csv(path + 'test.csv', index_col=0)  
 print(test_set.shape)   #(2933, 18)
-
 
 #################### 결측치 #####################
 train_set = train_set.dropna()
@@ -45,7 +43,6 @@ for i in idxarr:
         train_set[i] = le.fit_transform(train_set[i])
         test_set[i] = le.fit_transform(test_set[i])
         
-        
 print(train_set)
 print(test_set) 
        
@@ -59,10 +56,8 @@ print(test_set)
 
 # plt.show()
 
-
 x = train_set.drop('ProdTaken',axis=1)
 y = train_set['ProdTaken']
-
 
 
 x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=134,stratify=y)
@@ -98,8 +93,6 @@ print(y_submmit)
 
 print(pd.value_counts(y_submmit))
 
-
-
 submission = pd.read_csv(path + 'sample_submission.csv')
 submission['ProdTaken'] = y_submmit
 
@@ -107,3 +100,6 @@ submission['ProdTaken'] = y_submmit
 # print(submission.shape)
 
 submission.to_csv(path + 'submission.csv',index=False)
+
+
+
