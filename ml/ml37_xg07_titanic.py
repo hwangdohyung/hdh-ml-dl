@@ -105,3 +105,4 @@ print('model.score : ', round(result, 2))
 
 
 # model.score :  0.79
+

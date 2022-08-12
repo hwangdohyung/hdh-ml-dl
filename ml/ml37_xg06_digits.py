@@ -41,26 +41,29 @@ parameters = {'n_estimators' : [1000],
               'max_depth': [3],
               'gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100],
               'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
-              'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-              'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-              'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-              'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
-              'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
-              'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
+            #   'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+            #   'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+            #   'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+            #   'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
+            #   'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
+            #   'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
               }
 
 # https://xgboost.readthedocs.io/en/stable/parameter.html
 
+import time
 #2.모델 
 xgb = XGBClassifier(random_state = 123,tree_method = 'gpu_hist',predictor = 'gpu_predictor', gpu_id=0,)
 
 model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8,verbose=1)
-
+start = time.time()
 model.fit(x_train,y_train)
-
+end = time.time()
 print('최상의 매개변수 : ', model.best_params_)
 print('최상의 점수 : ', model.best_score_)
 
 results = model.score(x_test,y_test)
 print(results)
+print('걸린시간 : ', round(end-start,2))
+
 
