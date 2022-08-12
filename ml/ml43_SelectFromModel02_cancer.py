@@ -1,5 +1,5 @@
 import numpy as np 
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold,StratifiedKFold
 from sklearn.model_selection import train_test_split
@@ -10,10 +10,12 @@ from sklearn.metrics import accuracy_score,r2_score
 from sklearn.feature_selection import SelectFromModel
 
 #1.데이터 
-datasets = load_iris()
+datasets = load_breast_cancer()
 x = datasets.data
 y = datasets.target 
-print(x.shape, y.shape) #(442, 10) (442,)
+print(x.shape, y.shape) #(569, 30) (569,)
+
+
 
 x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=123, 
                                                  stratify=y
@@ -41,7 +43,7 @@ model = XGBClassifier(random_state = 123,
 
 # model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8)
 
-model.fit(x_train,y_train,
+model.fit(x_train,y_train,early_stopping_rounds=20,
             eval_set =[(x_train,y_train),(x_test,y_test)]
              
         )  
@@ -74,13 +76,8 @@ for thresh in thresholds:
     print("Thres=%.3f, n=%d, acc: %.2f%%"
           %(thresh, select_x_train.shape[1], score*100))
 
-# (120, 2) (30, 2)
-# Thres=0.404, n=2, acc: 96.67%
+#0.956140350877193
 
-thresholds = np.array(thresholds)
-aaa = 0.404151
-if thresholds < :
-         print(np.where[thresholds]) 
-         
-                
-    
+# (455, 14) (114, 14)
+# Thres=0.014, n=14, acc: 98.25%
+

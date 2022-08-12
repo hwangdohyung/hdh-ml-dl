@@ -77,10 +77,3 @@ for thresh in thresholds:
 # (120, 2) (30, 2)
 # Thres=0.404, n=2, acc: 96.67%
 
-thresholds = np.array(thresholds)
-aaa = 0.404151
-if thresholds < :
-         print(np.where[thresholds]) 
-         
-                
-    

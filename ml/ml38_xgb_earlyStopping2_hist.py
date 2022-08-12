@@ -76,3 +76,4 @@ for i in range(len(hist.keys())):
     plt.title('validation_'+str(i))
     
 plt.show()
+

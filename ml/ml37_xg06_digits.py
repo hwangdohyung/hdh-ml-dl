@@ -13,7 +13,7 @@ import time
 datasets = load_digits()
 x = datasets.data
 y = datasets.target 
-print(x.shape, y.shape) #(569, 30) (569,)
+print(x.shape, y.shape) 
 
 x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=123, stratify=y)
 

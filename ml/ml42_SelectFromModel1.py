@@ -1,5 +1,5 @@
 import numpy as np 
-from sklearn.datasets import load_iris
+from sklearn.datasets import load_diabetes
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import KFold,StratifiedKFold
 from sklearn.model_selection import train_test_split
@@ -10,13 +10,13 @@ from sklearn.metrics import accuracy_score,r2_score
 from sklearn.feature_selection import SelectFromModel
 
 #1.데이터 
-datasets = load_iris()
+datasets = load_diabetes()
 x = datasets.data
 y = datasets.target 
 print(x.shape, y.shape) #(442, 10) (442,)
 
 x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=123, 
-                                                 stratify=y
+                                                #  stratify=y
                                                 )
 
 scaler = StandardScaler()
@@ -32,7 +32,7 @@ parameters = {'n_estimators' : [100],'learning_rate': [0.1],'max_depth': [3],'ga
               }
 
 #2.모델 
-model = XGBClassifier(random_state = 123,
+model = XGBRegressor(random_state = 123,
                       n_estimators = 100,
                       learning_rate = 0.1,
                       max_depth = 3,
@@ -41,15 +41,17 @@ model = XGBClassifier(random_state = 123,
 
 # model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8)
 
-model.fit(x_train,y_train,
-            eval_set =[(x_train,y_train),(x_test,y_test)]
-             
-        )  
+model.fit(x_train,y_train,early_stopping_rounds=200,
+            eval_set =[(x_train,y_train),(x_test,y_test)],
+            eval_metric = 'error' 
+          )  
 
 results = model.score(x_test,y_test)
 print(results)
 
 print(model.feature_importances_)
+# [0.03986917 0.04455113 0.25548902 0.07593288 0.04910125 0.04870857
+#  0.06075545 0.05339111 0.30488744 0.06731401]
 
 thresholds = model.feature_importances_
 print('================================')
@@ -60,7 +62,7 @@ for thresh in thresholds:
     select_x_test= selection.transform(x_test)
     print(select_x_train.shape,select_x_test.shape)
 
-    selection_model = XGBClassifier(random_state = 123,
+    selection_model = XGBRegressor(random_state = 123,
                                     n_estimators = 100,
                                     learning_rate = 0.1,
                                     max_depth = 3,
@@ -69,18 +71,13 @@ for thresh in thresholds:
     selection_model.fit(select_x_train, y_train)
     
     y_predict = selection_model.predict(select_x_test)
-    score = accuracy_score(y_test, y_predict)
+    score = r2_score(y_test, y_predict)
     
-    print("Thres=%.3f, n=%d, acc: %.2f%%"
+    print("Thres=%.3f, n=%d, R2: %.2f%%"
           %(thresh, select_x_train.shape[1], score*100))
 
-# (120, 2) (30, 2)
-# Thres=0.404, n=2, acc: 96.67%
 
-thresholds = np.array(thresholds)
-aaa = 0.404151
-if thresholds < :
-         print(np.where[thresholds]) 
-         
-                
-    
+
+
+
+

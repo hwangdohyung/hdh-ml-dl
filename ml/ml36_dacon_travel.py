@@ -35,6 +35,7 @@ test_set = test_set.fillna(means)
 print(train_set.shape,test_set.shape)#(1649, 19) (2479, 18)
 ##################### 라벨인코더 ######################
 le = LabelEncoder()
+
 idxarr = train_set.columns
 idxarr = np.array(idxarr)
 
