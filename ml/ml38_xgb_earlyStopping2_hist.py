@@ -1,4 +1,4 @@
-from random import shuffle
+
 import numpy as np 
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import GridSearchCV
@@ -40,7 +40,7 @@ model = XGBClassifier(random_state = 123,
 
 # model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8)
 
-model.fit(x_train,y_train,early_stopping_rounds=10,
+model.fit(x_train,y_train,early_stopping_rounds=30,
             eval_set =[(x_train,y_train),(x_test,y_test)],
         #   eval_set =[(x_test,y_test)]
             eval_metric = 'error'
@@ -67,29 +67,12 @@ matplotlib.rcParams['font.family'] ='Malgun Gothic'
 matplotlib.rcParams['axes.unicode_minus'] =False
 #######################################################
 
-# plt.figure(figsize=(9,6)) #그래프 표 사이즈
-# plt.plot(hist.history['validation_0'], marker = '.' ,c = 'red', label = 'val0') # maker: 점으로 표시하겟다  ,c:색깔 ,label : 이름
-# plt.plot(hist.history['validation_1'], marker = '.' ,c = 'blue', label = 'val1')
-# plt.grid() # 모눈종이에 하겠다
-# plt.title('eval')#제목
-# plt.ylabel('val0')#y축 이름
-# plt.xlabel('val1')#x축 이름
-# plt.legend(loc='upper right') # upper right: 위쪽 상단에 표시하겠다.(라벨 이름들)
-# plt.show()# 보여줘
-
- 
-# plt.plot(hist.values(), '-', color='C0', label='Solid')
-# plt.plot(hist, '-.', color='C0', label='Dash-dot')
-# plt.xlabel('X-Axis')
-# plt.ylabel('Y-Axis')
-# plt.axis([0.8, 3.2, 0.5, 5.0])
-# plt.legend(loc='upper right', ncol=4)
-# plt.show()
-
-# plt.show()
-
-print('==================')
-a = hist['validation_0'].values()
-b = hist['validaiont_1'].values()
-print(a)
-print(b)
+plt.figure(figsize=(10,10))
+for i in range(len(hist.keys())):
+    plt.subplot(len(hist.keys()),1, i+1)
+    plt.plot(hist['validation_'+str(i)]['error'])
+    plt.xlabel('n_estimators')
+    plt.ylabel('evals_result')
+    plt.title('validation_'+str(i))
+    
+plt.show()

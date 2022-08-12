@@ -1,4 +1,3 @@
-
 import numpy as np 
 from sklearn.datasets import load_breast_cancer
 from sklearn.model_selection import GridSearchCV
@@ -24,7 +23,6 @@ x_test = scaler.transform(x_test)
 n_splits = 5
 kfold = StratifiedKFold(n_splits=n_splits, shuffle = True, random_state = 123)
 
-
 parameters = {'n_estimators' : [100],'learning_rate': [0.1],'max_depth': [3],'gamma': [1],
               'min_child_weight': [1],'subsample': [1],'colsample_bytree': [1],'colsample_bylevel': [1],
               'colsample_bynode': [1] ,'reg_alpha': [0],'reg_lambda':[1]
@@ -42,18 +40,13 @@ model = XGBClassifier(random_state = 123,
 
 model.fit(x_train,y_train,early_stopping_rounds=10,
             eval_set =[(x_train,y_train),(x_test,y_test)],
-        #   eval_set =[(x_test,y_test)]
-            eval_metric = 'error'
-                # 회귀: rmse, mae, rmsle ... 등등
-                # 이진: error, logloss, auc... 등
-                # 다중: merror, mlogloss... 등 
-          )  # 10번동안 갱신 없으면 정지 시키겠다
-
-# print('최상의 매개변수 : ', model.best_params_)
-# print('최상의 점수 : ', model.best_score_)
+            eval_metric = 'error' 
+          )  
 
 results = model.score(x_test,y_test)
 print(results)
 
-
+import joblib
+path = 'D:\study_data\_save\_xg/'
+joblib.dump(model,path + 'm40_joblib1_save.dat')
 
