@@ -33,6 +33,7 @@ x = scaler.transform(x)#스케일링한것을 보여준다.
 # x= pca.fit_transform(x) 
 print(np.unique(y,return_counts=True)) #
 
+
 lda = LinearDiscriminantAnalysis(n_components=2) # y의 라벨 갯수(n개)-1=(n)보다 크면 안된다.
 lda.fit(x, y)
 x = lda.transform(x)

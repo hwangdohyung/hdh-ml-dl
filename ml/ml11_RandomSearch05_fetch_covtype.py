@@ -29,6 +29,7 @@ parameters = [
     ]                                                                                                   # 총 합 110        
 
 #2.모델구성
+from xgboost import XGBClassifier
 from sklearn.ensemble import RandomForestClassifier
 model = RandomizedSearchCV(RandomForestClassifier(),parameters, cv =kfold, verbose=1 ,
                     refit=True, n_jobs= -1)
