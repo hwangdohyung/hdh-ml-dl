@@ -259,3 +259,4 @@ plt.show()
 
 pred = model.predict(test_set)
 y_summit = [1 if x > 0.5 else 0 for x in pred]
+

@@ -76,3 +76,7 @@ test_dataset = tf.data.Dataset.from_tensor_slices((x_valid, y_valid))
 train_dataset = train_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
 test_dataset = test_dataset.shuffle(buffer_size=BUFFER_SIZE).batch(batch_size=BATCH_SIZE)
 
+
+
+
+
