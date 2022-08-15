@@ -7,7 +7,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.multioutput import MultiOutputRegressor
 path = 'D:\study_data\_data\dacon_antena/'
 
-
 def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -36,3 +35,4 @@ for idx, col in enumerate(submit.columns):
 print('Done.')
 
 submit.to_csv(path + 'submmit.csv', index=False)
+
