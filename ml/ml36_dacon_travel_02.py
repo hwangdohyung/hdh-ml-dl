@@ -1,6 +1,6 @@
 import pandas as pd 
 import numpy as np 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split,KFold,GridSearchCV
 from xgboost import XGBClassifier,XGBRegressor
 import matplotlib.pyplot as plt 
 import seaborn as sns
@@ -29,7 +29,7 @@ for i in idxarr:
         test[i] = le.fit_transform(test[i])
 
 
-### 상관관계 ###
+# ### 상관관계 ###
 # sns.set(font_scale= 0.8 )
 # sns.heatmap(data=train.corr(), square= True, annot=True, cbar=True) # square: 정사각형, annot: 안에 수치들 ,cbar: 옆에 bar
 
@@ -49,7 +49,6 @@ test = alldata[len(train):]
 
 train = train.dropna()
 
-
 mean = test['DurationOfPitch'].mean()
 test['DurationOfPitch'] = test['DurationOfPitch'].fillna(mean)
 
@@ -65,9 +64,7 @@ test['NumberOfTrips'] = test['NumberOfTrips'].fillna(mean)
 mean = test['NumberOfChildrenVisiting'].median()
 test['NumberOfChildrenVisiting'] = test['NumberOfChildrenVisiting'].fillna(mean)
 
-
 print(test.isnull().sum())
-
 
 x = train.drop('ProdTaken',axis=1)
 print(x.shape)      #(1955, 18)
@@ -81,34 +78,82 @@ test = test.drop('ProdTaken',axis=1)
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, 
                                                      random_state=123)
 
+n_splits = 5
+kfold = KFold(n_splits=n_splits, shuffle = True, random_state = 123)
 
-parameters = {'n_estimators' : [100, 200, 300, 400, 500, 1000],
-              'learning_rate': [0.1, 0.2, 0.3, 0.5, 1, 0.01, 0.001],
-              'max_depth': [None, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-              'gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100],
-              'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
-              'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-              'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-              'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-              'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
-              'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
-              'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
+parameters = {'n_estimators' : [200],
+              'learning_rate': [0.2],
+              'max_depth': [10],
+              'gamma': [0],
+              'min_child_weight': [0.1],
+              'subsample': [1],
+              'colsample_bytree': [1],
+              'colsample_bylevel': [0.5],
+              'colsample_bynode': [1] ,
+              'reg_alpha': [0.1],
+              'reg_lambda':[1]
               }
+from sklearn.metrics import accuracy_score
+from sklearn.feature_selection import SelectFromModel
+
+
+model = XGBClassifier(random_state = 123,
+                                    n_estimators =200,
+              learning_rate= 0.2,
+              max_depth= 10,
+              gamma=0,
+              min_child_weight= 0.1,
+              subsample= 1,
+              colsample_bytree= 1,
+              colsample_bylevel= 0.5,
+              colsample_bynode= 1 ,
+              reg_alpha= 0.1,
+              reg_lambda=1)
+# model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8)
+model.fit(x_train,y_train)
+
+
+# print(model.feature_importances_)
+
+# thresholds = model.feature_importances_
+# print('================================')
+# for thresh in thresholds:
+#     selection = SelectFromModel(model, threshold=thresh, prefit=True)  #prefit=true: feature importance 자기보다 같거나 큰놈들을 전부 반환해준다
+    
+#     select_x_train = selection.transform(x_train)
+#     select_x_test= selection.transform(x_test)
+#     print(select_x_train.shape,select_x_test.shape)
+
+#     selection_model = XGBClassifier(random_state = 123,
+#                                     n_estimators = 100,
+#                                     learning_rate = 0.1,
+#                                     max_depth = 3,
+#                                     gamma = 1, 
+#                                     )
+#     selection_model.fit(select_x_train, y_train)
+    
+#     y_predict = selection_model.predict(select_x_test)
+#     score = accuracy_score(y_test, y_predict)
+    
+#     print("Thres=%.3f, n=%d, acc: %.2f%%"
+#           %(thresh, select_x_train.shape[1], score*100))
 
 #2. 모델 
 from sklearn.svm import LinearSVC,SVC
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
 from sklearn.pipeline import Pipeline, make_pipeline 
 from xgboost import XGBRegressor
+# print('최상의 매개변수 : ', model.best_params_)
+# print('최상의 점수 : ', model.best_score_)
 
-model = XGBClassifier(random_state = 66)
-model.fit(x_train,y_train)
+
+
 
 submit= model.predict(test)
 
 submission = pd.read_csv(path + 'sample_submission.csv')
 submission['ProdTaken'] = submit
 
-submission.to_csv(path +'last.csv',index=False)
+submission.to_csv(path +'last2.csv',index=False)
 
 
