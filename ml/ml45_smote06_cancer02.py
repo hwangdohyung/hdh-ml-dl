@@ -16,11 +16,11 @@ x = datasets.data
 y = datasets.target
 
 ## 개쉽쥬 ##
-y1 = np.array(np.where(y==0))
-y2 = y1.reshape(212,)[:112]
-
-x = np.delete(x,y2,0)
-y = np.delete(y,y2,0)
+zero = np.array(np.where(y==0))
+zero2 = zero.reshape(212,)[:112]
+# zero3= np.random.choice(zero2,112,replace=False) # 섞고싶으면 !
+x = np.delete(x,zero2,0)
+y = np.delete(y,zero2,0)
 
 print(np.unique(y,return_counts=True))   #(array([0, 1]), array([100, 357], dtype=int64))
 ########
