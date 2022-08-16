@@ -59,7 +59,7 @@ print('f1_score(macro) : ', f1_score(y_test,y_predict,average='macro'))
 print('=========== SMOTE 적용후 ==============')
 smote = SMOTE(random_state=123)
 x_train,y_train = smote.fit_resample(x_train,y_train)
-# 가장 큰 숫자에 통일되서 증폭됨 ,단점은 데이터가 많아져서 오래걸림
+# 가장 큰 숫자에 통일되서 증폭됨 ,단점 (resampling과정)은 데이터가 많아져서 오래걸림(전체를 /n 해서 10번반복하여서 하는 편법으로 시간을 줄일수 있다.)
 print(pd.Series(y_train).value_counts())   
 
 # 0    53
@@ -75,6 +75,18 @@ score = model.score(x_test,y_test)
 print('acc_score : ', accuracy_score(y_test,y_predict)) 
 print('f1_score(macro) : ', f1_score(y_test,y_predict,average='macro')) 
 
-
+# 1    53
+# 0    44
+# 2    17
+# dtype: int64
+# acc_score :  0.9487179487179487
+# f1_score(macro) :  0.9404257630064081
+# =========== SMOTE 적용후 ==============
+# 0    53
+# 1    53
+# 2    53
+# dtype: int64
+# acc_score :  0.9743589743589743
+# f1_score(macro) :  0.9797235023041475
 
 

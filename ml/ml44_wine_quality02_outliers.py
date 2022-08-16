@@ -10,7 +10,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 #1. 데이터
-path = "D:/_data/winequality/"
+path = "D:\study_data\_data/"
 datasets = pd.read_csv(path + 'winequality-white.csv', index_col = None, header = 0, sep=';') # 분리
 
 x = datasets.drop('quality', axis=1)
@@ -32,15 +32,6 @@ datasets = remove_outlier(datasets)
 
 # # 이상치를 interpolate로 채우기
 datasets = datasets.interpolate()
-print(datasets[:40])
-
-
-x = datasets[:, :11]                       # 모든 행, 10번재 열까지
-y = datasets[:, 11]                        # 모든 행, 11번째 열
-print(x.shape,y.shape)                      #(4898, 11) (4898,)
-
-print(np.unique(y,return_counts=True))      #(array([3., 4., 5., 6., 7., 8., 9.]), array([  20,  163, 1457, 2198,  880,  175,    5], dtype=int64))
-print(datasets['quality'].value_counts())   #pandas 는 value_counts
 
 
 from sklearn.model_selection import train_test_split
