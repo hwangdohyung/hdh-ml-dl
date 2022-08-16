@@ -45,11 +45,6 @@ train_y = train_df.filter(regex='Y') # Output : Y Feature
 cols = ["X_10","X_11"]
 train_x[cols] = train_x[cols].replace(0, np.nan)
 
-# MICE 결측치 보간
-
-
-
-
 imp = IterativeImputer(estimator = LinearRegression(), 
                        tol= 1e-10, 
                        max_iter=30, 
@@ -63,9 +58,9 @@ kfold = KFold(n_splits=n_splits, shuffle = True, random_state = 123)
 
 parameters = {'n_estimators' : [100],
               'learning_rate': [0.1],
-              'max_depth': [None, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            #   'gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100],
-            #   'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
+              'max_depth': [None],
+              'gamma': [1],
+              'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
             #   'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
             #   'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
             #   'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
@@ -73,7 +68,6 @@ parameters = {'n_estimators' : [100],
             #   'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
             #   'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
               }
-
 
 xgb = XGBRegressor(random_state=123)
 # model = XGBRFRegressor().fit(train_x, train_y)  5

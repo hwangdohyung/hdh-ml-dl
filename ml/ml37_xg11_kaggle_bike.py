@@ -36,6 +36,7 @@ test_set.drop('datetime',axis=1,inplace=True)
 
 
 x = train_set.drop(['count'], axis=1)  
+x = train_set.drop(['count'], axis=1)  
 
 
 y = train_set['count'] 
