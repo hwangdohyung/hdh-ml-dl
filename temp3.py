@@ -56,24 +56,32 @@ train_x = pd.DataFrame(imp.fit_transform(train_x))
 n_splits = 5
 kfold = KFold(n_splits=n_splits, shuffle = True, random_state = 123)
 
-parameters = {'n_estimators' : [100],
-              'learning_rate': [0.1],
-              'max_depth': [None],
-              'gamma': [1],
-              'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
-            #   'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
-            #   'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
-            #   'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
-              }
+# parameters = {'n_estimators' : [100],
+#               'learning_rate': [0.1],
+#               'max_depth': [None],
+#               'gamma': [1],
+#               'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1],
+#             #   'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+#             #   'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+#             #   'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+#             #   'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
+#             #   'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
+#             #   'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
+            #   }
 
-xgb = XGBRegressor(random_state=123)
+model = XGBRegressor(random_state=123,
+                   n_estimators = 100,
+                   learning_rate = 0.1,
+                   max_depth = None,
+                   gamma = 1,
+                   min_child_weight = 0)
+
 # model = XGBRFRegressor().fit(train_x, train_y)  5
 
-model = RandomizedSearchCV(xgb, parameters, cv=kfold, n_jobs=8,)
+# model = RandomizedSearchCV(xgb, parameters, cv=kfold, n_jobs=8,)
 model.fit(train_x,train_y)
+
+print('결과 : ',model.score(train_x,train_y))
  
 print(test_x.shape,train_x.shape) 
 

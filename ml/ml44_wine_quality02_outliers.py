@@ -28,6 +28,7 @@ def remove_outlier(input_data):
     df_removed_outlier = input_data[(minimum < input_data) & (input_data < maximum)]
     return df_removed_outlier
 
+
 datasets = remove_outlier(datasets)
 
 # # 이상치를 interpolate로 채우기

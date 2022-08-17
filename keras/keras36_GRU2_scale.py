@@ -26,7 +26,6 @@ model.add(Dense(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))
-model.add(Dense(100, activation= 'relu'))
 model.add(Dense(1))
 
 #3.컴파일,훈련

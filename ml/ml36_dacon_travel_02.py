@@ -41,6 +41,23 @@ for i in idxarr:
 alldata = pd.concat((train, test), axis=0)
 alldata_index = alldata.index
 
+# # 아웃라이어를 찾아서 NaN으로 바꾸기
+# def remove_outlier(input_data):
+#     q1 = input_data.quantile(0.25) # 제 1사분위수
+#     q3 = input_data.quantile(0.75) # 제 3사분위수
+#     iqr = q3 - q1 # IQR(Interquartile range) 계산
+#     minimum = q1 - (iqr * 1.5) # IQR 최솟값
+#     maximum = q3 + (iqr * 1.5) # IQR 최댓값
+#     # IQR 범위 내에 있는 데이터만 산출(IQR 범위 밖의 데이터는 이상치)
+#     df_removed_outlier = input_data[(minimum < input_data) & (input_data < maximum)]
+#     return df_removed_outlier
+
+# datasets = remove_outlier(alldata)
+
+# # # 이상치를 interpolate로 채우기
+# alldata = datasets.interpolate()
+
+
 alldata = alldata.drop(['Age','MonthlyIncome'],axis=1)
 
 print(alldata.shape)
@@ -76,7 +93,7 @@ print(test.columns)
 test = test.drop('ProdTaken',axis=1)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.9, 
-                                                     random_state=123)
+                                                     random_state=123,stratify=y)
 
 n_splits = 5
 kfold = KFold(n_splits=n_splits, shuffle = True, random_state = 123)
@@ -145,8 +162,6 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from xgboost import XGBRegressor
 # print('최상의 매개변수 : ', model.best_params_)
 # print('최상의 점수 : ', model.best_score_)
-
-
 
 
 submit= model.predict(test)
