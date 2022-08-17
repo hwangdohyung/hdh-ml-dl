@@ -15,7 +15,7 @@ datasets = load_breast_cancer()
 x = datasets.data
 y = datasets.target
 
-## 개쉽쥬 ##
+
 zero = np.array(np.where(y==0))
 zero2 = zero.reshape(212,)[:112]
 # zero3= np.random.choice(zero2,112,replace=False) # 섞고싶으면 !
