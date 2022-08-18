@@ -36,24 +36,26 @@ kfold = StratifiedKFold(n_splits=n_splits, shuffle = True, random_state = 123)
 # 'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10] 디폴트 0/ 0~inf / L1 절대값 가중치 규제 /alpha
 # 'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10] 디폴트 1/ 0~inf/ L2 제곱 가중치 규제 /lambda
 
-parameters = {'n_estimators' : [1000],
+parameters = {'n_estimators' : [200],
               'learning_rate': [0.1],
               'max_depth': [3],
-              'gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100],
-              'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
-            #   'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
-            #   'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
-            #   'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
+              'gamma': [0],
+              'min_child_weight': [1],
+              'subsample': [0.7],
+              'colsample_bytree': [0.3],
+              'colsample_bylevel': [0.5],
+              'colsample_bynode': [1] ,
+              'reg_alpha': [0.001],
+              'reg_lambda':[0.001]
               }
 
-# https://xgboost.readthedocs.io/en/stable/parameter.html
+
 
 import time
 #2.모델 
-xgb = XGBClassifier(random_state = 123,tree_method = 'gpu_hist',predictor = 'gpu_predictor', gpu_id=0,)
+xgb = XGBClassifier(random_state = 123,
+                    # tree_method = 'gpu_hist',predictor = 'gpu_predictor', gpu_id=0,
+                    )
 
 model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8,verbose=1)
 start = time.time()
@@ -67,3 +69,7 @@ print(results)
 print('걸린시간 : ', round(end-start,2))
 
 
+# 최상의 매개변수 :  {'colsample_bylevel': 0.5, 'colsample_bynode': 1, 'colsample_bytree': 0.3, 'gamma': 0, 'learning_rate': 0.1, 'max_depth': 3, 'min_child_weight': 1, 'n_estimators': 200, 'reg_alpha': 
+# 0.001, 'reg_lambda': 0.001, 'subsample': 0.7}
+# 최상의 점수 :  0.9798199767711964
+# 0.9888888888888889

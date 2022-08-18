@@ -87,3 +87,4 @@ print(y_test)
 
 # loss :  0.018528694286942482
 # accuracy :  1.0
+

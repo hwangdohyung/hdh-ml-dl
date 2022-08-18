@@ -30,30 +30,29 @@ y = train_set['count']
 
 x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.7,random_state=31)
 
-parameters = {'n_estimators' : [100],
-              'learning_rate': [0.2],
-              'max_depth': [9],
-              'gamma': [100],
-              'min_child_weight': [0.1],
-              'subsample': [1],
-              'colsample_bytree': [1],
-              'colsample_bylevel': [0.3],
-              'colsample_bynode': [0.7] ,
-              'reg_alpha': [0.01],
-              'reg_lambda':[0.1]
-              }
 
 #2. 모델 
 from sklearn.svm import LinearSVC,SVC
-from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor,BaggingRegressor
 from xgboost import XGBRegressor
 from sklearn.pipeline import make_pipeline
 
-xgb = XGBRegressor(random_state=123)
+model =BaggingRegressor (XGBRegressor(random_state=123,
+                                     n_estimators=100,
+                                     learning_rate=0.2,
+                                     max_depth=9,
+                                     gamma=100,
+                                     min_child_weight=0.1,
+                                     subsample=1,
+                                     colsample_bytree=1,
+                                     colsample_byleve=0.3,
+                                     colsample_bynode=0.7 ,
+                                     reg_alpha=0.01,
+                                     reg_lambda=0.1))
 
 # model = RandomForestClassifier()
 # pipe = make_pipeline(MinMaxScaler(), XGBRegressor())
-model = RandomizedSearchCV(xgb,parameters,cv=5,verbose=1)
+# model = RandomizedSearchCV(xgb,parameters,cv=5,verbose=1)
 
 #3.훈련 
 model.fit(x_train, y_train) # 파이프라인에서 fit 할땐 스케일링의 transform 과 fit이 돌아간다. 
@@ -61,13 +60,13 @@ model.fit(x_train, y_train) # 파이프라인에서 fit 할땐 스케일링의 t
 #4.평가, 예측 
 result = model.score(x_test, y_test)
 
-print('최상의 매개변수 : ', model.best_params_)
-print('최상의 점수 : ', model.best_score_)
+# print('최상의 매개변수 : ', model.best_params_)
+# print('최상의 점수 : ', model.best_score_)
 
 
 print('model.r2 : ', round(result,2))
 
 # model.r2 :  0.8
-
+# model.r2 :  0.8
 
 
