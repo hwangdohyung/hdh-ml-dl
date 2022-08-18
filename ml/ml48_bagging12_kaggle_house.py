@@ -63,15 +63,15 @@ x_train, x_test, y_train, y_test = train_test_split(train_set, trainLabel, train
 n_splits = 5
 kfold = KFold(n_splits=n_splits, shuffle= True, random_state=66)
 
-parameters = {'RF__n_estimators' : [100, 200, 300],
-            #   'RF__learning_rate': [0.1, 0.2, 0.3, 0.5, 1, 0.01, 0.001],
-            #   'RF__max_depth': [None, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            #   'RF__gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100],
-            #   'RF__min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10],
-            #   'RF__subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'RF__colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'RF__colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
-            #   'RF__colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
+parameters = {'RF__n_estimators' : [100],
+              'RF__learning_rate': [0.3],
+              'RF__max_depth': [3],
+              'RF__gamma': [1],
+              'RF__min_child_weight': [0.001],
+              'RF__subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+              'RF__colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+              'RF__colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1],
+              'RF__colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] ,
             #   'RF__reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
             #   'RF__reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
               }
@@ -105,3 +105,4 @@ print('최상의 점수 : ', model.best_score_)
 print('model.score : ', round(result,2))
 
 # model.score :  0.89
+
