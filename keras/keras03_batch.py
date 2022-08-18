@@ -18,7 +18,7 @@ model.add(Dense(1))
 
 
 #3. 컴파일, 훈련
-model.compile(loss='mae', optimizer='adam') 
+model.compile(loss='mae', optimizer='adam')  
 model.fit(x, y, epochs=100, batch_size=1)# batch = 데이터 하나씩 따로 작업하는것 *데이터가 많아질 때 overflow를 방지,batch size가 줄면 
 #훈련 횟수 많아짐 단점은 시간이 오래걸림
 #append= 하나씩 나온 결과를 연결하는 것 

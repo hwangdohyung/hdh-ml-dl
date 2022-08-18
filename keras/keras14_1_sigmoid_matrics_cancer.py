@@ -32,14 +32,14 @@ earlyStopping= EarlyStopping(monitor= 'val_loss',patience=80,mode='min',restore_
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy','mse'],) #모델과 예측값을 비교하는곳 2진분류는 무조건 binary쓴다. 다중분류는 softmax 
                                                                   #리스트 형태 평가지표 2개이상 계속 넣을수 있다. mse는 2진분류에서 신뢰할수없다.              
 x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.7,random_state=31)
-hist=model.fit(x_train,y_train,epochs=1000, batch_size=32,verbose=1,validation_split=0.2, callbacks= [earlyStopping])#callback 리스트형태 더 호출할수있다.
+hist=model.fit(x_train,y_train,epochs=100, batch_size=32,verbose=1,validation_split=0.2, callbacks= [earlyStopping])#callback 리스트형태 더 호출할수있다.
 
 #4.평가,예측
 loss = model.evaluate(x_test,y_test)
 print('loss: ', loss)
 
-y_predict = model.predict(x_test) # 반올림을 해줘야 acc가 나온다 
-y_predict = y_predict.round()
+y_predict = model.predict(x_test).round() # 반올림을 해줘야 acc가 나온다 
+# y_predict = y_predict.round()
 acc = accuracy_score(y_test, y_predict) 
 print('acc스코어: ', acc)
 print(y_predict)

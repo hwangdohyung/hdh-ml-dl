@@ -29,7 +29,6 @@ sns.heatmap(data=train.corr(),square=True, annot=True, cbar=True)
 plt.show()
 
 
-
 # 결측치를 처리하는 함수를 작성.
 def handle_na(data):
     temp = data.copy()
@@ -137,7 +136,6 @@ print(sample_submission)
 sample_submission.to_csv(path+'la.csv',index = False)
 
 exit()
-
 
 drop_cols = [ 'Age', 'NumberOfTrips' ,'MonthlyIncome' ,'TypeofContact','Occupation','ProductPitched','MaritalStatus','Passport']
 

@@ -164,8 +164,6 @@ from xgboost import XGBRegressor
 # print('최상의 점수 : ', model.best_score_)
 
 
-submit= model.predict(test)
-
 submission = pd.read_csv(path + 'sample_submission.csv')
 submission['ProdTaken'] = submit
 
