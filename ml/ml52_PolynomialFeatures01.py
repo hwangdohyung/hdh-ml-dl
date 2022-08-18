@@ -20,3 +20,6 @@ model = make_pipeline(StandardScaler(),LinearRegression(),)
 model.fit(x_train,y_train)
 print(model.score(x_test,y_test)) #0.7665382927362877
 
+
+
+

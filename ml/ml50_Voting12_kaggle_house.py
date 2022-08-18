@@ -108,3 +108,6 @@ for model2 in calssifiers:
 # XGBRegressor 정확도 : 0.7350
 # LGBMRegressor 정확도 : 0.9063
 # CatBoostRegressor 정확도 : 0.9066
+
+
+

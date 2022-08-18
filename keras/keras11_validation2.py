@@ -48,3 +48,6 @@ print(x_val)
 
 # #훈련 loss보다 검증 loss값이 더 떨어질 수 밖에 없다. (통상 그렇다,항상 그런것은 아님)
 
+for i in range(4): 
+    print(i)
+    
