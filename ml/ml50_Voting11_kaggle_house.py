@@ -59,52 +59,52 @@ print(test_set)
 ###############################################################
 x_train, x_test, y_train, y_test = train_test_split(train_set, trainLabel, train_size=0.9, 
                                             
-                                                random_state=58)
-n_splits = 5
-kfold = KFold(n_splits=n_splits, shuffle= True, random_state=66)
+                                            random_state=123)
 
-parameters = {'RF__n_estimators' : [100],
-              'RF__learning_rate': [0.3],
-              'RF__max_depth': [3],
-              'RF__gamma': [1],
-              'RF__min_child_weight': [0.001],
-              'RF__subsample': [0.1],
-              'RF__colsample_bytree': [0.5],
-              'RF__colsample_bylevel': [0.7],
-              'RF__colsample_bynode': [0.2] ,
-              'RF__reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10],
-              'RF__reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10]
-              }
+scaler = StandardScaler()
+x_train = scaler.fit_transform(x_train)
+x_test = scaler.transform(x_test)
 
-#2. 모델 
-from sklearn.svm import LinearSVC,SVC
-from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
-from sklearn.pipeline import Pipeline, make_pipeline 
 from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
+from catboost import CatBoostRegressor
+from sklearn.ensemble import VotingRegressor
 
+#2. 모델구성
+xg = XGBRegressor(random_state=123,n_estimators=100,
+              learning_rate=0.3,
+              max_depth=3,
+              gamma=1,
+              min_child_weight=0.001,
+              subsample=0.1,
+              colsample_bytree=0.5,
+              colsample_bylevel=0.7,
+              colsample_bynode=0.2 ,
+              reg_alpha=0.001,
+              reg_lambda=0)
+lg = LGBMRegressor()
+cat = CatBoostRegressor(verbose=0)
 
-pipe = Pipeline([('minmax', MinMaxScaler()), ('RF', XGBRegressor())],verbose=1) # '' 는 그냥 변수명 (파이프라인에 그리드서치 엮을때 모델명 변수를 파라미터에 명시해 줘야 됨.)
+model = VotingRegressor(estimators=[('XG', xg), ('LG', lg),('CAT',cat)])
 
+#3. 훈련
+model.fit(x_train, y_train)
 
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from sklearn.experimental import enable_halving_search_cv
-from sklearn.model_selection import HalvingGridSearchCV, HalvingRandomSearchCV
+#4. 평가, 예측
+y_predict = model.predict(x_test)
 
-# model =RandomForestRegressor (pipe, parameters, cv=5, verbose=1)
-model =RandomizedSearchCV(XGBRegressor(), parameters, cv=5, verbose=1)
+score = r2_score(y_test, y_predict)
+print('보팅결과 :', round(score, 4)) 
 
-model.fit(x_train, y_train) # 파이프라인에서 fit 할땐 스케일링의 transform 과 fit이 돌아간다. 
+calssifiers =[xg, lg, cat]
+for model2 in calssifiers:
+    model2.fit(x_train, y_train)
+    y_predict = model2.predict(x_test)
+    score2 = r2_score(y_test, y_predict)
+    class_name = model2.__class__.__name__ 
+    print('{0} 정확도 : {1:.4f}'.format(class_name, score2)) 
 
-#4.평가, 예측 
-result = model.score(x_test, y_test)
-
-print('최상의 매개변수 : ', model.best_params_)
-print('최상의 점수 : ', model.best_score_)
-
-
-print('model.score : ', round(result,2))
-
-# model.score :  0.89
-
-# 최상의 점수 :  0.8838098026347219
-# model.score :  0.91
+# 보팅결과 : 0.8983
+# XGBRegressor 정확도 : 0.7350
+# LGBMRegressor 정확도 : 0.9063
+# CatBoostRegressor 정확도 : 0.9066

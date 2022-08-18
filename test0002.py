@@ -1,221 +1,63 @@
-import numpy as np
-import pandas as pd
-from sklearn import datasets
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from scipy.stats import skew
-import warnings
-warnings.filterwarnings('ignore')
+from random import shuffle
+import numpy as np 
+from sklearn.datasets import load_iris
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import KFold,StratifiedKFold
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from xgboost import XGBClassifier,XGBRegressor
+import time 
 
+#1.데이터 
+datasets = load_iris()
+x = datasets.data
+y = datasets.target 
+print(x.shape, y.shape) #(569, 30) (569,)
 
-#1. 데이터
-path = 'D:\study_data\_data\dacon_travle/'
-train_set = pd.read_csv(path + 'train.csv', index_col=0)
-test_set = pd.read_csv(path + 'test.csv', index_col=0)
-submission = pd.read_csv(path + 'sample_submission.csv')
-
-print('train.shape, test.shape, submit.shape', 
-       train_set.shape, test_set.shape, submission.shape)    # (1955, 19) (2933, 18) (2933, 2)
-
-
-# 'ProdTaken'과  'MonthlyIncome'의 관계
-# import matplotlib.pyplot as plt
-# fig, ax = plt.subplots()
-# ax.scatter(x = train_set['ProdTaken'], y = train_set['MonthlyIncome'])
-# plt.ylabel('ProdTaken', fontsize = 13)
-# plt.ylabel('MonthlyIncome', fontsize = 13)
-# plt.show()
-
-# 이상치 제거 'ProdTaken'와  'MonthlyIncome'
-# train_set = train_set.drop(train_set[(train_set['MonthlyIncome']>80000) 
-#                                      & (train_set['ProdTaken']>=0)].index) 
-# 데이터 전처리
-train_set[['TypeofContact', 'ProdTaken']].groupby(['TypeofContact'], 
-                                          as_index=False).mean().sort_values(by='ProdTaken', ascending=False)
-train_set[['Occupation', 'ProdTaken']].groupby(['Occupation'], 
-                                       as_index=False).mean().sort_values(by='ProdTaken', ascending=False)
-train_set[['Gender', 'ProdTaken']].groupby(['Gender'], 
-                                         as_index=False).mean().sort_values(by='ProdTaken', ascending=False)
-train_set[['MaritalStatus', 'ProdTaken']].groupby(['MaritalStatus'], 
-                                         as_index=False).mean().sort_values(by='ProdTaken', ascending=False)
-train_set[['Designation', 'ProdTaken']].groupby(['Designation'], 
-                                         as_index=False).mean().sort_values(by='ProdTaken', ascending=False)
-
-# all_data_set 데이터
-label = train_set['ProdTaken']
-all_data_set = pd.concat((train_set, test_set)).reset_index(drop=True)
-all_data_set = all_data_set.drop(['ProdTaken'], axis=1)
-print(all_data_set.shape)   # (4888, 18)
-print(all_data_set.info())
-print(all_data_set.describe())
-print(all_data_set.columns) # Index(['Age', 'TypeofContact', 'CityTier', 'DurationOfPitch', 'Occupation',
-                            #    'Gender', 'NumberOfPersonVisiting', 'NumberOfFollowups',
-                            #    'ProductPitched', 'PreferredPropertyStar', 'MaritalStatus',
-                            #    'NumberOfTrips', 'Passport', 'PitchSatisfactionScore', 'OwnCar',
-                            #    'NumberOfChildrenVisiting', 'Designation', 'MonthlyIncome'],
-                            #     dtype='object')
-
-# 결측값 조회
-print(all_data_set.isnull().sum()) # Age 226, MonthlyIncome 233,
-                                   # DurationOfPitch 251, TypeofContact 25, 
-                                   # NumberOfFollowups 45, PreferredPropertyStar 26, 
-                                   # NumberOfTrips 140, NumberOfChildrenVisiting 66
-                                   
-# 라벨인코딩
-from sklearn.preprocessing import LabelEncoder
-cols = ('TypeofContact', 'Occupation', 'Gender', 'ProductPitched', 'MaritalStatus', 'Designation')
-for c in cols:
-    lbl = LabelEncoder() 
-    lbl.fit(list(all_data_set[c].values)) 
-    all_data_set[c] = lbl.transform(list(all_data_set[c].values))
-print(all_data_set.info())
-
-    
-# ###(1) Age 와 MonthlyIncome
-# all_data_set['Age'] = all_data_set['Age'].fillna('None')
-# all_data_set['MonthlyIncome'] = all_data_set['MonthlyIncome'].fillna('None')
-
-###(2) DurationOfPitch 와 TypeofContact
-all_data_set['DurationOfPitch'].isnull().sum()
-all_data_set['DurationOfPitch'].value_counts()
-# all_data_set['Age'] = all_data_set['Age'].fillna(all_data_set['Age'].median())
-# all_data_set['MonthlyIncome'] = all_data_set['MonthlyIncome'].fillna(all_data_set['MonthlyIncome'].median())
-all_data_set['DurationOfPitch'] = all_data_set['DurationOfPitch'].fillna(all_data_set['DurationOfPitch'].median())
-all_data_set['TypeofContact'].value_counts()
-for col in ['Age', 'MonthlyIncome', 'NumberOfFollowups', 'PreferredPropertyStar', 'NumberOfTrips', 'NumberOfChildrenVisiting']:
-# for col in ['NumberOfFollowups', 'PreferredPropertyStar', 'NumberOfTrips', 'NumberOfChildrenVisiting']:
-    # all_data_set[col] = all_data_set[col].fillna(all_data_set[col].mode()[0])
-    all_data_set[col] = all_data_set[col].fillna(all_data_set[col].median())
-
-def outliers(df, col):
-    out = []
-    m = np.mean(df[col])
-    sd = np.std(df[col])
-    
-    for i in df[col]: 
-        z = (i-m)/sd
-        if np.abs(z) > 3: 
-            out.append(i)
-            
-    print("Outliers:", out)
-    print("min",np.median(out))
-    return np.median(out)
-    
-col = "MonthlyIncome"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
-
-col = "NumberOfTrips"
-medOutlier = outliers(train_set,col)
-train_set[train_set[col] >= medOutlier]
-
-                                
-# x, y 데이터
-# all_data_set을 train_set과 test_set으로 분할
-train_set = all_data_set[:len(train_set)]
-test_set = all_data_set[len(train_set):]
-print(train_set.shape, test_set.shape)  # (1955, 18) (2933, 18)
-
-x = train_set
-y = label   # train_set['ProdTaken']
-
-# IterativeImputer() 결측치 처리
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
-imputer = IterativeImputer(random_state=72)
-imputer.fit(x)
-x = imputer.transform(x)
-
-from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
-x_train, x_test, y_train, y_test = train_test_split(
-    x, y, train_size=0.8, shuffle=True, random_state=72
-    )
+x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=123, stratify=y)
 
 scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
-# n_splits = 5
-# kfold = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=123)
+n_splits = 5
+kfold = StratifiedKFold(n_splits=n_splits, shuffle = True, random_state = 123)
 
-# parameters = {'n_estimators': [100],
-#               'learning_rate' : [0.1],
-#               'max_depth' : [3], #default 6 => 통상 max는 4정도에서 성능이 좋다
-#               'gamma': [1],
-#               'min_child_weight': [1],
-#               'subsample' : [1],
-#               'colsample_bytree' : [1],
-#               'colsample_bylevel' : [1],
-#               'colsample_bynode' : [1],
-#               'reg_alpha' : [0],
-#               'reg_lambda' : [1],
-#               }  
+# 'n_estimators' : [100, 200, 300, 400, 500, 1000] # 디폴트 100 / 1~inf  (inf: 무한대)
+# 'learning_rate': [0.1, 0.2, 0.3, 0.5, 1, 0.01, 0.001] 디폴트 0.3/ 0~1 / eta라고 써도 먹힘
+# 'max_depth': [None, 2, 3, 4, 5, 6, 7, 8, 9, 10] 디폴트 6 / 0~ inf / 정수
+# 'gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100] 디폴트 0/ 0~inf
+# 'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10] 디폴트 1 / 0~inf
+# 'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
+# 'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
+# 'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
+# 'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
+# 'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10] 디폴트 0/ 0~inf / L1 절대값 가중치 규제 /alpha
+# 'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10] 디폴트 1/ 0~inf/ L2 제곱 가중치 규제 /lambda
 
+parameters = {'n_estimators' : [100],
+              'learning_rate': [0.1],
+              'max_depth': [3],
+              'gamma': [1],
+              'min_child_weight': [1],
+              'subsample': [1],
+              'colsample_bytree': [1],
+              'colsample_bylevel': [1],
+              'colsample_bynode': [1] ,
+              'reg_alpha': [0],
+              'reg_lambda':[1]
+              }
 
-#2. 모델구성
-# from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from sklearn.model_selection import GridSearchCV
+from lightgbm import LGBMClassifier
+#2.모델 
+xgb = LGBMClassifier(random_state = 123)
 
+model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8)
 
-# # model = RandomForestClassifier()
-model = XGBClassifier(tree_method='gpu_hist', predictor='gpu_predictor', gpu_id=0)
-# model = XGBClassifier(random_state=72)
-# model = GridSearchCV(xgb, parameters, verbose=2, cv=kfold, n_jobs=8)
+model.fit(x_train,y_train)
 
-#3. 훈련
-model.fit(x_train, y_train) 
-
-
-#4. 평가, 예측
-result = model.score(x_test, y_test)    
-print('model.score : ', result) 
-
-y_summit = model.predict(test_set)
-print(y_summit) 
-print(y_summit.shape)   # (2933,)
-
-# submission summit
-submission['ProdTaken'] = y_summit
-print(submission)
-submission.to_csv('D:\study_data\_data\dacon_travle/submission1.csv', index=False)
+print('최상의 매개변수 : ', model.best_params_)
+print('최상의 점수 : ', model.best_score_)
 
 
-#================================= 결과 ====================================#
-# GridSearch 적용 전 model.score :  0.8900255754475703
-# GridSearch 적용 후 model.score :  0.8797953964194374
-#===========================================================================#
-import matplotlib.pyplot as plt
-import math
 
-def outliers(data_out):
-    quartile_1, q2, quartile_3 = np.percentile(data_out, [25, 50, 75])
-
-    print('1사분위: ', quartile_1)
-    print('q2: ', q2)
-    print('3사분위: ', quartile_3)
-    iqr = quartile_3-quartile_1 # interquartile range
-    lower_bound = quartile_1 - (iqr * 1.5) # -5.0
-    upper_bound = quartile_3 + (iqr * 1.5) # 19
-    print(upper_bound)
-    return np.where((data_out>upper_bound) | (data_out<lower_bound))
-
-def outliers_printer(dataset):
-    plt.figure(figsize=(10,8))
-    for i in range(dataset.shape[1]):
-        col = dataset[:, i]
-        outliers_loc = outliers(col)
-        print(i, '열의 이상치의 위치: ', outliers_loc, '\n')
-        plt.subplot(math.ceil(dataset.shape[1]/2),2,i+1)
-        plt.boxplot(col)
-        
-    plt.show()
-    
-outliers_printer(aaa)
-
-for i in range(len(a3)):
-    x[a3[i]][3] = 0
-
-for i in range(len(a4)):
-    x[a4[i]][4] = 0
-
-outliers_printer(a)
