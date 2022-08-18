@@ -15,7 +15,6 @@ print(kmeans.labels_)
 
 print(datasets.target)
 
-
 x['cluster'] = kmeans.labels_
 x['target'] = datasets.target
 
