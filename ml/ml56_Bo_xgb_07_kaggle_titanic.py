@@ -70,39 +70,59 @@ x = train_set.drop(['Survived'], axis=1,)
 y = train_set['Survived']
 
 
+from bayes_opt import BayesianOptimization
+from lightgbm import LGBMRegressor,LGBMClassifier
 
 x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True,random_state=1234,stratify=y)
 
-scaler_li = [StandardScaler(),MinMaxScaler(),MaxAbsScaler(),RobustScaler(),QuantileTransformer(),PowerTransformer(method='yeo-johnson')]
 
-for i in scaler_li:
-    scaler = i
-    x_train = scaler.fit_transform(x_train)
-    x_test = scaler.transform(x_test)
-    model = XGBClassifier(random_state=123,
-                    n_estimators=100,
-              learning_rate=0.3,
-              max_depth=None,
-              gamma=0,
-              min_child_weight=1,
-              subsample=0.7,
-              colsample_bytree=1,
-              colsample_bylevel=1,
-              colsample_bynode=1 ,
-              reg_alpha=0,
-              reg_lambda=10)
-    model.fit(x_train,y_train)
+scaler = StandardScaler()
+x_train = scaler.fit_transform(x_train)
+x_test = scaler.transform(x_test)
+
+
+bayesian_params ={'max_depth':(2,16),'gamma': (0,100),'min_child_weight':(1,50),'subsample':(0.1,1),
+                  'colsample_bytree':(0.1,1),'colsample_bylevel':(0.1,1),'colsample_bynode':(0.1,1),'max_bin':(10,500),'reg_lambda':(0.001,10),'reg_alpha':(0.01,50)}
+
+
+def lgb_hamsu(max_depth, gamma, min_child_weight,subsample,colsample_bytree,colsample_bylevel,colsample_bynode,max_bin, reg_lambda, reg_alpha):
+    params ={'n_estimators':300, 'learning_rate':0.1,
+             'max_depth':int(round(max_depth)),                  # 무조건 정수
+             'gamma': int(round(gamma)),
+             
+             'min_child_weight': int(round(min_child_weight)),  
+             'subsample': max(min(subsample,1),0),              # 어떤 값을 넣어도 0~1 의 값
+             'colsample_bytree': max(min(colsample_bytree,1),0),
+             'colsample_bylevel': max(min(colsample_bylevel,1),0),
+             'colsample_bynode': max(min(colsample_bynode,1),0),
+             'max_bin': max(int(round(max_bin)),10),            # 무조건 10이상
+             'reg_lambda': max(reg_lambda,0),                   # 무조건 0이상(양수)
+             'reg_alpha':max(reg_alpha,0)                       
+    }
+
+    #  * : 여러개의인자를받겠다
+    # ** : 키워드받겠다(딕셔너리형태)
+    model = XGBClassifier(**params) 
+
+    model.fit(x_train,y_train,
+              eval_set=[(x_train,y_train),(x_test,y_test)],
+            #   eval_metric='merror',
+              verbose=0,
+              early_stopping_rounds=50)
 
     y_predict = model.predict(x_test)
-    print('결과 : ',round(accuracy_score(y_test,y_predict),4))
+    results = accuracy_score(y_test,y_predict)
 
+    return results
 
-# scaler = PowerTransformer(method='yeo-johnson')  # 디폴트    
-# x_train = scaler.fit_transform(x_train)
-# x_test = scaler.transform(x_test)
+lgb_bo = BayesianOptimization(f=lgb_hamsu,
+                              pbounds=bayesian_params,
+                              random_state=123)
 
-# scaler = PowerTransformer(method='box-cox')
-# x_train = scaler.fit_transform(x_train)
-# x_test = scaler.transform(x_test)
+lgb_bo.maximize(init_points=5, n_iter=100)  #초기 2번  ,n-iter : 20번 돌거다! 총 22번 돈다 
 
+print(lgb_bo.max) 
 
+# {'target': 0.9833333333333333, 'params': {'colsample_bylevel': 1.0, 'colsample_bynode': 1.0, 'colsample_bytree': 1.0,
+#                                           'gamma': 0.0, 'max_bin': 179.7102064586691, 'max_depth': 2.0, 'min_child_weight': 1.0, 
+#                                           'reg_alpha': 0.01, 'reg_lambda': 0.001, 'subsample': 1.0}}
