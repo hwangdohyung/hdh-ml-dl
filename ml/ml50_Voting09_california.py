@@ -30,7 +30,7 @@ xg = XGBRegressor(random_state=123,
                                      min_child_weight=0.1,
                                      subsample=1,
                                      colsample_bytree=1,
-                                     colsample_byleve=0.3,
+                                     colsample_bylevel=0.3,
                                      colsample_bynode=0.7 ,
                                      reg_alpha=0.01,
                                      reg_lambda=0.1)

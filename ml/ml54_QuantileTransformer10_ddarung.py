@@ -12,6 +12,10 @@ from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 from catboost import CatBoostRegressor
 from sklearn.ensemble import VotingRegressor
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.pipeline import Pipeline,make_pipeline
+from sklearn.linear_model import LinearRegression
+ 
  
 #1.데이터 
 path = './_data/ddarung/'
@@ -32,14 +36,16 @@ x = train_set.drop(['count'], axis=1,)
 
 y = train_set['count']
 
-x_train,x_test,y_train,y_test=train_test_split(x,y,train_size= 0.8,random_state=31)
+from sklearn.preprocessing import QuantileTransformer,PowerTransformer
+x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True,random_state=1234)
 
-scaler = StandardScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
+scaler_li = [StandardScaler(),MinMaxScaler(),MaxAbsScaler(),RobustScaler(),QuantileTransformer(),PowerTransformer(method='yeo-johnson')]
 
-#2. 모델구성
-xg = XGBRegressor(random_state=123,
+for i in scaler_li:
+    scaler = i
+    x_train = scaler.fit_transform(x_train)
+    x_test = scaler.transform(x_test)
+    model = XGBRegressor(random_state=123,
                                      n_estimators=100,
                                      learning_rate=0.2,
                                      max_depth=9,
@@ -51,29 +57,18 @@ xg = XGBRegressor(random_state=123,
                                      colsample_bynode=0.7 ,
                                      reg_alpha=0.01,
                                      reg_lambda=0.1)
-lg = LGBMRegressor()
-cat = CatBoostRegressor(verbose=0)
+    model.fit(x_train,y_train)
 
-model = VotingRegressor(estimators=[('XG', xg), ('LG', lg),('CAT',cat)])
-
-#3. 훈련
-model.fit(x_train, y_train)
-
-#4. 평가, 예측
-y_predict = model.predict(x_test)
-
-score = r2_score(y_test, y_predict)
-print('보팅결과 :', round(score, 4)) 
-
-calssifiers =[xg, lg, cat]
-for model2 in calssifiers:
-    model2.fit(x_train, y_train)
-    y_predict = model2.predict(x_test)
-    score2 = r2_score(y_test, y_predict)
-    class_name = model2.__class__.__name__ 
-    print('{0} 정확도 : {1:.4f}'.format(class_name, score2)) 
+    y_predict = model.predict(x_test)
+    print('결과 : ',round(r2_score(y_test,y_predict),4))
 
 
-# XGBRegressor 정확도 : 0.7875
-# LGBMRegressor 정확도 : 0.7893
-# CatBoostRegressor 정확도 : 0.8174
+# scaler = PowerTransformer(method='yeo-johnson')  # 디폴트    
+# x_train = scaler.fit_transform(x_train)
+# x_test = scaler.transform(x_test)
+
+# scaler = PowerTransformer(method='box-cox')
+# x_train = scaler.fit_transform(x_train)
+# x_test = scaler.transform(x_test)
+
+

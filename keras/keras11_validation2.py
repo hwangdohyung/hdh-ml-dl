@@ -13,10 +13,7 @@ x_train,y_train =(x[:10],y[:10])
 x_test,y_test = (x[10:13],y[10:13])
 x_val,y_val = (x[13:16],y[13:16])
 
-
-
 print(x_val)
-
 
 #[실습] 잘라봐!!!
 # x_train = np.array(range(1,11))#훈련 
@@ -48,6 +45,3 @@ print(x_val)
 
 # #훈련 loss보다 검증 loss값이 더 떨어질 수 밖에 없다. (통상 그렇다,항상 그런것은 아님)
 
-for i in range(4): 
-    print(i)
-    
