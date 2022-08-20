@@ -43,7 +43,7 @@ print(df)
 # print(df['B'].head())
 
 df = np.log1p(df)      
-
+# 원래대로 돌리려면 exp 지수변환
 # print(df['B'].head())
 
 

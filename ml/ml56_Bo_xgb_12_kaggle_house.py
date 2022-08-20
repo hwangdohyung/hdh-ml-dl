@@ -138,3 +138,5 @@ print(lgb_bo.max)
 #                                           'colsample_bynode': 0.6825865037839414, 'colsample_bytree': 0.6293790245264026, 'gamma': 59.99992779214737, 'max_bin': 
 # 365.7889091384681, 'max_depth': 8.976342730790122, 'min_child_weight': 20.58069244248133, 
 # 'reg_alpha': 11.321680490624681, 'reg_lambda': 6.533174053608911, 'subsample': 0.410697513862758}}
+
+

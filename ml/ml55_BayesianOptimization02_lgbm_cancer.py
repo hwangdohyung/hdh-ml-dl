@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score,r2_score
 import warnings
 warnings.filterwarnings('ignore')
 
+
 #1.데이터 
 datasets = load_breast_cancer()
 x,y = datasets.data, datasets.target
