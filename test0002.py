@@ -1,77 +1,113 @@
-from random import shuffle
-import numpy as np 
-from sklearn.datasets import load_iris
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import KFold,StratifiedKFold
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler,MinMaxScaler
-from xgboost import XGBClassifier,XGBRegressor
-import time 
+import pandas as pd
+import random
+import os
+import numpy as np
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer,KNNImputer
+from sklearn.linear_model import LinearRegression
+from sklearn.multioutput import MultiOutputRegressor
+from xgboost import XGBClassifier,XGBRegressor  
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor 
+from sklearn.ensemble import BaggingClassifier,BaggingRegressor  # 한가지 모델을 여러번 돌리는 것(파라미터 조절).
 
-#1.데이터 
-datasets = load_iris()
-x = datasets.data
-y = datasets.target 
-print(x.shape, y.shape) #(569, 30) (569,)
-
-x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=123, stratify=y)
-
-scaler = StandardScaler()
-x_train = scaler.fit_transform(x_train)
-x_test = scaler.transform(x_test)
-
-n_splits = 5
-kfold = StratifiedKFold(n_splits=n_splits, shuffle = True, random_state = 123)
-
-# 'n_estimators' : [100, 200, 300, 400, 500, 1000] # 디폴트 100 / 1~inf  (inf: 무한대)
-# 'learning_rate': [0.1, 0.2, 0.3, 0.5, 1, 0.01, 0.001] 디폴트 0.3/ 0~1 / eta라고 써도 먹힘
-# 'max_depth': [None, 2, 3, 4, 5, 6, 7, 8, 9, 10] 디폴트 6 / 0~ inf / 정수
-# 'gamma': [0, 1, 2, 3, 4, 5, 7, 10, 100] 디폴트 0/ 0~inf
-# 'min_child_weight': [0, 0.01, 0.001, 0.1, 0.5, 1, 5, 10] 디폴트 1 / 0~inf
-# 'subsample': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
-# 'colsample_bytree': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
-# 'colsample_bylevel': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
-# 'colsample_bynode': [0, 0.1, 0.2, 0.3, 0.5, 0.7, 1] 디폴트 1 / 0~1
-# 'reg_alpha': [0, 0.1, 0.01, 0.001, 1, 2, 10] 디폴트 0/ 0~inf / L1 절대값 가중치 규제 /alpha
-# 'reg_lambda':[0, 0.1, 0.01, 0.001, 1, 2, 10] 디폴트 1/ 0~inf/ L2 제곱 가중치 규제 /lambda
-
-parameters = {'n_estimators' : [100],
-              'learning_rate': [0.1],
-              'max_depth': [3],
-              'gamma': [1],
-              'min_child_weight': [1],
-              'subsample': [1],
-              'colsample_bytree': [1],
-              'colsample_bylevel': [1],
-              'colsample_bynode': [1] ,
-              'reg_alpha': [0],
-              'reg_lambda':[1]
-              }
-
-from lightgbm import LGBMClassifier
-#2.모델 
-xgb = LGBMClassifier(random_state = 123)
-
-model = GridSearchCV(xgb, parameters, cv=kfold, n_jobs=8)
-
-model.fit(x_train,y_train)
-
-print('최상의 매개변수 : ', model.best_params_)
-print('최상의 점수 : ', model.best_score_)
+path = 'D:\study_data\_data\dacon_antena/'
 
 
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+seed_everything(42) # Seed 고정
 
-feil_name = ["01_iris","02_cancer","03__diabets","04_wine","05_fetch_covtype",\
-    "06_digits","07_kaggle_titanic","08_boston.py","09_california","10_ddarung",\
-        "11_kaggle_bike","12_kaggle_house"]
+train_df = pd.read_csv(path + 'train.csv')
+test_x = pd.read_csv(path + 'test.csv').drop(columns=['ID'])
+train = np.array(train_df)
+
+# print("=============================상관계수 히트 맵==============")
+# print(train_df.corr())                    # 상관관계를 확인.  
+# import matplotlib.pyplot as plt 
+# import seaborn as sns
+# sns.set(font_scale=0.3)
+# sns.heatmap(data=train_df.corr(),square=True, annot=True, cbar=True) 
+# plt.show()
+
+precent = [0.20,0.40,0.60,0.80]
 
 
-# feil_name = ["01_iris.py"]
+print(train_df.describe(percentiles=precent))
+# print(train_df.info())  
+# print(train_df.columns.values)
+# print(train_df.isnull().sum())
+
+#  X_07, X_08, X_09
+ 
+train_x = train_df.filter(regex='X') # Input : X Featrue
+train_y = train_df.filter(regex='Y') # Output : Y Feature
+
+cols = ["X_10","X_11"]
+train_x[cols] = train_x[cols].replace(0, np.nan)
+
+# MICE 결측치 보간
+imp = IterativeImputer(estimator = LinearRegression(), 
+                       tol= 1e-10, 
+                       max_iter=30, 
+                       verbose=2, 
+                       imputation_order='roman')
 
 
-for feil_name in feil_name:
-    with open(f"./ml/ml56_Bo_xgb_{feil_name}.py","w") as file:
-        file.write("")
-        
-        
-        
+train_x = pd.DataFrame(imp.fit_transform(train_x))
+print(train_x.shape,train_y.shape)
+
+
+######################모델######################################
+from sklearn.linear_model import LogisticRegression
+model = MultiOutputRegressor(RandomForestRegressor()).fit(train_x, train_y)
+# 0.03932714821910016
+
+# model = MultiOutputRegressor(XGBRegressor(n_estimators=100, learning_rate=0.08, gamma = 0, subsample=0.75, colsample_bytree = 1, max_depth=7) ).fit(train_x, train_y)
+# 0.28798862985210744 
+
+# model = BaggingRegressor(XGBRegressor(n_estimators=100, learning_rate=0.1, gamma = 1, subsample=1, colsample_bytree = 1, max_depth=4,random_state=123) ).fit(train_x, train_y)
+# 0.098387698230517  best
+
+# model = MultiOutputRegressor(XGBRegressor(n_estimators=100, learning_rate=0.1, gamma = 1, subsample=1, colsample_bytree = 1, max_depth=3) ).fit(train_x, train_y)
+# 0.0942562122814897
+
+# model = XGBRegressor().fit(train_x, train_y)
+# 0.4177584378415335
+
+print('Done.')
+######################모델######################################
+
+preds = model.predict(test_x)
+print(preds)
+print(model.score(train_x, train_y))
+print('Done.')
+
+# {'n_estimators':[1000],
+#               'learning_rate':[0.1],
+#               'max_depth':[3],
+#               'gamma': [1],
+#               'min_child_weight':[1],
+#               'subsample':[1],
+#               'colsample_bytree':[1],
+#               'colsample_bylevel':[1],
+#             #   'colsample_byload':[1],
+#               'reg_alpha':[0],
+#               'reg_lambda':[1]
+#               }  
+
+
+
+
+####################제출############################
+
+submit = pd.read_csv(path + 'sample_submission.csv')
+
+for idx, col in enumerate(submit.columns):
+    if col=='ID':
+        continue
+    submit[col] = preds[:,idx-1]
+print('Done.')
+
+submit.to_csv(path + 'submmit0820_1.csv', index=False)
