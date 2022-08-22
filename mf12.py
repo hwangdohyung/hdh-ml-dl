@@ -10,3 +10,5 @@ for feil_name in feil_name:
     with open(f"./ml/ml56_Bo_xgb_{feil_name}.py","w") as file:
         file.write("")
         
+        
+        
