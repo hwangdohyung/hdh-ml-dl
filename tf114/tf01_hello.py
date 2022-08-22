@@ -12,3 +12,6 @@ print(sess.run(hello))
 
 # 텐서플로우1는 출력을 할 때 반드시 sess , run 을 거쳐야한다
 
+
+
+
