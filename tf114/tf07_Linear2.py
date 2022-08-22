@@ -10,7 +10,7 @@ W = tf.Variable(10, dtype=tf.float32)
 b = tf.Variable(1, dtype=tf.float32)
 
 #2.모델 구성 
-h = x * W + b 
+h = x * W + b   # 실제 연산방법
 
 #3-1. 컴파일 
 loss = tf.reduce_mean(tf.square(h - y))
@@ -24,8 +24,11 @@ sess.run(tf.global_variables_initializer())
 epochs = 2001 
 for step in range(epochs):
     sess.run(train)
-    print(step, sess.run(loss), sess.run(W), sess.run(b))
+    if step %20 == 0:       # %: 나머지를 구하는것 
+        print(step, sess.run(loss), sess.run(W), sess.run(b))
         
 sess.close()
+
+
 
 
