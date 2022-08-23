@@ -1,4 +1,2 @@
-a = 1 
-b = 0
-
-print(a/b)
+print(1,end='')
+print(2)
