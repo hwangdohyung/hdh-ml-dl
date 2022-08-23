@@ -16,8 +16,7 @@ x_test = tf.placeholder(tf.float32, shape=[None])
 
 #2. 모델구성
 hypothesis = x * W + b
-
-############################################### 1. Session() // sess.run   #####################################################
+### 1. Session() // sess.run
 
 loss = tf.reduce_mean(tf.square(hypothesis - y_train))
 optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.16)
@@ -31,13 +30,13 @@ with tf.compat.v1.Session() as sess:
         _, loss_val, w_val, b_val = sess.run([train, loss, W, b], 
                                         feed_dict={x_train:x, y_train:y})
 
-#4. 예측
+    #4. 예측
     predict = x_test * w_val + b_val 
 
     print("1. [6,7,8] 예측 : " , sess.run(predict, feed_dict={x_test:x_test_d}))
 
 
-############################################### 2. Session() // eval #####################################################
+### 2. Session() // eval 
 
 sess = tf.compat.v1.Session()
 sess.run(tf.compat.v1.global_variables_initializer())
@@ -53,7 +52,7 @@ print("2. [6,7,8] 예측 : " , predict.eval(session=sess, feed_dict={x_test:x_te
 
 sess.close()
 
-############################################### 3. InteractiveSession() // eval #####################################################
+###3. InteractiveSession() // eval 
 
 sess = tf.compat.v1.InteractiveSession()
 sess.run(tf.compat.v1.global_variables_initializer())
@@ -68,3 +67,5 @@ predict = x_test * w_val + b_val
 print("3. [6,7,8] 예측 : " , predict.eval(feed_dict={x_test:x_test_d}))
 
 sess.close()
+
+
