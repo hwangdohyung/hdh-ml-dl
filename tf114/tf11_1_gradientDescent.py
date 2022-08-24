@@ -29,8 +29,17 @@ for step in range(21):
     
     w_history.append(w_v)
     loss_history.append(loss_v)
-    
+   
 sess.close()
 
-
+print('-=======w history=====')
+print(w_history) 
+print('========loss_history========')
+print(loss_history)
+  
+        
+plt.plot(w_history,loss_history)
+plt.xlabel('weight')
+plt.ylabel('loss')
+plt.show()   
 

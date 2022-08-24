@@ -22,7 +22,7 @@ with tf.compat.v1.Session() as sess:
 # sess = tf.compat.v1.Session()
     sess.run(tf.global_variables_initializer())
 
-    epochs = 2001 
+    epochs = 200
     for step in range(epochs):
         sess.run(train)
         if step %20 == 0:       # %: 나머지를 구하는것 

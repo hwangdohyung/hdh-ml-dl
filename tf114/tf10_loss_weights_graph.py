@@ -25,20 +25,11 @@ print('==================Loss history===============')
 print(loss_history)
 
 
-
-
 # Loss 와 weights와의 관계 그래프 
 plt.plot(w_history,loss_history)
 plt.xlabel('Weights')
 plt.ylabel('Loss')
 plt.show()
-
-
-
-
-
-
-
 
 
 

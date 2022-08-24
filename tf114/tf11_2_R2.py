@@ -27,7 +27,7 @@ loss_history = []
 sess = tf.compat.v1.Session()
 sess.run(tf.compat.v1.global_variables_initializer())
 
-for step in range(21):
+for step in range(2000):
    
     _, loss_v, w_v = sess.run([update, loss, w], feed_dict={x:x_train,y:y_train})
     print(step, '\t', loss_v, '\t', w_v)

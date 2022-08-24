@@ -15,4 +15,3 @@ print(sess.run(node3))         # 7.0
 
 
 
-
