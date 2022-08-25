@@ -8,6 +8,7 @@ from sklearn.metrics import r2_score, mean_squared_error,accuracy_score
 from tqdm import tqdm_notebook
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense
+
 #1. 데이터
 path = 'D:\study_data\_data\dacon_travle/'
 train = pd.read_csv(path + 'train.csv',                 
@@ -57,7 +58,6 @@ train_nona[object_columns]
 print(train_nona.shape)
 print(test.shape)
 
-
 # LabelEncoder를 준비해줍니다.
 from sklearn.preprocessing import LabelEncoder
 
@@ -95,7 +95,6 @@ for o_col in object_columns:
 
 # 결과를 확인
 print(test)
-
 
 # 모델 선언
 from sklearn.linear_model import LogisticRegression, LinearRegression     # LogisticRegression 분류모델 LinearRegression 회귀
@@ -220,3 +219,6 @@ y_test = np.argmax(y_test, axis= 1)
 
 acc1 = accuracy_score(y_test, y_predict) 
 print('acc1 : ', acc1)
+
+
+
