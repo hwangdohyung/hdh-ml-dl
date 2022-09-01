@@ -1,12 +1,12 @@
 import tensorflow as tf 
-from sklearn.datasets import load_digits
+from sklearn.datasets import fetch_covtype
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score,mean_squared_error
 import numpy as np 
 tf.set_random_seed(66)
 
 # 1.데이터
-datasets = load_digits()
+datasets = fetch_covtype()
 
 x_data = datasets.data
 y_data = datasets.target 
@@ -24,15 +24,30 @@ x_train, x_test, y_train, y_test = train_test_split(x_data,y_data, train_size = 
 x = tf.placeholder(tf.float32, shape=[None, x_data.shape[1]])
 y = tf.placeholder(tf.float32, shape=[None, y_data.shape[1]])
 
-w = tf.Variable(tf.zeros([x_data.shape[1],y_data.shape[1]]), name = 'weights') 
-b = tf.Variable(tf.zeros([1,y_data.shape[1]]), name='bias')
+w1 = tf.Variable(tf.zeros([x_data.shape[1],30])) 
+b1 = tf.Variable(tf.zeros([30]))
+h1 = tf.sigmoid(tf.matmul(x, w1) + b1)
 
-# 2.모델
-h = tf.nn.softmax(tf.matmul(x, w) + b)  
+w2 = tf.Variable(tf.zeros([30,10])) 
+b2 = tf.Variable(tf.zeros([10]))
+h2 = tf.nn.relu(tf.matmul(h1, w2) + b2)
+
+w3 = tf.Variable(tf.zeros([10,30])) 
+b3 = tf.Variable(tf.zeros([30]))
+h3 = tf.nn.relu(tf.matmul(h2, w3) + b3)
+
+w4 = tf.Variable(tf.zeros([30,10])) 
+b4 = tf.Variable(tf.zeros([10]))
+h4 = tf.nn.relu(tf.matmul(h3, w4) + b4)
+
+w5 = tf.Variable(tf.random_normal([10,y_data.shape[1]])) 
+b5 = tf.Variable(tf.random_normal([y_data.shape[1]]))
+h = tf.nn.softmax(tf.matmul(h4, w5) + b5)
+
 
 # 3-1.컴파일 
 loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(h), axis=1))     # categorical_crossentropy
-optimizer = tf.train.AdamOptimizer(learning_rate = 0.0001)
+optimizer = tf.train.AdamOptimizer(learning_rate = 0.01)
 train = optimizer.minimize(loss)
 
 # 3-2.훈련 
@@ -58,6 +73,8 @@ acc = accuracy_score(y_test,y_predict)
 print('acc : ', acc)
 
 sess.close()
+
+
 
 
 

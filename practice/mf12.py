@@ -7,7 +7,7 @@ feil_name = ["01_iris","02_cancer","03_diabets","04_wine","05_fetch_covtype",\
 
 
 for feil_name in feil_name:
-    with open(f"./ml/ml56_Bo_xgb_{feil_name}.py","w") as file:
+    with open(f"./tf114/tf18_mlp{feil_name}.py","w") as file:
         file.write("")
         
         
