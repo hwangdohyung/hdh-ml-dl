@@ -11,11 +11,9 @@ datasets = fetch_covtype()
 x_data = datasets.data
 y_data = datasets.target 
 
-
 from tensorflow.keras.utils import to_categorical
 
 y_data = to_categorical(y_data)
-
 
 x_train, x_test, y_train, y_test = train_test_split(x_data,y_data, train_size = 0.9, random_state=123, stratify = y_data)
 
@@ -42,8 +40,7 @@ h4 = tf.nn.relu(tf.matmul(h3, w4) + b4)
 
 w5 = tf.Variable(tf.random_normal([10,y_data.shape[1]])) 
 b5 = tf.Variable(tf.random_normal([y_data.shape[1]]))
-h = tf.nn.softmax(tf.matmul(h4, w5) + b5)
-
+h = tf.nn.softmax(tf.matmul(h4, w5) + b5)   
 
 # 3-1.컴파일 
 loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(h), axis=1))     # categorical_crossentropy
@@ -73,6 +70,12 @@ acc = accuracy_score(y_test,y_predict)
 print('acc : ', acc)
 
 sess.close()
+
+
+# acc :  0.4876079997246222
+
+
+
 
 
 

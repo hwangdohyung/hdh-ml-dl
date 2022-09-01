@@ -43,3 +43,6 @@ print(model,':',model.feature_importances_) # 열의 중요도를 나타냄. 필
 
 
 
+
+
+

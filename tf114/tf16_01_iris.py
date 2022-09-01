@@ -3,6 +3,7 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score,mean_squared_error
 import numpy as np 
+
 tf.set_random_seed(66)
 
 # 1.데이터
@@ -16,6 +17,7 @@ y_data = to_categorical(y_data)
 
 
 x_train, x_test, y_train, y_test = train_test_split(x_data,y_data, train_size = 0.9, random_state=123, stratify = y_data)
+
 
 
 # print(x_train.dtype,y_train.dtype)

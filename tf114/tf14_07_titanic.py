@@ -4,7 +4,7 @@ import tensorflow as tf
 tf.compat.v1.set_random_seed(123)
 
 #1.데이터
-path = './_data/kaggle_titanic/'
+path = 'D:\study_data\_data\kaggle_titanic/'
 train_set = pd.read_csv(path + 'train.csv',index_col =0)
 test_set = pd.read_csv(path + 'test.csv', index_col=0)
 
@@ -55,8 +55,6 @@ y_data = train_set['Survived']
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x_data,y_data, train_size = 0.8, random_state=123, stratify = y_data)
-
-# print(x_train.dtype,y_train.dtype)
 
 x = tf.placeholder(tf.float32, shape=[None, x_data.shape[1]])
 y = tf.placeholder(tf.float32, shape=[None])

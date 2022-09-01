@@ -33,3 +33,5 @@ print('accuracy: ', accuracy[-1])
 
 # loss:  9.724908522912301e-07
 # accuracy:  1.0
+
+
