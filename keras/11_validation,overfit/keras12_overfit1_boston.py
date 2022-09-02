@@ -29,7 +29,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                     random_state=66)
 start_time = time.time()
 
-hist = model.fit(x_train, y_train, epochs=150, batch_size=10, verbose=1,
+hist = model.fit(x_train, y_train, epochs=10, batch_size=10, verbose=1,
                   validation_split = 0.2) 
 
 end_time = time.time() - start_time

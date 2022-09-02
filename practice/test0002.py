@@ -1,302 +1,246 @@
-import numpy as np
-import pandas as pd                               
-from sklearn.model_selection import train_test_split, KFold
-from sklearn.metrics import r2_score, mean_squared_error
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import r2_score, mean_squared_error,accuracy_score
-from tqdm import tqdm_notebook
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
-from sklearn.model_selection import GridSearchCV
-from sklearn.ensemble import ExtraTreesClassifier
+from time import time
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import numpy as np 
 
 #1. 데이터
-path = 'D:\study_data\_data\dacon_travle/'
-train = pd.read_csv(path + 'train.csv',                 
-                        index_col=0)                       
-
-test = pd.read_csv(path + 'test.csv',                                   
+path = 'D:\study_data\_data\dacon_travle/' # ".은 현재 폴더"
+train_set = pd.read_csv(path + 'train.csv',
+                        index_col=0)
+test_set = pd.read_csv(path + 'test.csv', #예측에서 쓸거야!!
                        index_col=0)
-
-sample_submission = pd.read_csv(path + 'sample_submission.csv')
-
-import random
-import os
-def seed_everything(seed):
-    random.seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    np.random.seed(seed)
-seed_everything(2022) # Seed 고정
-
-print(train.describe()) 
-print(test.describe()) 
-print(train.shape)
-print(test.shape)
-
-print(train.isnull().sum())
-# Age                          94
-# TypeofContact                10
-# CityTier                      0
-# DurationOfPitch             102
-# Occupation                    0
-# Gender                        0
-# NumberOfPersonVisiting        0
-# NumberOfFollowups            13
-# ProductPitched                0
-# PreferredPropertyStar        10
-# MaritalStatus                 0
-# NumberOfTrips                57
-# Passport                      0
-# PitchSatisfactionScore        0
-# OwnCar                        0
-# NumberOfChildrenVisiting     27
-# Designation                   0
-# MonthlyIncome               100
-# ProdTaken                     0
-# median = data.median()
-# print("평균:",median)
-# data3 =data.fillna(median)
-# print(data3)
+print(train_set[train_set['ProdTaken'].notnull()].groupby(['ProductPitched'])['ProdTaken'].mean())
+print(train_set['ProductPitched'].value_counts())
+print(train_set[train_set['ProdTaken'].notnull()].groupby(['OwnCar'])['ProdTaken'].mean())
+print(train_set['OwnCar'].value_counts())
+# cols = ['TypeofContact','Occupation','Gender','ProductPitched','MaritalStatus','Designation']
 
 
-# train['NumberOfFollowups'] = train['NumberOfFollowups'].fillna(train.groupby('Designation')['NumberOfFollowups'].transform('mean'), inplace=True)
-# test['NumberOfFollowups'] = test['NumberOfFollowups'].fillna(test.groupby('Designation')['NumberOfFollowups'].transform('mean'), inplace=True)
+train_set['TypeofContact'].fillna('Self Enquiry', inplace=True)
+test_set['TypeofContact'].fillna('Self Enquiry', inplace=True)
+train_set['Age'].fillna(train_set.groupby('Designation')['Age'].transform('mean'), inplace=True)
+test_set['Age'].fillna(test_set.groupby('Designation')['Age'].transform('mean'), inplace=True)
+train_set['Age']=np.round(train_set['Age'],0).astype(int)
+test_set['Age']=np.round(test_set['Age'],0).astype(int)
 
-train['NumberOfFollowups'].fillna(train.groupby('NumberOfChildrenVisiting')['NumberOfFollowups'].transform('median'), inplace=True)
-test['NumberOfFollowups'].fillna(test.groupby('NumberOfChildrenVisiting')['NumberOfFollowups'].transform('median'), inplace=True)
 
-train.loc[ train['Gender'] =='Fe Male' , 'Gender'] = 'Female'
-test.loc[ test['Gender'] =='Fe Male' , 'Gender'] = 'Female'
 
-train['Age'].fillna(train.groupby('Designation')['Age'].transform('mean'), inplace=True)
-test['Age'].fillna(test.groupby('Designation')['Age'].transform('mean'), inplace=True)
+train_set['MonthlyIncome'].fillna(train_set.groupby('Designation')['MonthlyIncome'].transform('mean'), inplace=True)
+test_set['MonthlyIncome'].fillna(test_set.groupby('Designation')['MonthlyIncome'].transform('mean'), inplace=True)
+print(train_set.describe) #(1955, 19)
+print(train_set[train_set['MonthlyIncome'].notnull()].groupby(['Designation'])['MonthlyIncome'].mean())
 
-train['TypeofContact'].fillna('Self Enquiry', inplace=True)
-test['TypeofContact'].fillna('Self Enquiry', inplace=True)
-
-train['MonthlyIncome'].fillna(train.groupby('Designation')['MonthlyIncome'].transform('median'), inplace=True)
-test['MonthlyIncome'].fillna(test.groupby('Designation')['MonthlyIncome'].transform('median'), inplace=True)
-
-# train['DurationOfPitch']=train['DurationOfPitch'].fillna(train['DurationOfPitch'].median())
-# test['DurationOfPitch']=test['DurationOfPitch'].fillna(test['DurationOfPitch'].median())
-
-train['DurationOfPitch']=train['DurationOfPitch'].fillna(0)
-test['DurationOfPitch']=test['DurationOfPitch'].fillna(0)
-
-# train['PreferredPropertyStar'].fillna(train.groupby('Occupation')['PreferredPropertyStar'].transform('median'), inplace=True)
-# test['PreferredPropertyStar'].fillna(test.groupby('Occupation')['PreferredPropertyStar'].transform('median'), inplace=True)
-
-train['PreferredPropertyStar'].fillna(0)
-test['PreferredPropertyStar'].fillna(0)
-
-# combine = [train,test]
+train_set['NumberOfChildrenVisiting'].fillna(train_set.groupby('MaritalStatus')['NumberOfChildrenVisiting'].transform('mean'), inplace=True)
+test_set['NumberOfChildrenVisiting'].fillna(test_set.groupby('MaritalStatus')['NumberOfChildrenVisiting'].transform('mean'), inplace=True)
+train_set['NumberOfFollowups'].fillna(train_set.groupby('NumberOfChildrenVisiting')['NumberOfFollowups'].transform('mean'), inplace=True)
+test_set['NumberOfFollowups'].fillna(test_set.groupby('NumberOfChildrenVisiting')['NumberOfFollowups'].transform('mean'), inplace=True)
+# combine = [train_set,test_set]
 # for dataset in combine:    
-#     dataset.loc[ dataset['Age'] <= 26.6, 'Age'] = 0
-#     dataset.loc[(dataset['Age'] > 26.6) & (dataset['Age'] <= 35.2), 'Age'] = 1
-#     dataset.loc[(dataset['Age'] > 35.2) & (dataset['Age'] <= 43.8), 'Age'] = 2
-#     dataset.loc[(dataset['Age'] > 43.8) & (dataset['Age'] <= 52.4), 'Age'] = 3
-#     dataset.loc[ dataset['Age'] > 52.4, 'Age'] = 4
+#     dataset.loc[ dataset['NumberOfChildrenVisiting'] < 1, 'NumberOfChildrenVisiting'] = 0
+#     dataset.loc[ dataset['NumberOfChildrenVisiting'] >= 1, 'NumberOfChildrenVisiting'] = 1
+# print(train_set[train_set['DurationOfPitch'].notnull()].groupby(['NumberOfChildrenVisiting'])['DurationOfPitch'].mean())
+# print(train_set.isnull().sum()) 
 
-print(train.isnull().sum())
-
-# 탐색경로', '후속조치수', '프리젠테이션기간', '선호숙박등급', '연간여행횟수', '미취학아동' median()
-# 'TypeofContact', 'NumberOfFollowups','DurationOfPitch', 'PreferredPropertyStar','NumberOfChildrenVisiting','NumberOfTrips'  
-
-print(train.info())
-print(test.info())
+train_set['DurationOfPitch']=train_set['DurationOfPitch'].fillna(0)
+test_set['DurationOfPitch']=test_set['DurationOfPitch'].fillna(0)
+# train_set['DurationOfPitch'].fillna(train_set.groupby('NumberOfChildrenVisiting')['DurationOfPitch'].transform('mean'), inplace=True)
+# test_set['DurationOfPitch'].fillna(test_set.groupby('NumberOfChildrenVisiting')['DurationOfPitch'].transform('mean'), inplace=True)
+# print(train_set.isnull().sum()) 
 
 
-# 결측치를 처리하는 함수를 작성.
-def handle_na(data):
-    temp = data.copy()
-    for col, dtype in temp.dtypes.items():
-        if dtype == 'object':
-            # 문자형 칼럼의 경우 'Unknown'
-            value = 'Unknown'
-        elif dtype == int or dtype == float:
-            # 수치형 칼럼의 경우 0
-            value = 0
-        temp.loc[:,col] = temp[col].fillna(value)
-    return temp
+print(train_set[train_set['DurationOfPitch'].notnull()].groupby(['NumberOfChildrenVisiting'])['DurationOfPitch'].mean())
 
-train_nona = handle_na(train)
 
-# 결측치 처리가 잘 되었는지 확인
-train_nona.isna().sum()
+train_set['PreferredPropertyStar'].fillna(train_set.groupby('Occupation')['PreferredPropertyStar'].transform('mean'), inplace=True)
+test_set['PreferredPropertyStar'].fillna(test_set.groupby('Occupation')['PreferredPropertyStar'].transform('mean'), inplace=True)
+# print(train_set[train_set['PreferredPropertyStar'].notnull()].groupby(['ProdTaken'])['PreferredPropertyStar'].mean())
 
-print(train_nona.isna().sum())
-object_columns = train_nona.columns[train_nona.dtypes == 'object']
-print('object 칼럼 : ', list(object_columns))
 
-train_nona[object_columns]
+# train_set['Ageband'] = train_set['Age']
+# test_set['Ageband'] = test_set['Age']
+# 임의로 5개 그룹을 지정
 
-print(train_nona.shape)
-print(test.shape)
+# [(17.957, 26.6] < (26.6, 35.2] < (35.2, 43.8] <
+# (43.8, 52.4] < (52.4, 61.0]]
+# print(train_set['Age'].unique())
 
+combine = [train_set,test_set]
+for dataset in combine:    
+    dataset.loc[ dataset['Age'] <= 20, 'Age'] = 0
+    dataset.loc[(dataset['Age'] > 20) & (dataset['Age'] <= 29), 'Age'] = 1
+    dataset.loc[(dataset['Age'] > 29) & (dataset['Age'] <= 39), 'Age'] = 2
+    dataset.loc[(dataset['Age'] > 39) & (dataset['Age'] <= 49), 'Age'] = 3
+    dataset.loc[(dataset['Age'] > 49) & (dataset['Age'] <= 59), 'Age'] = 4
+    dataset.loc[ dataset['Age'] > 59, 'Age'] = 5
+
+
+train_set['NumberOfTrips'].fillna(train_set.groupby('DurationOfPitch')['NumberOfTrips'].transform('mean'), inplace=True)
+test_set['NumberOfTrips'].fillna(test_set.groupby('DurationOfPitch')['NumberOfTrips'].transform('mean'), inplace=True)
+# print(train_set[train_set['NumberOfChildrenVisiting'].notnull()].groupby(['MaritalStatus'])['NumberOfChildrenVisiting'].mean())
+
+# print(train_set['Occupation'].unique()) # ['Small Business' 'Salaried' 'Large Business' 'Free Lancer']
+train_set.loc[ train_set['Occupation'] =='Free Lancer' , 'Occupation'] = 'Salaried'
+test_set.loc[ test_set['Occupation'] =='Free Lancer' , 'Occupation'] = 'Salaried'
+
+train_set.loc[ train_set['Gender'] =='Fe Male' , 'Gender'] = 'Female'
+test_set.loc[ test_set['Gender'] =='Fe Male' , 'Gender'] = 'Female'
+cols = ['TypeofContact','Occupation','Gender','ProductPitched','MaritalStatus','Designation']
 from sklearn.preprocessing import LabelEncoder
-encoder = LabelEncoder()
-encoder.fit(train_nona['TypeofContact'])
+from tqdm import tqdm_notebook
 
-#학습된 encoder를 사용하여 문자형 변수를 숫자로 변환
-encoder.transform(train_nona['TypeofContact'])
-print(train_nona['TypeofContact'])
+for col in tqdm_notebook(cols):
+    le = LabelEncoder()
+    train_set[col]=le.fit_transform(train_set[col])
+    test_set[col]=le.fit_transform(test_set[col])
 
-train_enc = train_nona.copy()
+# print(train_set)
 
-# 모든 문자형 변수에 대해 encoder를 적용
-for o_col in object_columns:
-    encoder = LabelEncoder()
-    encoder.fit(train_enc[o_col])
-    train_enc[o_col] = encoder.transform(train_enc[o_col])
+# print(train_set['TypeofContact'])
+def outliers(data_out):
+    quartile_1, q2 , quartile_3 = np.percentile(data_out,
+                                               [25,50,75]) # percentile 백분위
+    print("1사분위 : ",quartile_1) # 25% 위치인수를 기점으로 사이에 값을 구함
+    print("q2 : ",q2) # 50% median과 동일 
+    print("3사분위 : ",quartile_3) # 75% 위치인수를 기점으로 사이에 값을 구함
+    iqr =quartile_3-quartile_1  # 75% -25%
+    print("iqr :" ,iqr)
+    lower_bound = quartile_1 - (iqr * 1.5)
+    upper_bound = quartile_3 + (iqr * 1.5)
+    return np.where((data_out>upper_bound)|
+                    (data_out<lower_bound))
+                     
+                           
+# print(train_set['Designation'].unique())
 
-# 결과를 확인
-print(train_enc)
-# 결측치 처리
-test = handle_na(test)
+# Age_out_index= outliers(train_set['Age'])[0]
+# TypeofContact_out_index= outliers(train_set['TypeofContact'])[0] # 0
+# CityTier_out_index= outliers(train_set['CityTier'])[0] # 0
+DurationOfPitch_out_index= outliers(train_set['DurationOfPitch'])[0] #44
+Gender_out_index= outliers(train_set['Gender'])[0] # 0
+NumberOfPersonVisiting_out_index= outliers(train_set['NumberOfPersonVisiting'])[0] # 1
+NumberOfFollowups_out_index= outliers(train_set['NumberOfFollowups'])[0] # 0
+ProductPitched_index= outliers(train_set['ProductPitched'])[0] # 0
+PreferredPropertyStar_out_index= outliers(train_set['PreferredPropertyStar'])[0]  # 0
+MaritalStatus_out_index= outliers(train_set['MaritalStatus'])[0] # 0
+NumberOfTrips_out_index= outliers(train_set['NumberOfTrips'])[0] # 38
+Passport_out_index= outliers(train_set['Passport'])[0] # 0
+PitchSatisfactionScore_out_index= outliers(train_set['PitchSatisfactionScore'])[0] # 0
+OwnCar_out_index= outliers(train_set['OwnCar'])[0] # 0
+NumberOfChildrenVisiting_out_index= outliers(train_set['NumberOfChildrenVisiting'])[0] # 0
+Designation_out_index= outliers(train_set['Designation'])[0] # 89
+MonthlyIncome_out_index= outliers(train_set['MonthlyIncome'])[0] # 138
+'''
+lead_outlier_index = np.concatenate((#Age_out_index,                            # acc : 0.8650306748466258
+                                    #  TypeofContact_out_index,                 # acc : 0.8920454545454546
+                                    #  CityTier_out_index,                      # acc : 0.8920454545454546
+                                     DurationOfPitch_out_index,               # acc : 0.9156976744186046
+                                    #  Gender_out_index,                        # acc : 0.8920454545454546
+                                    #  NumberOfPersonVisiting_out_index,        # acc : 0.8835227272727273
+                                    #  NumberOfFollowups_out_index,             # acc : 0.8942598187311178
+                                    #  ProductPitched_index,                    # acc : 0.8920454545454546
+                                    #  PreferredPropertyStar_out_index,         # acc : 0.8920454545454546
+                                    #  MaritalStatus_out_index,                 # acc : 0.8920454545454546
+                                    #  NumberOfTrips_out_index,                 # acc : 0.8670520231213873
+                                    #  Passport_out_index,                      # acc : 0.8920454545454546
+                                    #  PitchSatisfactionScore_out_index,        # acc : 0.8920454545454546
+                                    #  OwnCar_out_index,                        # acc : 0.8920454545454546
+                                    #  NumberOfChildrenVisiting_out_index,      # acc : 0.8920454545454546
+                                    #  Designation_out_index,                   # acc : 0.8869047619047619
+                                    #  MonthlyIncome_out_index                  # acc : 0.8932926829268293
+                                     ),axis=None)
+                              
+print(len(lead_outlier_index)) #577
+lead_not_outlier_index = []
+for i in train_set.index:
+    if i not in lead_outlier_index :
+        lead_not_outlier_index.append(i)
+train_set_clean = train_set.loc[lead_not_outlier_index]      
+train_set_clean = train_set_clean.reset_index(drop=True)
+# print(train_set_clean)
+'''       
+x = train_set.drop(['ProdTaken',
+                          'NumberOfChildrenVisiting',
+                          'NumberOfPersonVisiting',
+                          'OwnCar', 
+                          'MonthlyIncome', 
+                          'NumberOfFollowups',
+                        #   'TypeofContact',
+                          ], axis=1)
+# x = train_set.drop(['ProdTaken'], axis=1)
+test_set = test_set.drop(['NumberOfChildrenVisiting',
+                          'NumberOfPersonVisiting',
+                          'OwnCar', 
+                          'MonthlyIncome', 
+                          'NumberOfFollowups',
+                        #   'TypeofContact',
+                          ], axis=1)
+y = train_set['ProdTaken']
+print(x.shape) #1911,13
 
-# 문자형 변수 전처리
-for o_col in object_columns:
-    encoder = LabelEncoder()
-    
-    # test 데이터를 이용해 encoder를 학습하는 것은 Data Leakage 입니다! 조심!
-    encoder.fit(train_nona[o_col])
-    
-    # test 데이터는 오로지 transform 에서만 사용되어야 합니다.
-    test[o_col] = encoder.transform(test[o_col])
 
-# 결과를 확인
-print(test)
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import StratifiedKFold
 
-print(train_enc.describe())  # DurationOfPitch, MonthlyIncome
-print("=============================상관계수 히트 맵==============")
-print(train_enc.corr())                    # 상관관계를 확인.  
-import matplotlib.pyplot as plt 
-import seaborn as sns
-sns.set(font_scale=0.7)
-sns.heatmap(data=train_enc.corr(),square=True, annot=True, cbar=True) 
-# plt.show()
+x_train,x_test,y_train,y_test = train_test_split(x,y,train_size=0.91,shuffle=True,random_state=1234,stratify=y)
 
-# 모델 선언
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.linear_model import LogisticRegression, LinearRegression     # LogisticRegression 분류모델 LinearRegression 회귀
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor 
-from xgboost import XGBClassifier, XGBRegressor 
-from sklearn.linear_model import LogisticRegression
-from lightgbm import LGBMClassifier,LGBMRegressor
-from catboost import CatBoostClassifier, CatBoostRegressor
+from catboost import CatBoostClassifier
+# 2. 모델
 
-# import matplotlib.pyplot as plt
+n_splits = 6
+# 최상의 점수 :  0.9044520547945205
+# acc : 0.954248366013072
+# 걸린 시간 : 5.827547073364258 
+kfold = StratifiedKFold(n_splits=n_splits,shuffle=True,random_state=123)
+# {'target': 0.9825581395348837, 
+#  'params': {'depth': 9.870692750101593,
+#             'fold_permutation_block': 8.315144786179879, 
+#             'l2_leaf_reg': 5.182351079272809, 
+#             'learning_rate': 0.20711118811391716, 
+#             'model_size_reg': 0.44979263197508923, 
+#             'od_pval': 0.442501612764838}}
 
-# train_enc.plot.box()
-# plt.title('boston')
-# plt.xlabel('Feature')
-# plt.ylabel('data')
-# plt.show()
+#  Trial 2 finished with value: 1.0 and parameters: 
+# {'n_estimators': 1872, 
+# 'depth': 14, 
+# 'fold_permutation_block': 137, 
+# 'od_pval': 0.4558538849228756, 
+# 'l2_leaf_reg': 0.32453261538080636}. 
 
-# 분석할 의미가 없는 칼럼을 제거합니다.
-# 상관계수 그래프를 통해 연관성이 적은것과 - 인것을 빼준다.
-train = train_enc.drop(columns=['NumberOfChildrenVisiting','NumberOfPersonVisiting','OwnCar', 'MonthlyIncome', 'NumberOfTrips','NumberOfFollowups','Designation'])  
-test = test.drop(columns=['NumberOfChildrenVisiting','NumberOfPersonVisiting','OwnCar', 'MonthlyIncome', 'NumberOfTrips','NumberOfFollowups','Designation'])
-# 'TypeofContact','NumberOfChildrenVisiting','NumberOfPersonVisiting','OwnCar', 'MonthlyIncoe'
+# Best trial : score 1.0,
+# params {'n_estimators': 1304,
+# 'depth': 8, 'fold_permutation_block': 142, 
+# 'learning_rate': 0.21616891196578603, 
+# 'od_pval': 0.12673190617341812, 
+# 'l2_leaf_reg': 0.33021257848638497}
+cat_paramets = {"learning_rate" : [0.01],
+                'depth' : [8],
+                'od_pval' : [0.12673190617341812],
+                # 'model_size_reg': [0.44979263197508923],
+                'fold_permutation_block': [142],
+                'l2_leaf_reg' :[0.33021257848638497]}
+cat = CatBoostClassifier(random_state=100,verbose=False,n_estimators=1304)
+model = RandomizedSearchCV(cat,cat_paramets,cv=kfold,n_jobs=-1,)
 
-# 탐색경로', '후속조치수', '프리젠테이션기간', '선호숙박등급', '연간여행횟수', '미취학아동' median()
-# 'TypeofContact', 'NumberOfFollowups','DurationOfPitch', 'PreferredPropertyStar','NumberOfChildrenVisiting','NumberOfTrips'  
+import time 
+start_time = time.time()
+model.fit(x_train,y_train)   
+end_time = time.time()-start_time 
+y_predict = model.predict(x_test)
+results = accuracy_score(y_test,y_predict)
+print('최적의 매개변수 : ',model.best_params_)
+print('최상의 점수 : ',model.best_score_)
+print('acc :',results)
+print('걸린 시간 :',end_time)
 
-# 학습에 사용할 정보와 예측하고자 하는 정보를 분리합니다.
+model.fit(x,y)
+y_summit = model.predict(test_set)
+y_summit = np.round(y_summit,0)
+submission = pd.read_csv(path + 'sample_submission.csv',#예측에서 쓸거야!!
+                      )
+submission['ProdTaken'] = y_summit
 
-x = train.drop(columns=['ProdTaken'])
-y = train[['ProdTaken']]
-
-print(x.isnull().sum())
-
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer,KNNImputer,SimpleImputer
-imp = IterativeImputer(estimator = LinearRegression(), 
-                       tol= 1e-10, 
-                       max_iter=30, 
-                       verbose=2, 
-                       imputation_order='roman')
-x = pd.DataFrame(imp.fit_transform(x))
-
-x_train,x_test,y_train,y_test = train_test_split(x,y, random_state=42, train_size=0.87,shuffle=True)
-
-# from sklearn.preprocessing import MinMaxScaler, StandardScaler
-# from sklearn.model_selection import train_test_split, KFold , StratifiedKFold
-# scaler = MinMaxScaler()
-# x_train = scaler.fit_transform(x_train)
-# x_test = scaler.transform(x_test)
-
-# 모델 학습
-# xgb = XGBClassifier(n_estimators=100, learning_rate=0.1, gamma = 1, subsample=1, colsample_bytree = 1, max_depth=4,random_state=123)
-
-
-# ##########################GridSearchCV###############################
-# n_splits = 5
-
-# parameters = {'n_estimators':[1000],
-#               'learning_rate':[0.1],
-#               'max_depth':[3],
-#               'gamma': [0],
-#             #   'min_child_weight':[1],
-#               'subsample':[1],
-#               'colsample_bytree':[1],
-#             #   'colsample_bylevel':[1],
-#             #   'colsample_byload':[1],
-#             #   'reg_alpha':[0],
-#             #   'reg_lambda':[1]
-#               }  
-
-# kfold = KFold(n_splits=n_splits ,shuffle=True, random_state=123)
-# xgb = XGBClassifier(random_state=123,
-#                     )
-# model = GridSearchCV(xgb,param_grid=parameters, cv =kfold, n_jobs=8)
-##########################GridSearchCV###############################
-
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-############################0821_1####################################
-param_grid = [
-              {'n_estimators':[10], 'max_features':[10]},
-              {'bootstrap':[False],'n_estimators':[400], 'max_features':[6]}
-]
-
-forest_reg =  RandomForestClassifier()
-# 
-model = RandomizedSearchCV(forest_reg, param_grid, cv=5,
-                           scoring='accuracy',
-                           verbose=0,
-                           return_train_score=True)
-
-############################0821_1####################################
-
-# model = RandomForestClassifier()
-
-# model = ExtraTreesClassifier(n_estimators=100, random_state=2022)
-
-model.fit(x_train,y_train)
-
-prediction = model.predict(x_test)
-prediction1 = model.predict(test)
-
-print('----------------------예측된 데이터의 상위 10개의 값 확인--------------------\n')
-
-print('acc : ', accuracy_score(prediction,y_test))
-
-print(prediction[0:11])
-# print(model.score(x_train, y_train))
-# 예측된 값을 정답파일과 병합
-print(prediction.shape)
-
-sample_submission['ProdTaken'] = prediction1
-
-# 정답파일 데이터프레임 확인
-print(sample_submission[:15])
-
-sample_submission.to_csv(path+'sample_submission0831_2.csv',index = False)
-
-
+submission.to_csv('test100.csv',index=False)
 
 
 
