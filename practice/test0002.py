@@ -1,4 +1,3 @@
-# m36_dacon_travel.py
 import numpy as np
 import pandas as pd                               
 from sklearn.model_selection import train_test_split, KFold
@@ -98,7 +97,6 @@ test['PreferredPropertyStar'].fillna(0)
 #     dataset.loc[(dataset['Age'] > 43.8) & (dataset['Age'] <= 52.4), 'Age'] = 3
 #     dataset.loc[ dataset['Age'] > 52.4, 'Age'] = 4
 
-
 print(train.isnull().sum())
 
 # 탐색경로', '후속조치수', '프리젠테이션기간', '선호숙박등급', '연간여행횟수', '미취학아동' median()
@@ -169,8 +167,6 @@ for o_col in object_columns:
 # 결과를 확인
 print(test)
 
-
-
 print(train_enc.describe())  # DurationOfPitch, MonthlyIncome
 print("=============================상관계수 히트 맵==============")
 print(train_enc.corr())                    # 상관관계를 확인.  
@@ -179,7 +175,6 @@ import seaborn as sns
 sns.set(font_scale=0.7)
 sns.heatmap(data=train_enc.corr(),square=True, annot=True, cbar=True) 
 # plt.show()
-
 
 # 모델 선언
 from sklearn.model_selection import train_test_split
@@ -211,7 +206,6 @@ test = test.drop(columns=['NumberOfChildrenVisiting','NumberOfPersonVisiting','O
 # 'TypeofContact', 'NumberOfFollowups','DurationOfPitch', 'PreferredPropertyStar','NumberOfChildrenVisiting','NumberOfTrips'  
 
 # 학습에 사용할 정보와 예측하고자 하는 정보를 분리합니다.
-
 
 x = train.drop(columns=['ProdTaken'])
 y = train[['ProdTaken']]
@@ -301,4 +295,9 @@ sample_submission['ProdTaken'] = prediction1
 print(sample_submission[:15])
 
 sample_submission.to_csv(path+'sample_submission0831_2.csv',index = False)
+
+
+
+
+
 
