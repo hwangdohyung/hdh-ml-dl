@@ -82,19 +82,6 @@ print(preds)
 print(model.score(train_x, train_y))
 print('Done.')
 
-# {'n_estimators':[1000],
-#               'learning_rate':[0.1],
-#               'max_depth':[3],
-#               'gamma': [1],
-#               'min_child_weight':[1],
-#               'subsample':[1],
-#               'colsample_bytree':[1],
-#               'colsample_bylevel':[1],
-#             #   'colsample_byload':[1],
-#               'reg_alpha':[0],
-#               'reg_lambda':[1]
-#               }  
-
 
 
 
