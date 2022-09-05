@@ -9,11 +9,6 @@ train_set = pd.read_csv(path + 'train.csv',
                         index_col=0)
 test_set = pd.read_csv(path + 'test.csv', #예측에서 쓸거야!!
                        index_col=0)
-print(train_set[train_set['ProdTaken'].notnull()].groupby(['ProductPitched'])['ProdTaken'].mean())
-print(train_set['ProductPitched'].value_counts())
-print(train_set[train_set['ProdTaken'].notnull()].groupby(['OwnCar'])['ProdTaken'].mean())
-print(train_set['OwnCar'].value_counts())
-# cols = ['TypeofContact','Occupation','Gender','ProductPitched','MaritalStatus','Designation']
 
 
 train_set['TypeofContact'].fillna('Self Enquiry', inplace=True)
@@ -27,42 +22,20 @@ test_set['Age']=np.round(test_set['Age'],0).astype(int)
 
 train_set['MonthlyIncome'].fillna(train_set.groupby('Designation')['MonthlyIncome'].transform('mean'), inplace=True)
 test_set['MonthlyIncome'].fillna(test_set.groupby('Designation')['MonthlyIncome'].transform('mean'), inplace=True)
-print(train_set.describe) #(1955, 19)
-print(train_set[train_set['MonthlyIncome'].notnull()].groupby(['Designation'])['MonthlyIncome'].mean())
+
 
 train_set['NumberOfChildrenVisiting'].fillna(train_set.groupby('MaritalStatus')['NumberOfChildrenVisiting'].transform('mean'), inplace=True)
 test_set['NumberOfChildrenVisiting'].fillna(test_set.groupby('MaritalStatus')['NumberOfChildrenVisiting'].transform('mean'), inplace=True)
 train_set['NumberOfFollowups'].fillna(train_set.groupby('NumberOfChildrenVisiting')['NumberOfFollowups'].transform('mean'), inplace=True)
 test_set['NumberOfFollowups'].fillna(test_set.groupby('NumberOfChildrenVisiting')['NumberOfFollowups'].transform('mean'), inplace=True)
-# combine = [train_set,test_set]
-# for dataset in combine:    
-#     dataset.loc[ dataset['NumberOfChildrenVisiting'] < 1, 'NumberOfChildrenVisiting'] = 0
-#     dataset.loc[ dataset['NumberOfChildrenVisiting'] >= 1, 'NumberOfChildrenVisiting'] = 1
-# print(train_set[train_set['DurationOfPitch'].notnull()].groupby(['NumberOfChildrenVisiting'])['DurationOfPitch'].mean())
-# print(train_set.isnull().sum()) 
+
 
 train_set['DurationOfPitch']=train_set['DurationOfPitch'].fillna(0)
 test_set['DurationOfPitch']=test_set['DurationOfPitch'].fillna(0)
-# train_set['DurationOfPitch'].fillna(train_set.groupby('NumberOfChildrenVisiting')['DurationOfPitch'].transform('mean'), inplace=True)
-# test_set['DurationOfPitch'].fillna(test_set.groupby('NumberOfChildrenVisiting')['DurationOfPitch'].transform('mean'), inplace=True)
-# print(train_set.isnull().sum()) 
-
-
-print(train_set[train_set['DurationOfPitch'].notnull()].groupby(['NumberOfChildrenVisiting'])['DurationOfPitch'].mean())
-
 
 train_set['PreferredPropertyStar'].fillna(train_set.groupby('Occupation')['PreferredPropertyStar'].transform('mean'), inplace=True)
 test_set['PreferredPropertyStar'].fillna(test_set.groupby('Occupation')['PreferredPropertyStar'].transform('mean'), inplace=True)
-# print(train_set[train_set['PreferredPropertyStar'].notnull()].groupby(['ProdTaken'])['PreferredPropertyStar'].mean())
 
-
-# train_set['Ageband'] = train_set['Age']
-# test_set['Ageband'] = test_set['Age']
-# 임의로 5개 그룹을 지정
-
-# [(17.957, 26.6] < (26.6, 35.2] < (35.2, 43.8] <
-# (43.8, 52.4] < (52.4, 61.0]]
-# print(train_set['Age'].unique())
 
 combine = [train_set,test_set]
 for dataset in combine:    
@@ -76,9 +49,7 @@ for dataset in combine:
 
 train_set['NumberOfTrips'].fillna(train_set.groupby('DurationOfPitch')['NumberOfTrips'].transform('mean'), inplace=True)
 test_set['NumberOfTrips'].fillna(test_set.groupby('DurationOfPitch')['NumberOfTrips'].transform('mean'), inplace=True)
-# print(train_set[train_set['NumberOfChildrenVisiting'].notnull()].groupby(['MaritalStatus'])['NumberOfChildrenVisiting'].mean())
 
-# print(train_set['Occupation'].unique()) # ['Small Business' 'Salaried' 'Large Business' 'Free Lancer']
 train_set.loc[ train_set['Occupation'] =='Free Lancer' , 'Occupation'] = 'Salaried'
 test_set.loc[ test_set['Occupation'] =='Free Lancer' , 'Occupation'] = 'Salaried'
 
@@ -93,16 +64,13 @@ for col in tqdm_notebook(cols):
     train_set[col]=le.fit_transform(train_set[col])
     test_set[col]=le.fit_transform(test_set[col])
 
-# print(train_set)
 
-# print(train_set['TypeofContact'])
 def outliers(data_out):
     quartile_1, q2 , quartile_3 = np.percentile(data_out,
-                                               [25,50,75]) # percentile 백분위
-    print("1사분위 : ",quartile_1) # 25% 위치인수를 기점으로 사이에 값을 구함
-    print("q2 : ",q2) # 50% median과 동일 
-    print("3사분위 : ",quartile_3) # 75% 위치인수를 기점으로 사이에 값을 구함
-    iqr =quartile_3-quartile_1  # 75% -25%
+                                               [25,50,75]) 
+    print("1사분위 : ",quartile_1) 
+    print("3사분위 : ",quartile_3) 
+    iqr =quartile_3-quartile_1  
     print("iqr :" ,iqr)
     lower_bound = quartile_1 - (iqr * 1.5)
     upper_bound = quartile_3 + (iqr * 1.5)
@@ -110,11 +78,7 @@ def outliers(data_out):
                     (data_out<lower_bound))
                      
                            
-# print(train_set['Designation'].unique())
 
-# Age_out_index= outliers(train_set['Age'])[0]
-# TypeofContact_out_index= outliers(train_set['TypeofContact'])[0] # 0
-# CityTier_out_index= outliers(train_set['CityTier'])[0] # 0
 DurationOfPitch_out_index= outliers(train_set['DurationOfPitch'])[0] #44
 Gender_out_index= outliers(train_set['Gender'])[0] # 0
 NumberOfPersonVisiting_out_index= outliers(train_set['NumberOfPersonVisiting'])[0] # 1
@@ -219,7 +183,7 @@ cat_paramets = {"learning_rate" : [0.01],
                 # 'model_size_reg': [0.44979263197508923],
                 'fold_permutation_block': [142],
                 'l2_leaf_reg' :[0.33021257848638497]}
-cat = CatBoostClassifier(random_state=100,verbose=False,n_estimators=1304)
+cat = CatBoostClassifier(random_state=72,verbose=False,n_estimators=1304)
 model = RandomizedSearchCV(cat,cat_paramets,cv=kfold,n_jobs=-1,)
 
 import time 
@@ -236,7 +200,7 @@ print('걸린 시간 :',end_time)
 model.fit(x,y)
 y_summit = model.predict(test_set)
 y_summit = np.round(y_summit,0)
-submission = pd.read_csv(path + 'sample_submission.csv',#예측에서 쓸거야!!
+submission = pd.read_csv(path + 'sample_submission.csv',
                       )
 submission['ProdTaken'] = y_summit
 
