@@ -5,18 +5,13 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense,Conv2D,MaxPooling2D,Flatten
 (x_train,y_train),(x_test,y_test) = mnist.load_data()
 
-print(x_train.shape, y_train.shape)
-print(x_test.shape, y_test.shape)
-
 x_train = x_train.reshape(60000,28,28,1)
 x_test = x_test.reshape(10000,28,28,1)
-print(x_train.shape)
 
-import numpy as np
-print(np.unique(y_train,return_counts=True))
 from keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
+
 
 #2.모델구성
 model = Sequential()
@@ -31,23 +26,46 @@ model.add(Dense(32, activation='relu'))
 model.add(Dense(10, activation='softmax')) 
 model.summary()
 
-from tensorflow.python.keras.optimizer_v2 import adam
+from tensorflow.python.keras.optimizer_v2 import adam, adadelta, adagrad, adamax
+from tensorflow.python.keras.optimizer_v2 import rmsprop, nadam 
 
 #3.컴파일 훈련
+
 learning_rate = 0.001
-optimizer = adam.Adam(lr= learning_rate)
-model.compile(loss='categorical_crossentropy', optimizer=optimizer)
-model.fit(x_train, y_train, epochs=10, batch_size=20)
 
-print(y_test)
-#4.평가 훈련
-loss = model.evaluate(x_test, y_test)
-y_predict = model.predict(x_test)
-print(y_test)
-print(y_predict)
-y_predict = np.argmax(y_predict, axis= 1)
-y_test = np.argmax(y_test, axis= 1)
+op_list = [adam.Adam,adadelta.Adadelta,adagrad.Adagrad,adamax.Adamax,rmsprop.RMSprop,nadam.Nadam]
+op_name = ['Adam','Adadelta','Adagrad','Adamax','RMSprop','Nadam']
+result = []
 
-from sklearn.metrics import accuracy_score
-acc = accuracy_score(y_test, y_predict)
-print(':acc스코어 ', acc)
+for i,n in zip(op_list,op_name):
+    
+
+    optimizer = i(lr= learning_rate)
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer)
+    model.fit(x_train, y_train, epochs=1, batch_size=20,verbose=0)
+
+    #4.평가 훈련
+    loss = model.evaluate(x_test, y_test)
+    y_predict = model.predict(x_test)
+    y_predict = np.argmax(y_predict, axis= 1)
+    y_test = np.argmax(y_test, axis= 1)
+    
+
+    from sklearn.metrics import accuracy_score
+    acc = accuracy_score(y_test, y_predict)
+    re = n,':loss : ', loss, 'lr : ', learning_rate, '결과 : ', y_predict, 'acc : ',acc
+    result.append(re)
+    y_test = to_categorical(y_test)
+print('=============================================')    
+print(result)
+    
+
+# [('Adam', ':loss : ', 0.09247702360153198, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9712), 
+# ('Adadelta', ':loss : ', 0.0838637426495552, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9746), 
+# ('Adagrad', ':loss : ', 0.0580800361931324, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9813), 
+# ('Adamax', ':loss : ', 0.05223749205470085, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9851), 
+# ('RMSprop', ':loss : ', 0.0676237940788269, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.979), 
+# ('Nadam', ':loss : ', 0.07385706901550293, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9772)]
+
+
+
