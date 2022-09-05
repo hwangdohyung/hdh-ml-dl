@@ -97,6 +97,3 @@ print('Done.')
 
 submit.to_csv(path + 'la.csv', index=False)
 
-
-
-hhhddkkv
