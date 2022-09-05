@@ -34,12 +34,10 @@ from tensorflow.python.keras.optimizer_v2 import rmsprop, nadam
 learning_rate = 0.001
 
 op_list = [adam.Adam,adadelta.Adadelta,adagrad.Adagrad,adamax.Adamax,rmsprop.RMSprop,nadam.Nadam]
-op_name = ['Adam','Adadelta','Adagrad','Adamax','RMSprop','Nadam']
 result = []
 
-for i,n in zip(op_list,op_name):
+for i in (op_list):
     
-
     optimizer = i(lr= learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer)
     model.fit(x_train, y_train, epochs=1, batch_size=20,verbose=0)
@@ -50,22 +48,16 @@ for i,n in zip(op_list,op_name):
     y_predict = np.argmax(y_predict, axis= 1)
     y_test = np.argmax(y_test, axis= 1)
     
-
     from sklearn.metrics import accuracy_score
     acc = accuracy_score(y_test, y_predict)
-    re = n,':loss : ', loss, 'lr : ', learning_rate, '결과 : ', y_predict, 'acc : ',acc
-    result.append(re)
+    result.append(i.__name__)
+    result.append(acc)
     y_test = to_categorical(y_test)
 print('=============================================')    
 print(result)
     
 
-# [('Adam', ':loss : ', 0.09247702360153198, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9712), 
-# ('Adadelta', ':loss : ', 0.0838637426495552, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9746), 
-# ('Adagrad', ':loss : ', 0.0580800361931324, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9813), 
-# ('Adamax', ':loss : ', 0.05223749205470085, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9851), 
-# ('RMSprop', ':loss : ', 0.0676237940788269, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.979), 
-# ('Nadam', ':loss : ', 0.07385706901550293, 'lr : ', 0.001, '결과 : ', array([7, 2, 1, ..., 4, 5, 6], dtype=int64), 'acc : ', 0.9772)]
+
 
 
 
