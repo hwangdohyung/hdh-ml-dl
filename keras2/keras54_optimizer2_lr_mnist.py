@@ -12,7 +12,6 @@ from keras.utils import to_categorical
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 
-
 #2.모델구성
 model = Sequential()
 model.add(Conv2D(filters=64, kernel_size=(3,3), padding='same', input_shape=(28,28,1))) 
@@ -30,17 +29,15 @@ from tensorflow.python.keras.optimizer_v2 import adam, adadelta, adagrad, adamax
 from tensorflow.python.keras.optimizer_v2 import rmsprop, nadam 
 
 #3.컴파일 훈련
-
 learning_rate = 0.001
 
 op_list = [adam.Adam,adadelta.Adadelta,adagrad.Adagrad,adamax.Adamax,rmsprop.RMSprop,nadam.Nadam]
 result = []
 
 for i in (op_list):
-    
     optimizer = i(lr= learning_rate)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer)
-    model.fit(x_train, y_train, epochs=1, batch_size=20,verbose=0)
+    model.fit(x_train, y_train, epochs=10, batch_size=100,verbose=0)
 
     #4.평가 훈련
     loss = model.evaluate(x_test, y_test)
@@ -53,9 +50,10 @@ for i in (op_list):
     result.append(i.__name__)
     result.append(acc)
     y_test = to_categorical(y_test)
+    
 print('=============================================')    
 print(result)
-    
+
 
 
 
