@@ -52,13 +52,13 @@ end = time.time()
 loss, acc = model.evaluate(x_test,y_test)
 
 from sklearn.metrics import accuracy_score
-y_predict = np.argmax(model.predict(x_test),axis=-1)
+y_predict = model.predict(x_test)
+y_predict =np.argmax(model.predict(x_test),axis=-1)
 
 print('걸린시간 : ', start-end)
 print('accuracy : ', accuracy_score(y_test,y_predict))
 
 
-# 걸린시간 :  -16.006476640701294
-# accuracy :  0.818
+
 
     
