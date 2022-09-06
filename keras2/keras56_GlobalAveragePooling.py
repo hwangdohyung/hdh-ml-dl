@@ -54,7 +54,7 @@ loss, acc = model.evaluate(x_test,y_test)
 from sklearn.metrics import accuracy_score
 y_predict = np.argmax(model.predict(x_test),axis=-1)
 
-print('걸린시간 : ', start-end)
+print('걸린시간 : ', end - start)
 print('accuracy : ', accuracy_score(y_test,y_predict))
 
 

@@ -16,10 +16,10 @@ x_test = x_test.reshape(10000, 28*28).astype('float32')/255.
 # from keras.utils import to_categorical
 # y_train = to_categorical(y_train)
 # y_test = to_categorical(y_test)
-from keras.optimizers.optimizer_v2.adam import Adam
+from tensorflow.keras.optimizers import Adam,Adadelta,RMSprop
 
 # 2.모델 
-def build_model(drop=0.5, optimizer=Adam, activation='relu', node=111, lr=1):
+def build_model(drop=0.5, optimizer = Adam, activation='relu', node=111, lr=1):
     inputs = Input(shape= (28*28), name= 'input')
     x = Dense(node, activation=activation, name= 'hidden1')(inputs)
     x = Dropout(drop)(x)
@@ -30,14 +30,15 @@ def build_model(drop=0.5, optimizer=Adam, activation='relu', node=111, lr=1):
     outputs = Dense(10, activation='softmax', name='outputs')(x)
     
     model = Model(inputs=inputs, outputs=outputs)
+    learnig_rate = lr
+    optimizer = optimizer(lr=learnig_rate)
     
-    
-    model.compile(optimizer=Adam, metrics=['acc'], loss='sparse_categorical_crossentropy')
+    model.compile(optimizer=optimizer, metrics=['acc'], loss='sparse_categorical_crossentropy')
     return model
 
 def create_hyperparameter():
     batchs = [100, 200, 300, 400, 500]
-    optimizers = ['adam_v2', 'rmsprop', 'adadelta']
+    optimizers = [Adam, Adadelta,RMSprop]
     dropout = [0.3, 0.4, 0.5]
     activation = ['relu','linear','sigmoid','selu','elu']
     node = [32, 64, 128 ]

@@ -29,7 +29,6 @@ y_test = to_categorical(y_test)
 # 2.모델 
 activation = 'relu'
 drop = 0.2
-optimizer = 'adam'
 
 inputs = Input(shape= (32, 32, 3), name= 'input')
 x = Conv2D(64, (2, 2), padding='valid', activation=activation, name= 'hidden1')(inputs)
@@ -49,6 +48,10 @@ model = Model(inputs=inputs, outputs=outputs)
 from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 es = EarlyStopping(monitor='val_loss', patience=20, mode='min', restore_best_weights=True,verbose=1)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, mode='auto', verbose=1, factor=0.5) #factor50프로 감축시키겟다
+
+from tensorflow.keras.optimizers import Adam
+learning_rate = 0.01
+optimizer = Adam(lr=learning_rate)
 
 model.compile(optimizer=optimizer,metrics=['acc'], loss='categorical_crossentropy')
 model.fit(x_train,y_train, epochs=100,callbacks=[es,reduce_lr], validation_split=0.4,batch_size=128) 

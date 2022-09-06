@@ -2,14 +2,18 @@ from time import time
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np 
-
-#1. 데이터
-path = 'D:\study_data\_data\dacon_travle/' # ".은 현재 폴더"
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score
+from catboost import CatBoostClassifier
+from sklearn.preprocessing import LabelEncoder
+from tqdm import tqdm_notebook
+##### 데이터 ######
+path = './_data\dacon_travle/' 
 train_set = pd.read_csv(path + 'train.csv',
                         index_col=0)
-test_set = pd.read_csv(path + 'test.csv', #예측에서 쓸거야!!
+test_set = pd.read_csv(path + 'test.csv', 
                        index_col=0)
-
 
 train_set['TypeofContact'].fillna('Self Enquiry', inplace=True)
 test_set['TypeofContact'].fillna('Self Enquiry', inplace=True)
@@ -55,8 +59,7 @@ test_set.loc[ test_set['Occupation'] =='Free Lancer' , 'Occupation'] = 'Salaried
 train_set.loc[ train_set['Gender'] =='Fe Male' , 'Gender'] = 'Female'
 test_set.loc[ test_set['Gender'] =='Fe Male' , 'Gender'] = 'Female'
 cols = ['TypeofContact','Occupation','Gender','ProductPitched','MaritalStatus','Designation']
-from sklearn.preprocessing import LabelEncoder
-from tqdm import tqdm_notebook
+
 
 for col in tqdm_notebook(cols):
     le = LabelEncoder()
@@ -64,122 +67,35 @@ for col in tqdm_notebook(cols):
     test_set[col]=le.fit_transform(test_set[col])
 
 
-def outliers(data_out):
-    quartile_1, q2 , quartile_3 = np.percentile(data_out,
-                                               [25,50,75]) 
-    print("1사분위 : ",quartile_1) 
-    print("3사분위 : ",quartile_3) 
-    iqr =quartile_3-quartile_1  
-    print("iqr :" ,iqr)
-    lower_bound = quartile_1 - (iqr * 1.5)
-    upper_bound = quartile_3 + (iqr * 1.5)
-    return np.where((data_out>upper_bound)|
-                    (data_out<lower_bound))
-                     
-                           
-
-DurationOfPitch_out_index= outliers(train_set['DurationOfPitch'])[0] #44
-Gender_out_index= outliers(train_set['Gender'])[0] # 0
-NumberOfPersonVisiting_out_index= outliers(train_set['NumberOfPersonVisiting'])[0] # 1
-NumberOfFollowups_out_index= outliers(train_set['NumberOfFollowups'])[0] # 0
-ProductPitched_index= outliers(train_set['ProductPitched'])[0] # 0
-PreferredPropertyStar_out_index= outliers(train_set['PreferredPropertyStar'])[0]  # 0
-MaritalStatus_out_index= outliers(train_set['MaritalStatus'])[0] # 0
-NumberOfTrips_out_index= outliers(train_set['NumberOfTrips'])[0] # 38
-Passport_out_index= outliers(train_set['Passport'])[0] # 0
-PitchSatisfactionScore_out_index= outliers(train_set['PitchSatisfactionScore'])[0] # 0
-OwnCar_out_index= outliers(train_set['OwnCar'])[0] # 0
-NumberOfChildrenVisiting_out_index= outliers(train_set['NumberOfChildrenVisiting'])[0] # 0
-Designation_out_index= outliers(train_set['Designation'])[0] # 89
-MonthlyIncome_out_index= outliers(train_set['MonthlyIncome'])[0] # 138
-'''
-lead_outlier_index = np.concatenate((#Age_out_index,                            # acc : 0.8650306748466258
-                                    #  TypeofContact_out_index,                 # acc : 0.8920454545454546
-                                    #  CityTier_out_index,                      # acc : 0.8920454545454546
-                                     DurationOfPitch_out_index,               # acc : 0.9156976744186046
-                                    #  Gender_out_index,                        # acc : 0.8920454545454546
-                                    #  NumberOfPersonVisiting_out_index,        # acc : 0.8835227272727273
-                                    #  NumberOfFollowups_out_index,             # acc : 0.8942598187311178
-                                    #  ProductPitched_index,                    # acc : 0.8920454545454546
-                                    #  PreferredPropertyStar_out_index,         # acc : 0.8920454545454546
-                                    #  MaritalStatus_out_index,                 # acc : 0.8920454545454546
-                                    #  NumberOfTrips_out_index,                 # acc : 0.8670520231213873
-                                    #  Passport_out_index,                      # acc : 0.8920454545454546
-                                    #  PitchSatisfactionScore_out_index,        # acc : 0.8920454545454546
-                                    #  OwnCar_out_index,                        # acc : 0.8920454545454546
-                                    #  NumberOfChildrenVisiting_out_index,      # acc : 0.8920454545454546
-                                    #  Designation_out_index,                   # acc : 0.8869047619047619
-                                    #  MonthlyIncome_out_index                  # acc : 0.8932926829268293
-                                     ),axis=None)
-                              
-print(len(lead_outlier_index)) #577
-lead_not_outlier_index = []
-for i in train_set.index:
-    if i not in lead_outlier_index :
-        lead_not_outlier_index.append(i)
-train_set_clean = train_set.loc[lead_not_outlier_index]      
-train_set_clean = train_set_clean.reset_index(drop=True)
-# print(train_set_clean)
-'''       
 x = train_set.drop(['ProdTaken',
                           'NumberOfChildrenVisiting',
                           'NumberOfPersonVisiting',
                           'OwnCar', 
                           'MonthlyIncome', 
                           'NumberOfFollowups',
-                        #   'TypeofContact',
+
                           ], axis=1)
-# x = train_set.drop(['ProdTaken'], axis=1)
+
 test_set = test_set.drop(['NumberOfChildrenVisiting',
                           'NumberOfPersonVisiting',
                           'OwnCar', 
                           'MonthlyIncome', 
                           'NumberOfFollowups',
-                        #   'TypeofContact',
+                        #
                           ], axis=1)
 y = train_set['ProdTaken']
-print(x.shape) #1911,13
-
-
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import StratifiedKFold
 
 x_train,x_test,y_train,y_test = train_test_split(x,y,train_size=0.91,shuffle=True,random_state=1234,stratify=y)
 
-from sklearn.metrics import accuracy_score
-from catboost import CatBoostClassifier
 # 2. 모델
 
 n_splits = 6
-# 최상의 점수 :  0.9044520547945205
-# acc : 0.954248366013072
-# 걸린 시간 : 5.827547073364258 
+
 kfold = StratifiedKFold(n_splits=n_splits,shuffle=True,random_state=123)
-# {'target': 0.9825581395348837, 
-#  'params': {'depth': 9.870692750101593,
-#             'fold_permutation_block': 8.315144786179879, 
-#             'l2_leaf_reg': 5.182351079272809, 
-#             'learning_rate': 0.20711118811391716, 
-#             'model_size_reg': 0.44979263197508923, 
-#             'od_pval': 0.442501612764838}}
 
-#  Trial 2 finished with value: 1.0 and parameters: 
-# {'n_estimators': 1872, 
-# 'depth': 14, 
-# 'fold_permutation_block': 137, 
-# 'od_pval': 0.4558538849228756, 
-# 'l2_leaf_reg': 0.32453261538080636}. 
-
-# Best trial : score 1.0,
-# params {'n_estimators': 1304,
-# 'depth': 8, 'fold_permutation_block': 142, 
-# 'learning_rate': 0.21616891196578603, 
-# 'od_pval': 0.12673190617341812, 
-# 'l2_leaf_reg': 0.33021257848638497}
 cat_paramets = {"learning_rate" : [0.01],
                 'depth' : [8],
                 'od_pval' : [0.12673190617341812],
-                # 'model_size_reg': [0.44979263197508923],
                 'fold_permutation_block': [142],
                 'l2_leaf_reg' :[0.33021257848638497]}
 cat = CatBoostClassifier(random_state=72,verbose=False,n_estimators=1304)
@@ -191,20 +107,18 @@ model.fit(x_train,y_train)
 end_time = time.time()-start_time 
 y_predict = model.predict(x_test)
 results = accuracy_score(y_test,y_predict)
-print('최적의 매개변수 : ',model.best_params_)
-print('최상의 점수 : ',model.best_score_)
-print('acc :',results)
-print('걸린 시간 :',end_time)
 
 model.fit(x,y)
-y_summit = model.predict(test_set)
-y_summit = np.round(y_summit,0)
+y_submmit = model.predict(test_set)
+y_submmit = np.round(y_submmit,0)
 submission = pd.read_csv(path + 'sample_submission.csv',
                       )
-submission['ProdTaken'] = y_summit
+submission['ProdTaken'] = y_submmit
 
 submission.to_csv('test100.csv',index=False)
 
-
+import pickle
+path = '.\_save\_xg/'
+pickle.dump(model, open(path + 'm39_pickle1_save', 'wb')) 
 
 
