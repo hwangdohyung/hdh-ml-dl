@@ -10,16 +10,16 @@ from sklearn.metrics import accuracy_score
 # 1.데이터
 (x_train,y_train),(x_test,y_test)  = cifar100.load_data()
 
-x_train = x_train.reshape(50000, 32*32*3)
-x_test = x_test.reshape(10000, 32*32*3)
+x_train = x_train.reshape(60000, 28*28*1)
+x_test = x_test.reshape(10000, 28*28*1)
 
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 scaler = MinMaxScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
-x_train = x_train.reshape(50000, 32,32,3)
-x_test = x_test.reshape(10000, 32,32,3)
+x_train = x_train.reshape(60000, 28,28,1)
+x_test = x_test.reshape(10000, 28,28,1)
 
 # from keras.utils import to_categorical
 # y_train = to_categorical(y_train)
@@ -29,7 +29,7 @@ x_test = x_test.reshape(10000, 32,32,3)
 activation = 'relu'
 drop = 0.2
 
-inputs = Input(shape= (32, 32, 3), name= 'input')
+inputs = Input(shape= (28, 28, 1), name= 'input')
 x = Conv2D(64, (2, 2), padding='valid', activation=activation, name= 'hidden1')(inputs)
 x = Dropout(drop)(x)
 # x = Conv2D(64, (2, 2), padding='same', activation=activation, name= 'hidden2')(x)
@@ -40,7 +40,7 @@ x = Dropout(drop)(x)
 x = GlobalAveragePooling2D()(x) 
 x = Dense(100, activation=activation, name='hidden4')(x)
 x = Dropout(drop)(x)
-outputs = Dense(100, activation='softmax', name='outputs')(x)
+outputs = Dense(10, activation='softmax', name='outputs')(x)
 model = Model(inputs=inputs, outputs=outputs)
 
 # 3.컴파일,훈련

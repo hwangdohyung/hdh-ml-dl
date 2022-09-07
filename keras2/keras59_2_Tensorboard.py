@@ -32,8 +32,6 @@ drop = 0.2
 inputs = Input(shape= (28, 28, 1), name= 'input')
 x = Conv2D(64, (2, 2), padding='valid', activation=activation, name= 'hidden1')(inputs)
 x = Dropout(drop)(x)
-# x = Conv2D(64, (2, 2), padding='same', activation=activation, name= 'hidden2')(x)
-# x = Dropout(drop)(x)
 x = MaxPool2D()(x)
 x = Conv2D(32, (3, 3), padding='valid', activation=activation, name= 'hidden3')(x)
 x = Dropout(drop)(x)
@@ -51,6 +49,10 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, mode='auto', verb
 
 tb = TensorBoard(log_dir='D:\study_data\_tensorboard_log\_graph/', histogram_freq=0,
                  write_graph=True, write_images=True)
+#실행방법 : tensorboard --logdir=. (경로)
+# http://localhost:6006 
+# 또는
+# http://127.0.0.1:6006
 
 from keras.optimizers import Adam 
 learning_rate= 0.01
