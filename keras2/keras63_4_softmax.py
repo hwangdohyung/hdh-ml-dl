@@ -14,3 +14,5 @@ labels = y
 
 plt.pie(ratio, labels, shadow=True, startangle=90)
 plt.show()
+
+
