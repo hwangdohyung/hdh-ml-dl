@@ -47,7 +47,7 @@ model = Model(inputs=inputs, outputs=outputs)
 
 from tensorflow.python.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 es = EarlyStopping(monitor='val_loss', patience=20, mode='min', restore_best_weights=True,verbose=1)
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, mode='auto', verbose=1, factor=0.5) #factor50프로 감축시키겟다
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', patience=10, mode='auto', verbose=1, factor=0.5) #factor - 얼만큼 줄일 것이냐 50프로 감축시키겟다
 
 from tensorflow.keras.optimizers import Adam
 learning_rate = 0.01
