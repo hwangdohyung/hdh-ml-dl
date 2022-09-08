@@ -35,7 +35,6 @@ x_test = x_test.reshape(13, 150,150,3)
 # y_test = to_categorical(y_test)
 
 
-
 vGG16 = VGG16(weights='imagenet', include_top=False,
               input_shape=(150, 150, 3))  
 
