@@ -23,3 +23,5 @@ pd.set_option('max_colwidth', -1)
 layers= [(layer, layer.name, layer.trainable) for layer in model.layers]
 resluts = pd.DataFrame(layers, columns=['Layer Type', 'Layer Name', 'Layer Trainable'])
 print(resluts)
+
+

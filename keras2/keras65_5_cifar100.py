@@ -44,6 +44,7 @@ y_predict =np.argmax(model.predict(x_test),axis=1)
 acc = accuracy_score(y_test,y_predict)
 print('acc : ', round(acc,4))
 
+
 #vgg False -- 0.3501
 #all True --  0.4083
 #all False -- 0.0927
