@@ -22,12 +22,7 @@ for i in m_list:
     model = i()
     model.trainable = False
     model.summary()
-    weights = model.weights
-    trainable = model.trainable_weights
-    last.append(i.__name__)
-    weight.append(weights)
-    train.append(trainable)
-
+    print
 
 # print('===================================================')
 # print('모델명 : ', )

@@ -4,11 +4,14 @@ from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.callbacks import EarlyStopping
 from keras.models import Sequential,Model
 from keras.layers import Dense,Flatten,GlobalAveragePooling2D,Input
-from keras.applications import VGG19,VGG16
+from keras.applications import VGG19,VGG16,Xception,ResNet50,ResNet101,InceptionResNetV2,InceptionV3,DenseNet121,MobileNetV2,EfficientNetB0
 from keras.datasets import cifar10,cifar100
 import tensorflow as tf 
 from sklearn.preprocessing import MinMaxScaler, StandardScaler 
 tf.random.set_seed(123)
+import warnings
+warnings.filterwarnings('ignore')
+
 
 x = np.load('d:/study_data/_save/_npy/rps_02/keras49_08_x.npy')
 y = np.load('d:/study_data/_save/_npy/rps_02/keras49_08_y.npy')
@@ -30,6 +33,8 @@ x_test = x_test.reshape(13, 150,150,3)
 # from keras.utils import to_categorical
 # y_trian = to_categorical(y_train)
 # y_test = to_categorical(y_test)
+
+
 
 vGG16 = VGG16(weights='imagenet', include_top=False,
               input_shape=(150, 150, 3))  

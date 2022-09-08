@@ -4,11 +4,13 @@ from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.python.keras.callbacks import EarlyStopping
 from keras.models import Sequential,Model
 from keras.layers import Dense,Flatten,GlobalAveragePooling2D,Input
-from keras.applications import VGG19,VGG16
+from keras.applications import VGG19,VGG16,Xception,ResNet50,ResNet101,InceptionResNetV2,InceptionV3,DenseNet121,MobileNetV2,EfficientNetB0
 from keras.datasets import cifar10,cifar100
 import tensorflow as tf 
 from sklearn.preprocessing import MinMaxScaler, StandardScaler 
 tf.random.set_seed(123)
+import warnings
+warnings.filterwarnings('ignore')
 
 # 1. 데이터
 x_train = np.load('d:/study_data/_save/_npy/men_women_02/keras49_09_train_x.npy')
