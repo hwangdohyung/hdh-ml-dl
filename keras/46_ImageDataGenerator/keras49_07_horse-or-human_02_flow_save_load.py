@@ -1,10 +1,8 @@
 import numpy as np 
 from keras.preprocessing.image import ImageDataGenerator
 
-
 x = np.load('d:/study_data/_save/_npy/horse-or-human_02/keras49_07_x.npy')
 y= np.load('d:/study_data/_save/_npy/horse-or-human_02/keras49_07_y.npy')
-
 
 from sklearn.model_selection import train_test_split
 

@@ -13,7 +13,6 @@ x_test = x_test.reshape(10000,32,32,3)
 base_model = DenseNet201(weights='imagenet',include_top=False,input_shape=(32,32,3))
 base_model.summary()
 
-
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(102, activation='relu')(x)
@@ -35,7 +34,11 @@ model.evaluate(x_test,y_test)
 y_predict= np.argmax(model.predict(x_test),axis=1)
 
 from sklearn.metrics import accuracy_score
-print('acc : ',accuracy_score(y_predict,y_test))
+print('acc : ',accuracy_score(y_predict,y_test))    
+
+
+
+
 
 
 
