@@ -49,13 +49,15 @@ for i in m_list:
 
     from sklearn.metrics import accuracy_score
     model.compile(loss= 'binary_crossentropy',optimizer='adam',metrics=['acc'])
-    model.fit(x_train,y_train, epochs=100, batch_size=256, verbose=1)
+    model.fit(x_train,y_train, epochs=100, batch_size=256, verbose=0)
     model.evaluate(x_test,y_test)
     y_predict = (model.predict(x_test)).round()
     acc = accuracy_score(y_test,y_predict)
     print('acc : ', round(acc,4))
     acc_list.append([i.__name__,acc])
 print(acc_list)
+
+
 
 
 

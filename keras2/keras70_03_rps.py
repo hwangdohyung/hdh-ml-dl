@@ -49,6 +49,7 @@ for i in m_list:
     model.add(Flatten())
     model.add(Dense(100))
     model.add(Dense(3,activation='softmax'))
+    model.layers[0].trainable= False
 
     # model.trainable = False
 
@@ -73,3 +74,11 @@ print(acc_list)
 #  ['ResNet101', 0.46153846153846156], ['InceptionResNetV2', 0.6923076923076923], 
 #  ['InceptionV3', 0.6923076923076923], ['DenseNet121', 0.7692307692307693], 
 #  ['MobileNetV2', 0.38461538461538464], ['EfficientNetB0', 0.3076923076923077]]
+
+# model trainable False
+
+# [['VGG19', 0.7692307692307693], ['VGG16', 0.5384615384615384], 
+#  ['Xception', 0.5384615384615384], ['ResNet50', 0.9230769230769231],
+#  ['ResNet101', 0.9230769230769231], ['InceptionResNetV2', 0.6153846153846154], 
+# ['InceptionV3', 0.46153846153846156], ['DenseNet121', 0.8461538461538461], 
+# ['MobileNetV2', 0.9230769230769231], ['EfficientNetB0', 0.9230769230769231]]
