@@ -33,33 +33,38 @@ x_test = x_test.reshape(13, 150,150,3)
 # from keras.utils import to_categorical
 # y_trian = to_categorical(y_train)
 # y_test = to_categorical(y_test)
+m_list=[VGG19,VGG16,Xception,ResNet50,ResNet101,InceptionResNetV2,InceptionV3,DenseNet121,MobileNetV2,EfficientNetB0]
+acc_list=[]
 
+for i in m_list:
+    
 
-vGG16 = VGG16(weights='imagenet', include_top=False,
-              input_shape=(150, 150, 3))  
+    vGG16 = i(weights='imagenet', include_top=False,
+                input_shape=(150, 150, 3))  
 
-# vGG16.trainable= False     
+    # vGG16.trainable= False     
 
-model = Sequential()
-model.add(vGG16)
-model.add(Flatten())
-model.add(Dense(100))
-model.add(Dense(3,activation='softmax'))
+    model = Sequential()
+    model.add(vGG16)
+    model.add(Flatten())
+    model.add(Dense(100))
+    model.add(Dense(3,activation='softmax'))
 
-# model.trainable = False
+    # model.trainable = False
 
-from sklearn.metrics import accuracy_score
-model.compile(loss= 'categorical_crossentropy',optimizer='adam',metrics=['acc'])
-model.fit(x_train,y_train, epochs=100, batch_size=256, verbose=1)
-model.evaluate(x_test,y_test)
-y_predict = model.predict(x_test)
-y_predict = np.argmax(y_predict,axis=1) 
-y_test = np.argmax(y_test,axis=1)
-acc = accuracy_score(y_test,y_predict)
-print('acc : ', round(acc,4))
-
-
-#vgg False - acc :  0.7692
-#all True - acc :  0.4615
-
+    from sklearn.metrics import accuracy_score
+    model.compile(loss= 'categorical_crossentropy',optimizer='adam',metrics=['acc'])
+    model.fit(x_train,y_train, epochs=100, batch_size=256, verbose=0)
+    model.evaluate(x_test,y_test)
+    y_predict = model.predict(x_test)
+    y_predict = np.argmax(y_predict,axis=1) 
+    y_test = np.argmax(y_test,axis=1)
+    acc = accuracy_score(y_test,y_predict)
+    print('acc : ', round(acc,4))
+    from keras.utils import to_categorical
+    y_trian = to_categorical(y_train)
+    y_test = to_categorical(y_test)
+    acc_list.append([i.__name__,acc])
+    
+print(acc_list)
 

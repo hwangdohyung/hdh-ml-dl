@@ -44,7 +44,6 @@ model = Model(inputs=input1,outputs=output)
 model.layers[1].trainable= False
 model.summary()
 
-
 from sklearn.metrics import accuracy_score
 model.compile(loss= 'binary_crossentropy',optimizer='adam',metrics=['acc'])
 model.fit(x_train,y_train, epochs=100, batch_size=256, verbose=1)

@@ -41,7 +41,7 @@ print(np.unique(pad_x, return_counts =True))
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import Dense,LSTM,Embedding # 엠베딩은 통상 input layer쪽에서 많이 씀.
 
-model = Sequential()            #인풋은 (14,5)
+model = Sequential()            #인풋은 (14,5)  
                     #input단어사전의 갯수, output 아웃풋갯수, input_length= 명시하지 않아도 잡아줌. 엠베딩layer 연산량은 동일
 model.add(Embedding(input_dim =31,output_dim=11, input_length=5))
 # model.add(Embedding(input_dim =31,output_dim=10))
