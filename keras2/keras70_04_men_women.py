@@ -49,7 +49,7 @@ for i in m_list:
 
     from sklearn.metrics import accuracy_score
     model.compile(loss= 'binary_crossentropy',optimizer='adam',metrics=['acc'])
-    model.fit(x_train,y_train, epochs=100, batch_size=256, verbose=0)
+    model.fit(x_train,y_train, epochs=100, batch_size=128, verbose=0)
     model.evaluate(x_test,y_test)
     y_predict = (model.predict(x_test)).round()
     acc = accuracy_score(y_test,y_predict)
@@ -61,5 +61,10 @@ print(acc_list)
 
 
 
-
-
+# acc :  0.8036
+# [['VGG19', 0.8051359516616314], ['VGG16', 0.8006042296072508],
+#  ['Xception', 0.8036253776435045], ['ResNet50', 0.8036253776435045],
+#  ['ResNet101', 0.8036253776435045], ['InceptionResNetV2', 0.8036253776435045], 
+#  ['InceptionV3', 0.8021148036253777], ['DenseNet121', 0.803625377643504501', 0.8036253776435045], 
+# ['InceptionResNetV2', 0.8036253776435045], ], ['MobileNetV2', 0.8036253776435045], 
+# ['EfficientNetB0', 0.8036253776435045]]                                                             
