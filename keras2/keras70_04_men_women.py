@@ -68,3 +68,7 @@ print(acc_list)
 #  ['InceptionV3', 0.8021148036253777], ['DenseNet121', 0.803625377643504501', 0.8036253776435045], 
 # ['InceptionResNetV2', 0.8036253776435045], ], ['MobileNetV2', 0.8036253776435045], 
 # ['EfficientNetB0', 0.8036253776435045]]                                                             
+
+
+
+adsfasdfasdfasdfasdfasdf
