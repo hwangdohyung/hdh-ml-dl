@@ -69,6 +69,3 @@ print(acc_list)
 # ['InceptionResNetV2', 0.8036253776435045], ], ['MobileNetV2', 0.8036253776435045], 
 # ['EfficientNetB0', 0.8036253776435045]]                                                             
 
-
-
-adsfasdfasdfasdfasdfasdf
