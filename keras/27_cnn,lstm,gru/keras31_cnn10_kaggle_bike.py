@@ -39,6 +39,7 @@ print(x)
 print(x.columns)
 print(x.shape) # (10886, 12)
 
+
 y = train_set['count'] 
 print(y)
 print(y.shape) # (10886,)

@@ -1,25 +1,34 @@
+### 데이터와 모델만 바꿔준다 ###
+
 from inspect import Parameter
 from pickletools import optimize
 from unittest import result
 import numpy as np 
 import torch 
 print(torch.__version__) #1.12.1
+
 import torch.nn as nn 
 import torch.optim as optim 
 import torch.nn.functional as F
+
+USE_CUDA = torch.cuda.is_available()
+DEVICE = torch.device('cuda' if USE_CUDA else 'cpu')  # 쓸 수 있는 장치가 있으면 cuda 없으면 cpu를 쓰겟다
+print('torch : ', torch.__version__,'사용DEVICE : ', DEVICE)
+
 
 # 1.데이터
 x = np.array([1,2,3])   # (3, )
 y = np.array([1,2,3])
 
-x = torch.FloatTensor(x).unsqueeze(1)  # 1번째 자리에 차원 늘려줌. (3, ) -> (3, 1)
-y = torch.FloatTensor(y).reshape(3,1)
+x = torch.FloatTensor(x).unsqueeze(1).to(DEVICE)  # 1번째 자리에 차원 늘려줌. (3, ) -> (3, 1)
+y = torch.FloatTensor(y).reshape(3,1).to(DEVICE)
 
 print(x.shape,y.shape)
 
 # 2.모델
 # model = Sequential()
-model = nn.Linear(1, 1) # (인풋 x값 , 아웃풋 y값)
+model = nn.Linear(1, 1).to(DEVICE) # (인풋 x값 , 아웃풋 y값)
+
 
 # 3.컴파일,훈련 
 # model.compile(loss='mse',optimizer='SGD')
@@ -42,12 +51,12 @@ def train(model, criterion, optimizer, x, y):
     return loss.item()
 
 
-epochs = 1000
+epochs = 2000
 for epoch in range(1, epochs+1):
     loss = train(model, criterion, optimizer, x, y)
     print('epochs : {}, loss: {}'.format(epoch,loss))
     
-
+    
 # 4.평가, 예측
 # loss = model.evaluate(x,y)
 
@@ -64,7 +73,7 @@ print('최종 loss : ', loss2)
 
 # y_predict = model.predict([4])
 
-results = model(torch.Tensor([[4]])) #2차원으로 넣어줘야함.
+results = model(torch.Tensor([[4]]).to(DEVICE)) #2차원으로 넣어줘야함.
 
 print('4의 예측값 : ', results.item())
 
