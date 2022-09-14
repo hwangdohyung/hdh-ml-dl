@@ -69,5 +69,7 @@ print('최종 loss : ', loss2)
 
 results = model(predict)
 results = results.tolist()
-print('predict의 결과 : ', np.round(results,4))
+print('predict의 결과 : ', np.round(results))
 
+# 최종 loss :  1.641728474086751e-13
+# predict의 결과 :  [10.   1.9  0. ]
