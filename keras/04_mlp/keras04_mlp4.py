@@ -16,6 +16,7 @@ y = np.array([[1,2,3,4,5,6,7,8,9,10], [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8
 y = np.transpose(y)
 print(y.shape)
 
+
 #2.모델구성
 model = Sequential()
 model.add(Dense(50, input_dim=1)) 

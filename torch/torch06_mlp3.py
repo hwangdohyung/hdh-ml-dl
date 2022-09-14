@@ -11,40 +11,40 @@ DEVICE = torch.device('cuda' if USE_CUDA else 'cpu')
 #1.데이터 
 x = np.array([range(10), range(21, 31), range(201, 211)])
 y = np.array([[1,2,3,4,5,6,7,8,9,10], [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]]) 
-x_test = np.array([[9, 30, 210]])
+predict = np.array([[9, 30, 210]])
 
-print(x.shape,y.shape,x_test.shape)
+print(x.shape,y.shape,predict.shape)
 
 x = torch.FloatTensor(x).to(DEVICE)
 y = torch.FloatTensor(y).to(DEVICE)
-x_test = torch.FloatTensor(x_test).to(DEVICE)
+predict = torch.FloatTensor(predict).to(DEVICE)
 
 
-
-
-T = np.transpose
 x = x.T
 y = y.T
-print(x.shape,y.shape,x_test.shape)
+print(x.shape,y.shape,predict.shape)
 
-# 스케일링 #
-x = (x - torch.mean(x)) / torch.std(x)
-x_test = (x_test - torch.mean(x)) / torch.std(x)
+print(x,y,predict)
+
+
+# 스케일링 # predict 먼저 해주는것 중요!
+# predict = (predict - torch.mean(x)) / torch.std(x)
+# x = (x - torch.mean(x)) / torch.std(x)
+
 
 #2.모델구성
 model = nn.Sequential(
-    nn.Linear(3,50),
-    nn.Linear(50,40),
-    nn.Linear(40,30),
+    nn.Linear(3,10),
+    nn.Linear(10,10),
     nn.ReLU(),
-    nn.Linear(30,20),
+    nn.Linear(10,8),
     nn.ReLU(),
-    nn.Linear(20,2)
+    nn.Linear(8,2)
 ).to(DEVICE)
 
 #3.컴파일,훈련
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(),lr=0.0001)
+optimizer = optim.Adam(model.parameters(),lr=0.001)
 
 def train(model,criterion,optimizer,x,y):
     optimizer.zero_grad()
@@ -57,7 +57,7 @@ def train(model,criterion,optimizer,x,y):
     optimizer.step()
     return loss.item()
 
-epochs = 500
+epochs = 1000
 for epoch in range(1, epochs+1):
     loss = train(model, criterion, optimizer, x, y)
     print('epochs : {}, loss : {}'.format(epoch,loss))
@@ -74,6 +74,9 @@ def evaluate(model, criterion, x, y):
 loss2 = evaluate(model,criterion, x, y)
 print('최종 loss : ', loss2)
 
-results = model(torch.Tensor(x_test).to(DEVICE))
+results = model(torch.Tensor(predict).to(DEVICE))
+results = results.tolist()
 print('x_test의 결과 : ', results)
 
+# 최종 loss :  6.549302725034067e-06
+# x_test의 결과 :  [[10.003754615783691, 1.9004648923873901]]

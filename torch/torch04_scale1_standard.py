@@ -22,10 +22,10 @@ y = np.array([1,2,3])
 x_test = np.array([4])
 
 x = torch.FloatTensor(x).unsqueeze(1).to(DEVICE)  # 1번째 자리에 차원 늘려줌. (3, ) -> (3, 1)
-y = torch.FloatTensor(y).reshape(3,1).to(DEVICE)
+y = torch.FloatTensor(y).unsqueeze(-1).to(DEVICE)
 x_test = torch.FloatTensor(x_test).to(DEVICE)
 
-x_test = (x_test - torch.mean(x)) / torch.std(x)
+predict = (x_test - torch.mean(x)) / torch.std(x)
 x = (x - torch.mean(x)) / torch.std(x) # standard scaler
 
 
@@ -41,11 +41,11 @@ model = nn.Linear(1, 1).to(DEVICE) # (인풋 x값 , 아웃풋 y값)
 # 3.컴파일,훈련 
 # model.compile(loss='mse',optimizer='SGD')
 criterion = nn.MSELoss()
-optimizer = optim.SGD(model.parameters(), lr = 0.01)
+optimizer = optim.SGD(model.parameters(), lr = 0.001)
 # optim.Adam(model.parameters(), lr = 0.01)
 
 
-def train(model, criterion, optimizer, x, y):
+def train(model, optimizer, x, y):
     # model.train()         # 훈련모드 *생략해도 됨(default)
     optimizer.zero_grad()    # 손실함수의 기울기를 초기화한다. 역전파할때 미분값이 남아있지 않게 하기위해  #1 외우기 
     
@@ -62,7 +62,7 @@ def train(model, criterion, optimizer, x, y):
 
 epochs = 2000
 for epoch in range(1, epochs+1):
-    loss = train(model, criterion, optimizer, x, y)
+    loss = train(model,  optimizer, x, y)
     print('epochs : {}, loss: {}'.format(epoch,loss))
     
     
@@ -82,10 +82,10 @@ print('최종 loss : ', loss2)
 
 # y_predict = model.predict([4])
 
-predict = (2 - torch.mean(x) / torch.std(x)) # standard scaler
+ # standard scaler
 
 
-results = model(torch.Tensor([[predict]]).to(DEVICE)) #2차원으로 넣어줘야함.
+results = model(predict) #2차원으로 넣어줘야함.
 
 print('predict의 예측값 : ', results.item())
 

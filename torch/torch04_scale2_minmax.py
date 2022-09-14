@@ -25,8 +25,9 @@ x = torch.FloatTensor(x).unsqueeze(-1).to(DEVICE)  # 1번째 자리에 차원 �
 y = torch.FloatTensor(y).unsqueeze(-1).to(DEVICE)
 x_test = torch.FloatTensor(x_test).to(DEVICE)
 
-x = (x - torch.min(x)) / torch.max(x)-torch.min(x) # standard scaler
-x_test = (torch.max(x)-torch.min(x)) / (x_test -torch.min(x))
+x_test = (x_test -torch.min(x)) / (torch.max(x)-torch.min(x))
+x = ( torch.max(x)-torch.min(x) / x - torch.min(x))  
+
 
 print(x,y)
 print(x.shape,y.shape)

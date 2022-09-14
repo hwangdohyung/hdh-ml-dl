@@ -28,7 +28,7 @@ x = torch.FloatTensor(x).to(DEVICE)
 y = torch.FloatTensor(y).unsqueeze(-1).to(DEVICE)
 x_test = torch.FloatTensor(x_test).unsqueeze(-1).to(DEVICE)
 
-T = np.transpose
+
 x = x.T
 x_test = x_test.T
 
