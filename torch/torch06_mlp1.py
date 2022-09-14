@@ -17,30 +17,43 @@ print('torch : ', torch.__version__,'사용DEVICE : ', DEVICE)
 
 
 # 1.데이터
-x = np.array([1,2,3])   # (3, )
-y = np.array([1,2,3])   
+x = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+             [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.5, 1.4, 1.3]])   
+y = np.array([11,12,13,14,15,16,17,18,19,20])   
+x_test = np.array([10, 1.3])
 
-x = torch.FloatTensor(x).unsqueeze(1).to(DEVICE)  # 1번째 자리에 차원 늘려줌. (3, ) -> (3, 1)
-y = torch.FloatTensor(y).reshape(3,1).to(DEVICE)
+x = torch.FloatTensor(x).to(DEVICE)  
+y = torch.FloatTensor(y).unsqueeze(-1).to(DEVICE)
+x_test = torch.FloatTensor(x_test).unsqueeze(-1).to(DEVICE)
 
+T = np.transpose
+x = x.T
+x_test = x_test.T
 
-x = (x - torch.mean(x) / torch.std(x)) # standard scaler
+# # 스케일링 #
+x_test = (x_test - torch.mean(x)) / torch.std(x)
+x = (x - torch.mean(x)) / torch.std(x) # standard scaler
 
 
 print(x,y)
 print(x.shape,y.shape)
 
-
 # 2.모델
 # model = Sequential()
-model = nn.Linear(1, 1).to(DEVICE) # (인풋 x값 , 아웃풋 y값)
-
+model = nn.Sequential(
+    nn.Linear(2,6),
+    nn.Linear(6,5),
+    nn.Linear(5,3),
+    nn.ReLU(),
+    nn.Linear(3,2),
+    nn.Linear(2,1),
+    ).to(DEVICE)
 
 # 3.컴파일,훈련 
 # model.compile(loss='mse',optimizer='SGD')
 criterion = nn.MSELoss()
-optimizer = optim.SGD(model.parameters(), lr = 0.01)
-# optim.Adam(model.parameters(), lr = 0.01)
+optimizer = optim.SGD(model.parameters(), lr = 0.001)
+# optimizer = optim.Adam(model.parameters(), lr = 0.001)
 
 
 def train(model, criterion, optimizer, x, y):
@@ -49,9 +62,9 @@ def train(model, criterion, optimizer, x, y):
     
     hypothesis = model(x)    # model에 x를 넣었을 때 h 반환
     
-    # loss = criterion(hypothesis, y)
+    loss = criterion(hypothesis, y)
     # loss = nn.MSELoss()(hypothesis, y)  
-    loss = F.mse_loss(hypothesis, y)
+    # loss = F.mse_loss(hypothesis, y)
     
     loss.backward()                                          #2 외우기
     optimizer.step()                                         #3 외우기
@@ -77,18 +90,17 @@ def evaluate(model, criterion, x, y):
 
 loss2 = evaluate(model, criterion, x, y)
 print('최종 loss : ', loss2)
-
-# y_predict = model.predict([4])
-
-predict = (2 - torch.mean(x) / torch.std(x)) # standard scaler
+print(x_test)
 
 
-results = model(torch.Tensor([[predict]]).to(DEVICE)) #2차원으로 넣어줘야함.
+results = model(torch.Tensor(x_test).to(DEVICE)) 
 
-print('predict의 예측값 : ', results.item())
+print('x_test의 예측값 : ', results.item())
 
 
-
+# 최종 loss :  0.0002392903988948092
+# tensor([[8.8575, 0.1575]], device='cuda:0')
+# x_test의 예측값 :  19.97201156616211
 
 
 
