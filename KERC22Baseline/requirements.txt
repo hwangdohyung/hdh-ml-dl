@@ -1,6 +1,0 @@
-numpy==1.21.5
-pandas==1.4.3
-pandas_stubs==1.2.0.57
-torch==1.10.2+cu113
-tqdm==4.62.3
-transformers==4.17.0

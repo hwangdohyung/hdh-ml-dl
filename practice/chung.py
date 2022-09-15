@@ -5,7 +5,6 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import LSTM,GRU,Dense,Dropout
 from sklearn.model_selection import train_test_split
 
-
 path = 'D:\study_data\_data\dacon_chung/'
 all_input_list = sorted(glob.glob(path + 'train_input/*.csv'))
 all_target_list = sorted(glob.glob(path + 'train_target/*.csv'))
@@ -79,7 +78,6 @@ import time
 start_time = time.time()
 #3. 컴파일, 훈련
 model.compile(loss='mae', optimizer='adam',metrics=['acc'])
-# "".join은 " "사이에 있는 문자열을 합치겠다는 기능
 hist = model.fit(x_train, y_train, epochs=30, batch_size=700, 
                 validation_data=(val_data, val_target),
                 verbose=2,#callbacks = [earlyStopping]

@@ -19,7 +19,7 @@ y = torch.FloatTensor(y)
 
 from sklearn.model_selection import train_test_split
 
-x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.8,shuffle=True, random_state=123)
+x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.7,shuffle=True, random_state=72)
 
 x_train = torch.FloatTensor(x_train)
 y_train = torch.FloatTensor(y_train).unsqueeze(1).to(DEVICE)
@@ -40,19 +40,27 @@ x_test = torch.FloatTensor(x_test).to(DEVICE)
 
 #2.모델 
 model = nn.Sequential(
-    nn.Linear(10,64),
+    nn.Linear(10,4),
     nn.ReLU(),
-    nn.Linear(64,32),
+    nn.Linear(4,70),
     nn.ReLU(),
-    nn.Linear(32,16),
+    nn.Linear(70,60),
     nn.ReLU(),
-    nn.Linear(16,1),
-      
+    nn.Linear(60,40),
+    nn.ReLU(),
+    nn.Linear(40,30),
+    nn.ReLU(),
+    nn.Linear(30,20),
+    nn.ReLU(),
+    nn.Linear(20,10),
+    nn.ReLU(),
+    nn.Linear(10,1),
+    nn.ReLU() 
 ).to(DEVICE)
 
 #3.컴파일,훈련 
 criterion = nn.MSELoss()  
-optimizer = optim.Adam(model.parameters(),lr=0.01)
+optimizer = optim.Adam(model.parameters(),lr=0.001)
 
 def train(model,criterion,optimizer,x_train,y_train):
     optimizer.zero_grad()

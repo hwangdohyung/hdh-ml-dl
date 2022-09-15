@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn 
 import torch.optim as optim 
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
 
 USE_CUDA = torch.cuda.is_available
 DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
@@ -17,6 +18,10 @@ x,y = datasets.data,datasets.target
 x = torch.FloatTensor(x)
 y = torch.LongTensor(y)
 
+x = DataLoader(x,batch_size=128,shuffle=True)
+y = DataLoader(y,batch_size=128,shuffle=True)
+
+
 from sklearn.model_selection import train_test_split
 
 x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.8,shuffle=True, random_state=123, stratify=y)
@@ -27,6 +32,7 @@ x_test = torch.FloatTensor(x_test)
 y_test = torch.LongTensor(y_test).to(DEVICE)
 
 print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
+
 
 
 from sklearn.preprocessing import StandardScaler
