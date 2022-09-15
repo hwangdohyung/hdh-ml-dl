@@ -69,7 +69,8 @@ results = model(x_predict).cpu().detach()
 print('x_predict 결과 : ', results)
 
 
-
+# 최종 loss :  6.252776074688882e-13
+# x_predict 결과 :  tensor([[11.0000], [12.0000],[13.0000]]
 
 
 
