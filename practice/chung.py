@@ -63,6 +63,14 @@ print(train_data.shape, label_data.shape)   # (1607, 1440, 37) (1607,)
 print(val_data.shape, val_target.shape)   # (206, 1440, 37) (206,)
 
 
+train_data = np.save('D:\study_data\_save\_npy\green/train_data1.npy',arr=train_data)
+label_data = np.save('D:\study_data\_save\_npy\green/label_data2.npy',arr=label_data)
+val_data = np.save('D:\study_data\_save\_npy\green/val_data1.npy',arr=val_data)
+val_target = np.save('D:\study_data\_save\_npy\green/val_target1.npy',arr=val_target)
+test_data = np.save('D:\study_data\_save\_npy\green/test_data1.npy',arr=test_data)
+test_target = np.save('D:\study_data\_save\_npy\green/test_target1.npy',arr=test_target)
+
+
 x_train,x_test,y_train,y_test = train_test_split(train_data,label_data,train_size=0.91,shuffle=False)
 
 #2. 모델 구성
