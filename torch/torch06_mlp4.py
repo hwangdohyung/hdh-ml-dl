@@ -23,10 +23,10 @@ x = x.T
 y = y.T
 
 print(x.shape,y.shape,predict.shape)
-# exit()
+
 # 스케일링 #
-# predict = (predict - torch.mean(x)) / torch.std(x)
-# x = (x - torch.mean(x)) / torch.std(x)
+predict = (predict - torch.mean(x)) / torch.std(x)
+x = (x - torch.mean(x)) / torch.std(x)
 
 #2.모델구성
 model = nn.Sequential(
@@ -57,7 +57,7 @@ for epoch in range(epochs+1):
 
 #4.평가,예측
 def evaluate(model,criterion,x,y):
-    model.eval()
+    model.eval()          
     
     with torch.no_grad():
         y_predict = model(x)
