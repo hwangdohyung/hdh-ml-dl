@@ -67,3 +67,5 @@ class KERC22BaselineModel(nn.Module):
         x = self.clf(final_ftrs)
 
         return x
+    
+    

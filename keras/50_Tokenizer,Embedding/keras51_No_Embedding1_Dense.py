@@ -26,7 +26,7 @@ print(x)
 #  [16], [17], [18, 19], [20, 21], [22], [2, 23], [1, 24], [25, 26, 27, 28], [29, 30]]
 
 from keras.preprocessing.sequence import pad_sequences 
-pad_x = pad_sequences(x, padding='pre', maxlen=5)  # 통상적으로 앞부분에 0을 채워주게 됨. padding = pre : 앞에 채우겟다. maxlen : 최대를 5개까지로 한정한다.
+pad_x = pad_sequences(x, padding='pre', maxlen=5)  # 통상적으로 뒷부분에 0을 채워주게 됨. padding = pre : 앞에 채우겟다. maxlen : 최대를 5개까지로 한정한다.
 print(pad_x)
 print(pad_x.shape) #(14, 5)
 

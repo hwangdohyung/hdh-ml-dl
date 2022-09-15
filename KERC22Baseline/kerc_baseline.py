@@ -88,3 +88,4 @@ class KERC22Baseline():
         # load best model weights and save
         model.load_state_dict(best_model_wts)
         torch.save(model, f'{self.log_dir}/saved_model.pt')
+
