@@ -9,6 +9,7 @@ path = 'D:\study_data\_data\dacon_chung/'
 all_input_list = sorted(glob.glob(path + 'train_input/*.csv'))
 all_target_list = sorted(glob.glob(path + 'train_target/*.csv'))
 
+
 test_input_list2 = sorted(glob.glob(path + 'test_input/*.csv'))
 test_target_list2 = sorted(glob.glob(path + 'test_target/*.csv'))
 
