@@ -1,18 +1,54 @@
-#회귀모델에 시그모이드를 붙인 모델 logistic regression 2진분류에서만 사용 
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
+import datetime as dt
+from sklearn.preprocessing import MinMaxScaler,StandardScaler,MaxAbsScaler,RobustScaler
+import datetime
+     
+#1. 데이터
+path = 'D:\study_data\_data\kaggle_bike/'
+train_set = pd.read_csv(path + 'train.csv') 
+            
+test_set = pd.read_csv(path + 'test.csv') 
 
-from sklearn.datasets import fetch_california_housing
+train_set["hour"] = [t.hour for t in pd.DatetimeIndex(train_set.datetime)]
+train_set["day"] = [t.dayofweek for t in pd.DatetimeIndex(train_set.datetime)]
+train_set["month"] = [t.month for t in pd.DatetimeIndex(train_set.datetime)]
+train_set['year'] = [t.year for t in pd.DatetimeIndex(train_set.datetime)]
+train_set['year'] = train_set['year'].map({2011:0, 2012:1})
+
+test_set["hour"] = [t.hour for t in pd.DatetimeIndex(test_set.datetime)]
+test_set["day"] = [t.dayofweek for t in pd.DatetimeIndex(test_set.datetime)]
+test_set["month"] = [t.month for t in pd.DatetimeIndex(test_set.datetime)]
+test_set['year'] = [t.year for t in pd.DatetimeIndex(test_set.datetime)]
+test_set['year'] = test_set['year'].map({2011:0, 2012:1})
+
+train_set.drop('datetime',axis=1,inplace=True) 
+train_set.drop('casual',axis=1,inplace=True)
+train_set.drop('registered',axis=1,inplace=True)
+
+test_set.drop('datetime',axis=1,inplace=True) 
+
+
+x = train_set.drop(['count'], axis=1)  
+print(x)
+print(x.columns)
+print(x.shape) # (10886, 12)
+
+y = train_set['count'] 
+
 import torch 
 import torch.nn as nn 
 import torch.optim as optim 
 import torch.nn.functional as F
-
+ 
 USE_CUDA = torch.cuda.is_available
 DEVICE = torch.device('cuda:0' if USE_CUDA else 'cpu')
 print('torch : ', torch.__version__, '사용DEVICE : ', DEVICE)
 
-#1.데이터 
-datasets = fetch_california_housing()
-x,y = datasets.data,datasets.target
+x = x.to_numpy()
+y = y.to_numpy()
 
 x = torch.FloatTensor(x)
 y = torch.FloatTensor(y)
@@ -28,7 +64,6 @@ y_test = torch.FloatTensor(y_test).unsqueeze(1).to(DEVICE)
 
 print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
 
-
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
@@ -37,10 +72,9 @@ x_test = scaler.transform(x_test)
 x_train = torch.FloatTensor(x_train).to(DEVICE)
 x_test = torch.FloatTensor(x_test).to(DEVICE)
 
-
 #2.모델 
 # model = nn.Sequential(
-#     nn.Linear(8,64),
+#     nn.Linear(12,64),
 #     nn.ReLU(),
 #     nn.Linear(64,32),
 #     nn.ReLU(),
@@ -50,28 +84,24 @@ x_test = torch.FloatTensor(x_test).to(DEVICE)
       
 # ).to(DEVICE)
 
+
 class Model(nn.Module):
     def __init__(self,input_dim,output_dim):
         super().__init__()
-        self.L1 = nn.Linear(input_dim, 64)
-        self.L2 = nn.Linear(64, 32)
-        self.L3 = nn.Linear(32, 16)
-        self.L4 = nn.Linear(16, 1)
-        self.relu = nn.ReLU()
-        
+        self.net = nn.Sequential(
+        nn.Linear(input_dim, 64),
+        nn.Linear(64, 32),
+        nn.ReLU(),
+        nn.Linear(32, 16),
+        nn.ReLU(),
+        nn.Linear(16, output_dim),
+        )
         
     def forward(self,input_size):
-        x = self.L1(input_size)
-        x = self.relu(x)
-        x = self.L2(x)
-        x = self.relu(x)
-        x = self.L3(x)
-        x = self.relu(x)
-        x = self.L4(x)
+        x = self.net(input_size)
         return x 
 
-model = Model(8,1).to(DEVICE)
-
+model = Model(12,1).to(DEVICE)
 
 
 #3.컴파일,훈련 
@@ -110,5 +140,8 @@ y_predict = model(x_test)
 score = r2_score(y_predict.cpu().detach(),y_test.cpu().detach())
 print('r2 : ', score)
 
-# 최종 loss :  0.2614021599292755
-# r2 :  0.7604241059431651
+# 최종 loss :  1684.18798828125
+# r2 :  0.9457936228888987
+
+
+

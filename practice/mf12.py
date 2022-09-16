@@ -7,7 +7,7 @@ feil_name = ["01_iris","02_cancer","03_wine","04_fetch_covtype",\
 
 
 for feil_name in feil_name:
-    with open(f"./torch/torch11_class{feil_name}.py","w") as file:
+    with open(f"./torch/torch12_DataLoader{feil_name}.py","w") as file:
         file.write("")
         
         

@@ -74,6 +74,7 @@ test_target = np.save('D:\study_data\_save\_npy\green/test_target1.npy',arr=test
 
 x_train,x_test,y_train,y_test = train_test_split(train_data,label_data,train_size=0.91,shuffle=False)
 
+
 #2. 모델 구성
 model = Sequential()
 model.add(GRU(100,input_shape=(1440,37)))
@@ -96,6 +97,7 @@ end_time = time.time()-start_time
 loss = model.evaluate(x_test, y_test)
 print('loss :', loss)
 
+
 # y_predict = model.predict(x_test)
 # print(y_test.shape) #(152,)
 # print(y_predict.shape) #(152, 13, 1)
@@ -103,6 +105,7 @@ print('loss :', loss)
 # from sklearn.metrics import accuracy_score, r2_score,accuracy_score
 # r2 = r2_score(y_test, y_predict)
 # print('r2스코어 :', r2)
+
 
 print(test_input_list2)
 model.fit(train_data,label_data)

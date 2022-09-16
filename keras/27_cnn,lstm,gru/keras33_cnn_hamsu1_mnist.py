@@ -28,7 +28,6 @@ output1= Dense(10,activation= 'softmax')(dense6)
 model = Model(inputs=input1,outputs=output1)
 
 
-
 # 3.컴파일,훈련
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 

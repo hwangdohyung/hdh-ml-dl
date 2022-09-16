@@ -18,9 +18,6 @@ x,y = datasets.data,datasets.target
 x = torch.FloatTensor(x)
 y = torch.LongTensor(y)
 
-x = DataLoader(x,batch_size=128,shuffle=True)
-y = DataLoader(y,batch_size=128,shuffle=True)
-
 
 from sklearn.model_selection import train_test_split
 
@@ -34,7 +31,6 @@ y_test = torch.LongTensor(y_test).to(DEVICE)
 print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
 
 
-
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
@@ -46,9 +42,9 @@ x_test = torch.FloatTensor(x_test).to(DEVICE)
 
 #2.모델 
 model = nn.Sequential(
-    nn.Linear(8,54),
+    nn.Linear(54,54),
     nn.ReLU(),
-    nn.Linear(64,32),
+    nn.Linear(54,32),
     nn.ReLU(),
     nn.Linear(32,16),
     nn.ReLU(),

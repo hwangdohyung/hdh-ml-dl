@@ -83,6 +83,13 @@ x_test = torch.FloatTensor(x_test).to(DEVICE)
 y_test = torch.FloatTensor(y_test).unsqueeze(1).to(DEVICE)
 test_set = torch.FloatTensor(test_set).to(DEVICE)
 
+####################################################
+from torch.utils.data import TensorDataset,DataLoader
+train_set = TensorDataset(x_train,y_train)
+test_set1 = TensorDataset(x_test,y_test)
+
+train_loader = DataLoader(train_set, batch_size=64,shuffle=True)
+test_loader = DataLoader(test_set1, batch_size=64,shuffle=True)
 
 #2.모델 
 # model = nn.Sequential(
@@ -129,35 +136,40 @@ model = Model(8,1).to(DEVICE)
 criterion = nn.BCELoss()
 optimizer = optim.Adam(model.parameters(), lr = 0.01)
 
-def train(model,criterion, optimizer,x_train,y_train):
-    optimizer.zero_grad()
-    
-    hypothesis = model(x_train)
-    
-    loss = criterion(hypothesis,y_train)
-
-    loss.backward()
-    optimizer.step()
-    return loss.item()
+def train(model,criterion, optimizer,loader):
+    total_loss = 0 
+    for x_batch,y_batch in loader:
+            
+        optimizer.zero_grad()
+        hypothesis = model(x_batch)
+        loss = criterion(hypothesis,y_batch)
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    return total_loss/len(loader)
 
 epochs = 1000
 for epoch in range(epochs+1):
-    loss = train(model,criterion,optimizer,x_train,y_train)
+    loss = train(model,criterion,optimizer,train_loader)
     print('epochs : {}, loss : {}'.format(epochs,loss))
     
     
 #4.평가,예측 
-def evaluate(model,criterion,x_test,y_test):
+def evaluate(model,criterion,loader):
     model.eval()
-    
-    with torch.no_grad():
+    total_loss = 0
+    for x_batch,y_batch in loader:
         
-        y_predict = model(x_test)
+        with torch.no_grad():
+        
+            y_predict = model(x_batch)
     
-        results = criterion(y_predict,y_test)
-    return results.item()
+            results = criterion(y_predict,y_batch)
+            total_loss += results.item()
+            
+        return total_loss
 
-loss2 = evaluate(model,criterion,x_test,y_test)
+loss2 = evaluate(model,criterion,test_loader)
 print('loss2 : ', loss2)
 
 y_predict = (model(x_test) >= 0.5).float()
