@@ -122,3 +122,5 @@ y_predict= torch.argmax(y_predict,axis=1)
 score = accuracy_score(y_predict.cpu(),y_test.cpu())
 print(score)
 
+
+

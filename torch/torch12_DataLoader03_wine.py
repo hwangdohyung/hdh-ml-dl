@@ -100,7 +100,7 @@ epochs = 1000
 for epoch in range(epochs+1):
     loss = train(model,criterion,optimizer,train_loader)
     print('epochs : {}, loss : {}'.format(epochs,loss))
-    
+
 #4.평가,예측
 def evaluate(model,criterion,loader):
     model.eval()
