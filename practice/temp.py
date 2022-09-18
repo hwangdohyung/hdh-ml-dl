@@ -182,3 +182,7 @@ alldata = pd.concat([data1,data3,data4,data5,data6],ignore_index=True)
 alldata.to_csv("D:\study_data\emotional/last/alldata_emotional.csv",encoding='utf-8')
 
 print(alldata.shape)
+ 
+ 
+ 
+ 
