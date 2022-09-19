@@ -9,7 +9,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
-
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, Normalizer
+from sklearn.impute import KNNImputer
 from tqdm.auto import tqdm
 
 import warnings
@@ -18,10 +19,10 @@ warnings.filterwarnings(action='ignore')
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 CFG = {
-    'EPOCHS':5,
+    'EPOCHS':10,
     'LEARNING_RATE':1e-3,
     'BATCH_SIZE':16,
-    'SEED':41
+    'SEED':123
 }
 
 def seed_everything(seed):
@@ -35,8 +36,10 @@ def seed_everything(seed):
 
 seed_everything(CFG['SEED']) # Seed 고정
 
-all_input_list = sorted(glob.glob('D:\study_data\_data\dacon_chung/train_input/*.csv'))
-all_target_list = sorted(glob.glob('D:\study_data\_data\dacon_chung/train_target/*.csv'))
+paths ='D:\study_data\_data\green/'
+
+all_input_list = sorted(glob.glob('D:\study_data\_data\green/train_input/*.csv'))
+all_target_list = sorted(glob.glob('D:\study_data\_data\green/train_target/*.csv'))
 
 train_input_list = all_input_list[:50]
 train_target_list = all_target_list[:50]
@@ -56,10 +59,53 @@ class CustomDataset(Dataset):
         for input_path, target_path in tqdm(zip(self.input_paths, self.target_paths)):
             input_df = pd.read_csv(input_path)
             target_df = pd.read_csv(target_path)
-            
+            # minmax = MinMaxScaler()
+            standard = StandardScaler()
+            # norm = Normalizer()
+            # print(input_df.info())
+            input_df['시간'] = pd.to_datetime(input_df['시간'])
+            input_df['년'] = input_df['시간'].dt.year 
+            input_df['월'] = input_df['시간'].dt.month 
+            input_df['일'] = input_df['시간'].dt.day 
+            input_df['시'] = input_df['시간'].dt.hour 
+            input_df['분'] = input_df['시간'].dt.minute 
             input_df = input_df.drop(columns=['시간'])
-            input_df = input_df.fillna(0)
+            try:
+              input_df = input_df.drop(columns=['외부온도추정관측치', '외부습도추정관측치'])
+            except:
+              input_df = input_df.drop(columns=['외부온도관측치', '외부습도관측치'])
+            # input_df = input_df.dropna(how='all').reset_index(drop=True)
+            # input_df = input_df.fillna(0)
+            # try:
+            #   input_df['외부온도추정관측치'] = input_df['외부온도추정관측치'].fillna(0)
+            #   input_df['외부습도추정관측치'] = input_df['외부습도추정관측치'].fillna(0)
+            # except:
+            #   input_df['외부습도관측치'] = input_df['외부습도관측치'].fillna(0)
+            #   input_df['외부습도관측치'] = input_df['외부습도관측치'].fillna(0)
+            imputer = KNNImputer(n_neighbors=5)
+            imputed = imputer.fit_transform(input_df)
+            input_df = pd.DataFrame(imputed, columns=input_df.columns)
             
+            # print(input_df)
+            # plt.rc('font', family='NanumBarunGothic')
+            # plt.figure(figsize=(10,5))
+            # ax = sns.heatmap(input_df)
+            # plt.show()
+            
+            # print(input_df.describe())
+            # q3 = input_df.quantile(0.75)
+            # q1 = input_df.quantile(0.25)
+
+            # iqr = (q3 - q1)
+            # iqr = iqr * 1.5
+            # lowest = q1 - iqr
+            # highest = q3 + iqr
+            # input_1 = input_df[iqr != 0.0]
+            # print(input_1)
+            # outlier_index = input_df[((input_1 < lowest) | (input_1 > highest))].index
+            # print(len(input_1))
+            # print(len(outlier_index))
+            input_df[input_df.columns] = standard.fit_transform(input_df[input_df.columns])
             input_length = int(len(input_df)/1440)
             target_length = int(len(target_df))
             
@@ -80,6 +126,48 @@ class CustomDataset(Dataset):
         
     def __len__(self):
         return len(self.data_list)
+ 
+# class CustomDataset(Dataset):
+#     def __init__(self, input_paths, target_paths, infer_mode):
+#         self.input_paths = input_paths
+#         self.target_paths = target_paths
+#         self.infer_mode = infer_mode
+        
+#         self.data_list = []
+#         self.label_list = []
+#         print('Data Pre-processing..')
+#         for input_path, target_path in tqdm(zip(self.input_paths, self.target_paths)):
+#             input_df = pd.read_csv(input_path)
+#             target_df = pd.read_csv(target_path)
+            
+#             input_df['시간'] = input_df['시간'].apply(lambda x : x.split(' ')[1]) 
+#             input_df['시간'] = input_df['시간'].apply(lambda x : x.split(':')[1])
+#             input_df['시간'] = input_df['시간'].astype(int)
+#             # minmax
+#             input_df = (input_df - input_df.min()) / input_df.std()
+#             input_df = input_df.fillna(0)
+            
+#             input_length = int(len(input_df)/1440)
+#             target_length = int(len(target_df))
+            
+#             for idx in range(target_length):
+#                 time_series = input_df[1440*idx:1440*(idx+1)].values
+#                 self.data_list.append(torch.Tensor(time_series))
+#             for label in target_df["rate"]:
+#                 self.label_list.append(label)
+#         print('Done.')
+#         print()
+              
+#     def __getitem__(self, index):
+#         data = self.data_list[index]
+#         label = self.label_list[index]
+#         if self.infer_mode == False:
+#             return data, label
+#         else:
+#             return data
+            
+#     def __len__(self):
+#         return len(self.data_list)
     
 train_dataset = CustomDataset(train_input_list, train_target_list, False)
 train_loader = DataLoader(train_dataset, batch_size = CFG['BATCH_SIZE'], shuffle=True, num_workers=0)
@@ -87,12 +175,29 @@ train_loader = DataLoader(train_dataset, batch_size = CFG['BATCH_SIZE'], shuffle
 val_dataset = CustomDataset(val_input_list, val_target_list, False)
 val_loader = DataLoader(val_dataset, batch_size=CFG['BATCH_SIZE'], shuffle=False, num_workers=0)
 
+
+it = iter(train_dataset)
+
+for i in range(10):
+    print(i, next(it))   
+
 class BaseModel(nn.Module):
     def __init__(self):
         super(BaseModel, self).__init__()
-        self.lstm = nn.LSTM(input_size=37, hidden_size=256, batch_first=True, bidirectional=False)
+        self.lstm = nn.GRU(input_size=40, hidden_size=256, batch_first=True, bidirectional=False)
         self.classifier = nn.Sequential(
-            nn.Linear(256, 1),
+            
+            nn.Linear(256,50),
+            nn.ReLU(),
+            nn.Linear(50,32),
+            nn.ReLU(),
+            nn.Linear(32,16),
+            nn.ReLU(),
+            nn.Linear(16,8),
+            nn.ReLU(),
+            # nn.Dropout(0.1),
+            nn.Linear(8,1),
+            
         )
         
     def forward(self, x):
@@ -152,13 +257,13 @@ def validation(model, val_loader, criterion, device):
 
 model = BaseModel()
 model.eval()
-optimizer = torch.optim.Adam(params = model.parameters(), lr = CFG["LEARNING_RATE"])
+optimizer = torch.optim.AdamW(params = model.parameters(), lr = CFG["LEARNING_RATE"])
 scheduler = None
 
 best_model = train(model, optimizer, train_loader, val_loader, scheduler, device)
 
-test_input_list = sorted(glob.glob('D:\study_data\_data\dacon_chung/test_input/*.csv'))
-test_target_list = sorted(glob.glob('D:\study_data\_data\dacon_chung/test_target/*.csv'))
+test_input_list = sorted(glob.glob('D:\study_data\_data\green/test_input/*.csv'))
+test_target_list = sorted(glob.glob('D:\study_data\_data\green/test_target/*.csv'))
 
 def inference_per_case(model, test_loader, test_path, device):
     model.to(device)
@@ -183,12 +288,21 @@ for test_input_path, test_target_path in zip(test_input_list, test_target_list):
     test_loader = DataLoader(test_dataset, batch_size = CFG['BATCH_SIZE'], shuffle=False, num_workers=0)
     inference_per_case(best_model, test_loader, test_target_path, device)
     
-import zipfile
-os.chdir("D:\study_data\_data\dacon_chung/test_target/")
-submission = zipfile.ZipFile("../submission.zip", 'w')
-for path in test_target_list:
-    path = path.split('/')[-1]
-    submission.write(path)
-submission.close()
+# import zipfile
+# os.chdir("D:\study_data\_data\green/test_target/")
+# submission = zipfile.ZipFile("../submission.zip", 'w')
+# for path in test_target_list:
+#     path = path.split('/')[-1]
+#     submission.write(path)
+# submission.close()
 
+import zipfile
+filelist = ['TEST_01.csv','TEST_02.csv','TEST_03.csv','TEST_04.csv','TEST_05.csv', 'TEST_06.csv']
+os.chdir("D:\study_data\_data\green/test_target")
+with zipfile.ZipFile("submission.zip", 'w') as my_zip:
+    for i in filelist:
+        my_zip.write(i)
+    my_zip.close()
+    
+print('end')
 
