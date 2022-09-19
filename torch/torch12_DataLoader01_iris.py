@@ -44,7 +44,7 @@ train_set = TensorDataset(x_train, y_train)
 test_set = TensorDataset(x_test, y_test)
 
 train_loader = DataLoader(train_set,batch_size=64,shuffle=True)
-test_loader = DataLoader(test_set,batch_size=64,shuffle=True)
+test_loader = DataLoader(test_set,batch_size=64,shuffle=False)
 
 #2.모델 
 # model = nn.Sequential(
