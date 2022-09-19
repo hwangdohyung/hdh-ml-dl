@@ -41,7 +41,7 @@ learning_rate = 0.01
 optimizer = adam_v2.Adam(lr=learning_rate)
 
 model.compile(loss='mae', optimizer='adam',metrics=['acc'])
-hist = model.fit(x_train, y_train, epochs=50, batch_size=1000, 
+hist = model.fit(x_train, y_train, epochs=60, batch_size=1000, 
                 validation_data=(val_data, val_target),
                 verbose=2,callbacks = [es,reduced_lr]
                 )
@@ -85,7 +85,7 @@ import os
 import zipfile
 filelist = ['TEST_01.csv','TEST_02.csv','TEST_03.csv','TEST_04.csv','TEST_05.csv', 'TEST_06.csv']
 os.chdir("D:\study_data\_data\dacon_chung/test_target")
-with zipfile.ZipFile("D:\study_data\_data\dacon_chung/sample_submission4.zip", 'w') as my_zip:
+with zipfile.ZipFile("D:\study_data\_data\dacon_chung/sample_submission32.zip", 'w') as my_zip:
     for i in filelist:
         my_zip.write(i)
     my_zip.close()

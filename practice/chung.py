@@ -88,7 +88,7 @@ import time
 start_time = time.time()
 #3. 컴파일, 훈련
 model.compile(loss='mae', optimizer='adam',metrics=['acc'])
-hist = model.fit(x_train, y_train, epochs=30, batch_size=700, 
+hist = model.fit(x_train, y_train, epochs=3, batch_size=700, 
                 validation_data=(val_data, val_target),
                 verbose=2,#callbacks = [earlyStopping]
                 )
@@ -138,7 +138,7 @@ import os
 import zipfile
 filelist = ['TEST_01.csv','TEST_02.csv','TEST_03.csv','TEST_04.csv','TEST_05.csv', 'TEST_06.csv']
 os.chdir("D:\study_data\_data\dacon_chung\\test_target")
-with zipfile.ZipFile("D:\study_data\_data\dacon_chung/submission.zip", 'w') as my_zip:
+with zipfile.ZipFile("D:\study_data\_data\dacon_chung/submission32.zip", 'w') as my_zip:
     for i in filelist:
         my_zip.write(i)
     my_zip.close()
