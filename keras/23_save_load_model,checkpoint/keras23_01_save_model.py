@@ -7,7 +7,6 @@ from sklearn.datasets import load_boston
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import MaxAbsScaler,MinMaxScaler,StandardScaler,RobustScaler
 
-
 #1.데이터
 datasets = load_boston()
 x = datasets.data
