@@ -158,8 +158,6 @@ score = r2_score(y_predict.cpu().detach(),y_test.cpu().detach())
 print('r2 : ', score)
 
 
-
-
 # 최종 loss :  0
 # r2 :  0.8196522510313116
 
