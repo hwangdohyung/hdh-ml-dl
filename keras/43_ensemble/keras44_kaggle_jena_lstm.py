@@ -10,7 +10,7 @@ print(data.shape)
 data = data.drop('Date Time',axis =1)
 
 print(data.shape)
-x_predict = data[]
+x_predict = data[d]
 
 print(x_predict)
 
