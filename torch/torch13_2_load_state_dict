@@ -155,3 +155,4 @@ print('accuracy : ', score)
 
 # path = 'D:\study_data\_save/'
 # torch.save(model.state_dict(), path + 'torch13_state_dict.pt')
+

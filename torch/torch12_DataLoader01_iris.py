@@ -29,7 +29,6 @@ y_test = torch.LongTensor(y_test).to(DEVICE)
 print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
 
 
-
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
