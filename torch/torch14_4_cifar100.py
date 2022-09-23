@@ -61,7 +61,7 @@ class DNN(nn.Module):
         self.hidden_layer4 = nn.Sequential(
             nn.Linear(32, 16),
             nn.ReLU(0.5),
-            nn.Dropout(0.2))
+            nn.Dropout(0.1))
         self.hidden_layer5 = nn.Sequential(
             nn.Linear(16, 10),
             nn.ReLU(0.5),
