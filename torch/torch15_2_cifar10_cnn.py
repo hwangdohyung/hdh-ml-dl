@@ -1,4 +1,4 @@
-from torchvision.datasets import CIFAR100
+from torchvision.datasets import CIFAR10
 import torch 
 from torch.utils.data import TensorDataset,DataLoader
 import torch.nn as nn 
@@ -19,8 +19,8 @@ path = 'D:\study_data\_data/torch_data/'
 # test_datasets = CIFAR10(path, train= False, download=True, transform= transf)
 
 # print(train_datasets[0][0].shape)  #torch.Size([1, 15, 15])
-train_datasets = CIFAR100(path, train= True, download=True)
-test_datasets = CIFAR100(path, train= False, download=True)
+train_datasets = CIFAR10(path, train= True, download=True)
+test_datasets = CIFAR10(path, train= False, download=True)
 
 x_train,y_train = train_datasets.data/255. , train_datasets.targets
 x_test,y_test = test_datasets.data/255. , test_datasets.targets
@@ -32,52 +32,47 @@ y_test = torch.LongTensor(y_test)
 
 print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
 
-
-x_train,x_test = x_train.reshape(50000, 32*32*3), x_test.reshape(10000, 32*32*3) #  == reshape
+# x_train,x_test = x_train.reshape(50000, 32*32*3), x_test.reshape(10000, 32*32*3) #  == reshape
+x_train,x_test = x_train.reshape(x_train.shape[0],3,32,32), x_test.reshape(x_test.shape[0],3,32,32)
+print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
 
 train_set = TensorDataset(x_train,y_train)
 test_set = TensorDataset(x_test,y_test)
 
-train_loader = DataLoader(train_set,batch_size=32,shuffle=True)
-test_loader = DataLoader(test_set,batch_size=32,shuffle=False)
+train_loader = DataLoader(train_set,batch_size=64,shuffle=True)
+test_loader = DataLoader(test_set,batch_size=64,shuffle=False)
 
 #2.모델
-class DNN(nn.Module):
-    def __init__(self, num_features):
+class CNN(nn.Module):
+    def __init__(self, in_channels):
         super().__init__()
         
         self.hidden_layer1 = nn.Sequential(
-            nn.Linear(num_features, 64),
+            nn.Conv2d(in_channels, 64, kernel_size=(3,3)),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=(2,2)),
             nn.Dropout(0.1))
         self.hidden_layer2 = nn.Sequential(
-            nn.Linear(64, 32),
+            nn.Conv2d(64,32, kernel_size=(3,3)),
             nn.ReLU(),
-            nn.Dropout(0.1)) 
+            nn.MaxPool2d(kernel_size=(2,2)),
+            nn.Dropout(0.1))
         self.hidden_layer3 = nn.Sequential(
-            nn.Linear(32, 32),
+            nn.Linear(32*6*6,32),
             nn.ReLU(),
-            nn.Dropout(0.1))
-        self.hidden_layer4 = nn.Sequential(
-            nn.Linear(32, 16),
-            nn.ReLU(0.5),
-            nn.Dropout(0.1))
-        self.hidden_layer5 = nn.Sequential(
-            nn.Linear(16, 10),
-            nn.ReLU(0.5),
-            nn.Dropout(0.1))   
-        self.output_layer = nn.Linear(10,100)
+        )
+        
+        self.output_layer = nn.Linear(32,10)
 
     def forward(self, x):
         x = self.hidden_layer1(x)
         x = self.hidden_layer2(x)
+        x = x.view(x.shape[0],-1)
         x = self.hidden_layer3(x)
-        x = self.hidden_layer4(x)
-        x = self.hidden_layer5(x)
         x = self.output_layer(x)
         return x
 
-model = DNN(32*32*3).to(DEVICE)
+model = CNN(3).to(DEVICE)
 
 #3. 컴파일,훈련
 criterion = nn.CrossEntropyLoss()
@@ -133,8 +128,7 @@ for epoch in range(epochs+1):
     print('epochs : {}, loss : {:.4f}, acc : {:.3f}, val_loss : {:.4f}, val_acc : {:.3f}'.format(epochs, loss, acc, val_loss, val_acc))
 
 
-
-# epochs : 20, loss : 3.9920, acc : 0.076, val_loss : 4.0215, val_acc : 0.075
+# epochs : 20, loss : 1.5882, acc : 0.421, val_loss : 1.6131, val_acc : 0.412
 
 
 
