@@ -7,6 +7,10 @@ import cv2
 import requests
 import numpy as np
 from PIL import ImageFont, ImageDraw, Image
+import matplotlib
+matplotlib.rcParams['font.family'] ='Malgun Gothic'
+matplotlib.rcParams['axes.unicode_minus'] =False
+font_fname = 'C:\Windows\Fonts/gulim.ttc'
 
 def plt_imshow(title='image', img=None, figsize=(8 ,5)):
     plt.figure(figsize=figsize)
@@ -99,7 +103,7 @@ def make_scan_image(image, width, ksize=(5,5), min_threshold=75, max_threshold=2
 def putText(cv_img, text, x, y, color=(0, 0, 0), font_size=22):
   # Colab이 아닌 Local에서 수행 시에는 gulim.ttc 를 사용하면 됩니다.
   # font = ImageFont.truetype("fonts/gulim.ttc", font_size)
-  font = ImageFont.truetype('/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf', font_size)
+  font = ImageFont.truetype('C:\Windows\Fonts/gulim.ttc', font_size)
   img = Image.fromarray(cv_img)
    
   draw = ImageDraw.Draw(img)
@@ -142,3 +146,7 @@ for (bbox, text, prob) in results:
 	# cv2.putText(business_card_image, text, (tl[0], tl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
  
 plt_imshow("Image", business_card_image, figsize=(16,10))
+
+
+
+
