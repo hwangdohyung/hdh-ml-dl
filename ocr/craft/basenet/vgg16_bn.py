@@ -75,4 +75,3 @@ class vgg16_bn(torch.nn.Module):
 
 
 
-print('이형권 바보')
