@@ -146,6 +146,6 @@ print('Done')
 print('걸린 시간:', end_time)
 
 
-
+print(x.shape )
 
 
