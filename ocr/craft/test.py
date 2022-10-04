@@ -1,7 +1,3 @@
-"""  
-Copyright (c) 2019-present NAVER Corp.
-MIT License
-"""
 # -*- coding: utf-8 -*-
 import sys
 import os
@@ -115,7 +111,6 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, r
     if args.show_time : print("\ninfer/postproc time : {:.3f}/{:.3f}".format(t0, t1))
 
     return boxes, polys, ret_score_text
-
 
 
 if __name__ == '__main__':
