@@ -23,6 +23,7 @@ print(x_train.shape)
 x_train= x_train.reshape(404,13,1)
 x_test = x_test.reshape(102,13,1)
 
+
 #2.모델구성
 model = Sequential()
 model.add(LSTM(200,activation='relu', input_shape=(13,1))) 
@@ -68,3 +69,6 @@ print('r2스코어 : ' , r2)
 #LSTM
 # loss :  75.4331283569336
 # r2스코어 :  0.09750564038152243
+
+
+import n

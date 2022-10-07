@@ -12,7 +12,7 @@ y = np.array([4,5,6,7,8,9,10])
 
 print(x.shape,y.shape)
 x = x.reshape(7, 3, 1) 
-print(x.shape)  
+print(x.shape)  #(7,)
 
 
 #2.모델구성

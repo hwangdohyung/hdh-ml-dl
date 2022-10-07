@@ -67,3 +67,7 @@ y_pred = np.array([8,9,10]).reshape(1,3,1)  # [[[8],[9],[10]]]
 result = model.predict(y_pred)  #모델은 3차원을 원한다.
 print('loss : ', loss)
 print('result : ', result)
+
+
+
+

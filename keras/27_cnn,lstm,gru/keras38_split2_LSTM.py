@@ -11,6 +11,7 @@ size = 5
 #x는 4개 y는 1개
 x_predict = np.array(range(96,106))
 
+
 ################################### data 자르기 ###################################
 def split_x(data, y1):
     aaa= [ ]
@@ -57,6 +58,7 @@ model.add(Dense(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))
 model.add(Dense(100, activation= 'relu'))
 model.add(Dense(1))
+
 
 #3.컴파일,훈련
 model.compile(loss='mse', optimizer='adam')

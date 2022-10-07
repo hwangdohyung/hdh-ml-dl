@@ -24,7 +24,7 @@ bayesian_params ={'max_depth':(6,16),'num_leaves': (24,64),'min_child_samples':(
                   'colsample_bytree':(0.5,1),'max_bin':(10,500),'reg_lambda':(0.001,10),'reg_alpha':(0.01,50)}
 
 
-def lgb_hamsu(max_depth, num_leaves, min_child_samples, min_child_weight,subsample,colsample_bytree,max_bin, reg_lambda, reg_alpha):
+def lgb_hamsu(max_depth, num_leaves, min_child_samples, min_child_weight,subsample,colsample_bytree,max_bin, reg_lambda, reg_alphal):
     params ={'n_estimators':500, 'learning_rate':0.02,
              'max_depth':int(round(max_depth)),                  # 무조건 정수
              'num_leaves': int(round(num_leaves)),
@@ -36,8 +36,7 @@ def lgb_hamsu(max_depth, num_leaves, min_child_samples, min_child_weight,subsamp
              'reg_lambda': max(reg_lambda,0),                   # 무조건 0이상(양수)
              'reg_alpha':max(reg_alpha,0)                       
     }
-
-    #  * : 여러개의인자를받겠다
+    #  * : 여러개의인자를받겠다l
     # ** : 키워드받겠다(딕셔너리형태)
     model = LGBMClassifier(**params) 
 
