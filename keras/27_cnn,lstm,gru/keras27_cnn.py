@@ -6,9 +6,9 @@ model = Sequential()
 # model.summary()
 # (input_dim + bias) *units = summary Param 갯수(Dense 모델)
 
-model.add(Conv2D(filters=10, kernel_size=(4,4),   #출력:(N,6 ,6 ,10) input 쉐입에서 커널사이즈 빼고 1더하면됨.   
-                 input_shape = (10, 10, 1)))   #(batch_size(행의갯수)=rows, columns , channels)
-model.add(Conv2D(7, (4,4),activation ='relu'))    #출력:(N,5 ,5 ,7)
+model.add(Conv2D(filters=10, kernel_size=(3,3),   #출력:(N,6 ,6 ,10) input 쉐입에서 커널사이즈 빼고 1더하면됨.   
+                 input_shape = (10, 10, 1),dilation_rate=2))   #(batch_size(행의갯수)=rows, columns , channels)
+model.add(Conv2D(7, (3,3),activation ='relu'))    #출력:(N,5 ,5 ,7)
 model.add(Flatten()) #(N, 175) #평탄화 작업(flatten) 
 model.add(Dense(32,activation = 'relu'))
 model.add(Dense(32,activation = 'relu'))
