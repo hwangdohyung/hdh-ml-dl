@@ -18,6 +18,7 @@ print(x.shape,y.shape)      #(506, 13) (506,)
 # x= pca.fit_transform(x) 
 # print(x.shape)              
 
+
 x_train,x_test,y_train,y_test = train_test_split(x,y , train_size=0.8, random_state=123, shuffle=True)
 
 #2.모델
@@ -38,5 +39,6 @@ print('결과 : ', results)
 
 # PCA (506, 11)
 # 결과 :  0.8049087643991026
+
 
 

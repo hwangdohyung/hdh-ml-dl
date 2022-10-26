@@ -47,3 +47,5 @@ print(type(xy_train[0][0]))#<class 'numpy.ndarray'>
 print(type(xy_train[0][1]))#<class 'numpy.ndarray'>
 # image 데이터를 가져왔을 때 x numpy y numpy 형태로 batch단위로 묶여있다!
 
+
+

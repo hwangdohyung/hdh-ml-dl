@@ -30,7 +30,6 @@ y_train = torch.LongTensor(y_train)
 x_test = torch.FloatTensor(x_test)
 y_test = torch.LongTensor(y_test)
 
-print(x_train.shape,y_train.shape,x_test.shape,y_test.shape)
 
 
 x_train,x_test = x_train.reshape(50000, 32*32*3), x_test.reshape(10000, 32*32*3) #  == reshape

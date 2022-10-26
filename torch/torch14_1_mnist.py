@@ -31,6 +31,8 @@ print(y_train.size(),y_test.shape)
 
 print(np.min(x_train.numpy())) #0.0
 print(np.max(x_train.numpy())) #1.0
+print(x_train.shape)
+
 
 x_train,x_test = x_train.view(-1, 28*28), x_test.view(-1, 28*28) #  == reshape
 print(x_train.shape,x_test.shape) #torch.Size([60000, 784]) torch.Size([10000, 784])

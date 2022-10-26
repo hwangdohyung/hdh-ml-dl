@@ -1,6 +1,5 @@
 ## 라이브러리 추가하기
 import argparse
-
 import os
 import numpy as np
 

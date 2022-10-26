@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout, Conv2DTranspose, BatchNormalization, ReLU, Concatenate, Softmax
 # import BatchNormalization and ReLU
 from tensorflow.keras.layers import BatchNormalization, ReLU
- 
+
 import tensorflow as tf
 # import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt

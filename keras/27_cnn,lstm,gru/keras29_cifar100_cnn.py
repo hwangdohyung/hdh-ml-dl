@@ -6,7 +6,6 @@ from tensorflow.python.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
 (x_train, y_train), (x_test, y_test) = cifar100.load_data()
 print(x_train.shape, y_train.shape)
 
-
 x_train = x_train.reshape(50000,32*32*3)
 x_test = x_test.reshape(10000,32*32*3)
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler
