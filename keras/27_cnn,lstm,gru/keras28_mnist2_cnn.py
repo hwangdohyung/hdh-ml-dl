@@ -7,13 +7,11 @@ from sklearn.preprocessing import MinMaxScaler, MaxAbsScaler, StandardScaler, Ro
 #1.데이터
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-
 x_train = x_train.reshape(60000,28,28,1)
 x_test = x_test.reshape(10000,28,28,1)
 print(x_train.shape)
 import numpy as np
 print(np.unique(y_train,return_counts=True))
-
 
 from tensorflow.keras.utils import to_categorical
 y_train = to_categorical(y_train)
@@ -55,3 +53,5 @@ print('acc스코어: ', acc)
 
 # 0.9809
 #
+
+

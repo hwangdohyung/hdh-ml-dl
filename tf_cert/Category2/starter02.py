@@ -39,6 +39,7 @@ def solution_model():
     model.add(Dense(20))
     model.add(Dense(10, activation='softmax'))
     
+    
     model.compile(loss= 'sparse_categorical_crossentropy',optimizer='adam')
     model.fit(x_train,y_train, epochs=100,batch_size=256,verbose=1)
     loss = model.evaluate(x_test,y_test)
