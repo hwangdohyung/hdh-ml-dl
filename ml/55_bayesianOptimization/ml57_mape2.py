@@ -24,5 +24,5 @@ mape_tf = keras.metrics.mean_absolute_percentage_error(y_true,y_pred)
 print('mape_tf : ',mape_tf.numpy())
 
 
-
+#asdefldkgeks.dkf
 
