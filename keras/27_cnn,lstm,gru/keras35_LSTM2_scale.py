@@ -18,7 +18,7 @@ x= x.reshape(13,3,1)
 print
 
 print(x.shape,y.shape)
-exit()
+
 #2.모델구성
 model = Sequential()
 model.add(LSTM(200,activation='relu', input_shape=(3,1))) 
