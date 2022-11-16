@@ -14,8 +14,6 @@ train_set = pd.read_csv(path + 'train.csv')
 test_set = pd.read_csv(path + 'test.csv') 
 
 
-
-
 train_set["hour"] = [t.hour for t in pd.DatetimeIndex(train_set.datetime)]
 train_set["day"] = [t.dayofweek for t in pd.DatetimeIndex(train_set.datetime)]
 train_set["month"] = [t.month for t in pd.DatetimeIndex(train_set.datetime)]
@@ -96,3 +94,4 @@ rmse = RMSE(y_test, y_predict)
 print("RMSE : ", rmse)
 # loss :  2744.703125
 # RMSE :  64.7638105407249
+
