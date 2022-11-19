@@ -47,7 +47,7 @@ ddd = predict_x(x_predict, size1)
 x_pred= ddd[:, :]
 
 print(x_predict)
-print(x_predict.shape)
+print(x_predict.shape)  
 
 #2.모델 구성
 model = Sequential()
