@@ -20,7 +20,7 @@ x_train,x_test,y_train,y_test = train_test_split(x,y, train_size=0.8, shuffle=Tr
 scaler = StandardScaler()
 x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
-
+  
 n_splits = 5
 kfold = StratifiedKFold(n_splits=n_splits, shuffle = True, random_state = 123)
 
