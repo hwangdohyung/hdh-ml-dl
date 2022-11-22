@@ -22,7 +22,7 @@ data1_label = data1['labels']
 print(data1_label)
 
 newlist = []
-
+    
 for i in data1_label :
     if i == 'joy':
         newlist += ['euphoria']
