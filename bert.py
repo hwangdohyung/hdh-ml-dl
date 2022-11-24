@@ -17,7 +17,7 @@ import transformers as tr
 from transformers import TFBertModel,BertTokenizer
 print(tr.__version__)
 
-BATCH_SIZE = 32
+BATCH_SIZE = 1000
 NUM_EPOCHS = 3
 VALID_SPLIT = 0.2
 MAX_LEN = 39 
@@ -95,7 +95,7 @@ class TFBertClassifier(tf.keras.Model):
         
         self.bert = TFBertModel.from_pretrained(model_name, cache_dir=dir_path)
         self.dropout = tf.keras.layers.Dropout(self.bert.config.hidden_dropout_prob)
-        self.classifer = tf.keras.layers.Dense(num_class,
+        self.classifier = tf.keras.layers.Dense(num_class,
                                                kernel_initializer=tf.keras.initializers.TruncatedNormal(self.bert.config.initializer_range),
                                                name = 'Classifier')
         
@@ -139,5 +139,10 @@ history= cls_model.fit(train_movie_inputs, train_data_labels, epochs=NUM_EPOCHS,
 
 print(history.history)
 
-
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'],'')
+plt.xlabel('EPOCHS')
+plt.ylabel('LOSS')
+plt.legend('loss','val_loss')
+plt.show()
 
