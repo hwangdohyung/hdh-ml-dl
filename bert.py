@@ -1,4 +1,4 @@
-
+# python 3.9.12 , tensorflow 2.11.0 transformers 4.2.2
 import os 
 import re 
 import json 
@@ -17,7 +17,7 @@ import transformers as tr
 from transformers import TFBertModel,BertTokenizer
 print(tr.__version__)
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 128
 NUM_EPOCHS = 3
 VALID_SPLIT = 0.2
 MAX_LEN = 39 
@@ -145,4 +145,7 @@ plt.xlabel('EPOCHS')
 plt.ylabel('LOSS')
 plt.legend('loss','val_loss')
 plt.show()
+
+
+
 
