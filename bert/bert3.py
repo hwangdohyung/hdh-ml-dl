@@ -447,3 +447,5 @@ path = 'D:\study_data\_save/'
 torch.save(model.state_dict(), path + 'torch_bert_dict.pt')
 
 
+
+
