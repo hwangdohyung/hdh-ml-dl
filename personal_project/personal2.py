@@ -285,3 +285,4 @@ for input_image in test_dataset.take(5) :
     gen_image = gen0(input_image , training = True)
     fig1(input_image, gen_image)
 
+
