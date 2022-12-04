@@ -78,7 +78,6 @@ test_dataset = test_dataset.batch(batch_size=TEST_BATCH)
 
 #2.모델구성
 
-
 ############################### 인코더 #################################
 
 init = RandomNormal(mean = 0.0, stddev = 0.02)
@@ -284,5 +283,6 @@ def fig1 (input_image, gen_image) :
 for input_image in test_dataset.take(5) :
     gen_image = gen0(input_image , training = True)
     fig1(input_image, gen_image)
+
 
 

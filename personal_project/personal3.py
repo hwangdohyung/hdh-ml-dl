@@ -18,7 +18,7 @@ from keras.layers import LeakyReLU
 from keras.layers import Conv2DTranspose
 from keras.initializers import RandomNormal
 from tensorflow_addons.layers import InstanceNormalization
-
+   
 #################### 데이터 ####################
 clr_path = "D:\study_data\_data\image\gan\color"
 gry_path = "D:\study_data\_data\image\gan\gray"
