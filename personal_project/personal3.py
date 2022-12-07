@@ -24,7 +24,7 @@ clr_path = "D:\study_data\_data\image\gan\color"
 gry_path = "D:\study_data\_data\image\gan\gray"
 
 import os
-
+   
 clr_img_path = []
 gry_img_path = []
 
