@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow import keras
 import tensorflow as tf
+import tensorflow
 print(tf.__version__)
-exit()
+
 
 
 clr_path = "D:\study_data\_data\image\gan\color"
@@ -360,4 +361,7 @@ fit(EPOCHS = 3)
 for b_w_image,tar_image in valid_dataset.take(20) :
     gen_image = gen0(b_w_image , training = True)
     fig(b_w_image, gen_image, tar_image)
+    
+    
+    
     
