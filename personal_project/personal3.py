@@ -5,6 +5,7 @@ from tensorflow import keras
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow_addons.layers import SpectralNormalization
+
 from keras.layers import BatchNormalization
 from keras.layers import ZeroPadding2D
 from keras.layers import Concatenate
@@ -266,7 +267,6 @@ def generate_images(model, test_input, tar):
     plt.show()
     
     
-    
 @tf.function
 def train_step(input_image, target):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
@@ -309,3 +309,6 @@ def fit(train_ds, epochs, test_ds):
         
         
 fit(train_dataset, EPOCHS, test_dataset)    
+
+
+

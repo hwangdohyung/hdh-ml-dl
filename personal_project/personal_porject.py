@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow import keras
 import tensorflow as tf
+print(tf.__version__)
+exit()
+
 
 clr_path = "D:\study_data\_data\image\gan\color"
 gry_path = "D:\study_data\_data\image\gan\gray"
