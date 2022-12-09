@@ -203,7 +203,7 @@ def convert_input_data(sentences):
 
     # BERT의 토크나이저로 문장을 토큰으로 분리
     tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
-
+  
     # 입력 토큰의 최대 시퀀스 길이
     MAX_LEN = 128
 
