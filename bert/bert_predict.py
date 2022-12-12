@@ -215,7 +215,7 @@ def convert_input_data(sentences):
 
     # 어텐션 마스크 초기화
     attention_masks = []
-
+ 
     # 어텐션 마스크를 패딩이 아니면 1, 패딩이면 0으로 설정
     # 패딩 부분은 BERT 모델에서 어텐션을 수행하지 않아 속도 향상
     for seq in input_ids:
