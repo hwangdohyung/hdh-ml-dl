@@ -22,13 +22,11 @@ print(train.head(10))
 # 리뷰 문장 추출
 sentences = train['document']
 
-
 # BERT의 입력 형식에 맞게 변환
 sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
 
 # 라벨 추출
 labels = train['label'].values
-
 
 # BERT의 토크나이저로 문장을 토큰으로 분리
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
@@ -37,17 +35,14 @@ tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
 print (sentences[0])
 print (tokenized_texts[0])
 
-
 # 입력 토큰의 최대 시퀀스 길이
 MAX_LEN = 128
 
 # 토큰을 숫자 인덱스로 변환
 input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]
 
-
 # 문장을 MAX_LEN 길이에 맞게 자르고, 모자란 부분을 패딩 0으로 채움
 input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype="long", truncating="post", padding="post")
-
 
 # 어텐션 마스크 초기화
 attention_masks = []
@@ -58,7 +53,6 @@ for seq in input_ids:
     seq_mask = [float(i>0) for i in seq]
     attention_masks.append(seq_mask)
     
-
 # 훈련셋과 검증셋으로 분리
 train_inputs, validation_inputs, train_labels, validation_labels = train_test_split(input_ids,
                                                                                     labels, 
