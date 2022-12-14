@@ -102,7 +102,6 @@ sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
 # 라벨 추출
 labels = test['label'].values
 
-
 # BERT의 토크나이저로 문장을 토큰으로 분리
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
 tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
