@@ -11,7 +11,7 @@ import numpy as np
 import random
 import time
 import datetime
-
+   
 # 데이터 
 train = pd.read_csv('d:/bertdata/ratings_train.txt', sep='\t')
 test = pd.read_csv('d:/bertdata/ratings_test.txt', sep='\t')
